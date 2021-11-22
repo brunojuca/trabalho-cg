@@ -4,7 +4,10 @@ import {TrackballControls} from '../build/jsm/controls/TrackballControls.js';
 import {initRenderer, 
         initCamera,
         InfoBox,
-        onWindowResize} from "../libs/util/util.js";
+        onWindowResize,
+        initDefaultSpotlight,
+        initDefaultBasicLight} from "../libs/util/util.js";
+import { Car } from './car.js';
 
 var stats = new Stats();          // To show FPS information
 var scene = new THREE.Scene();    // Create main scene
@@ -18,6 +21,10 @@ var trackballControls = new TrackballControls( camera, renderer.domElement );
 var axesHelper = new THREE.AxesHelper( 12 );
 scene.add( axesHelper );
 
+//light
+initDefaultSpotlight(scene, new THREE.Vector3(35, 20, 30)); // Use default light
+
+
 // create the ground plane
 var planeGeometry = new THREE.PlaneGeometry(20, 20);
 planeGeometry.translate(0.0, 0.0, -0.02); // To avoid conflict with the axeshelper
@@ -29,12 +36,9 @@ var plane = new THREE.Mesh(planeGeometry, planeMaterial);
 // add the plane to the scene
 scene.add(plane);
 
-// create a cube
-var cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
-var cubeMaterial = new THREE.MeshNormalMaterial();
-var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+var cube = new Car();
 // position the cube
-cube.position.set(0.0, 0.0, 2.0);
+cube.position.set(0.0, 0.0, 1.0);
 // add the cube to the scene
 scene.add(cube);
 

@@ -1,2 +1,2 @@
-# CG
-Files for the Computer Graphics course in Three.js
+# Trabalho CG - Rock 'n Roll Racing
+Trabalho desenvolvido para a disciplina de computação gráfica

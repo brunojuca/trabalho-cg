@@ -66,7 +66,142 @@ function createCube(size)
     return cube;
 }
 
+//-------------------------------------------------------------------------------
+// Checkpoints
+//-------------------------------------------------------------------------------
 
+//cria checkpoint
+function createCheckpoint(radius)
+{
+    var checkpointGeometry = new THREE.SphereGeometry(5*radius, 32, 32);
+    var checkpointMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,255,255)'} );
+    var checkpoint = new THREE.Mesh( checkpointGeometry, checkpointMaterial );
+    return checkpoint;
+}
+
+//cria pole
+function createPole(size)
+{
+    var flagGeometry = new THREE.BoxGeometry(size, 2*size, size);
+    var flagMaterial = new THREE.MeshPhongMaterial( {color:'rgb(0,255,255)'} );
+    var flag = new THREE.Mesh( flagGeometry, flagMaterial );
+    return flag;
+}
+
+//checkpoint
+var checkpoint1 = createCheckpoint(radius);
+checkpoint1.position.set(0.0, 0.0, 10.0);
+scene.add(checkpoint1);
+
+//checkpoint
+var checkpoint2 = createCheckpoint(radius);
+checkpoint2.position.set(0.0, 0.0, 20.0);
+scene.add(checkpoint2);
+
+//checkpoint
+var checkpoint3 = createCheckpoint(radius);
+checkpoint3.position.set(0.0, 0.0, 30.0);
+scene.add(checkpoint3);
+
+//checkpoint
+var checkpoint4 = createCheckpoint(radius);
+checkpoint4.position.set(0.0, 0.0, 40.0);
+scene.add(checkpoint4);
+
+for (var i = 1; i <= 4; i++){
+    //flag
+    var flag = createPole(size);
+    flag.position.set(0.0, 10.0, 10.0*i);
+    scene.add(flag);
+}
+
+var colidiu1 = false;
+var colidiu2 = false;
+var colidiu3 = false;
+var colidiu4 = false;
+var reset = false;
+var voltas = 0;
+
+function verificaCheckpoint1(checkpoint, cube){
+    if (Math.abs(checkpoint.position.getComponent(0) - cube.position.getComponent(0)) < 5*radius &&
+        Math.abs(checkpoint.position.getComponent(2) - cube.position.getComponent(2)) < 5*radius){
+        colidiu1 = true;
+        console.log(colidiu1);
+    }
+}
+function verificaCheckpoint2(checkpoint, cube){
+    if (Math.abs(checkpoint.position.getComponent(0) - cube.position.getComponent(0)) < 5*radius &&
+        Math.abs(checkpoint.position.getComponent(2) - cube.position.getComponent(2)) < 5*radius){
+        colidiu2 = true;
+        console.log(colidiu2);
+    }
+}
+function verificaCheckpoint3(checkpoint, cube){
+    if (Math.abs(checkpoint.position.getComponent(0) - cube.position.getComponent(0)) < 5*radius &&
+        Math.abs(checkpoint.position.getComponent(2) - cube.position.getComponent(2)) < 5*radius){
+        colidiu3 = true;
+        console.log(colidiu3);
+    }
+}
+
+function verificaCheckpoint4(checkpoint, cube){
+    if (Math.abs(checkpoint.position.getComponent(0) - cube.position.getComponent(0)) < 5*radius &&
+        Math.abs(checkpoint.position.getComponent(2) - cube.position.getComponent(2)) < 5*radius){
+        colidiu4 = true;
+        console.log(colidiu4);
+    }
+}
+
+function verificaVoltas(cube)
+{
+    if (colidiu1){
+        if (colidiu2){
+            if (colidiu3){
+                if (colidiu4){
+                    voltas += 1;
+                    colidiu1 = reset;
+                    colidiu2 = reset;
+                    colidiu3 = reset;
+                    colidiu4 = reset;
+                    console.log(voltas);
+                    armazenaTempoVolta(voltas);
+                }
+                else {
+                    verificaCheckpoint4(checkpoint4, cube);
+                }
+            }
+            else {
+                verificaCheckpoint3(checkpoint3, cube);
+            }
+        }
+        else {
+            verificaCheckpoint2(checkpoint2, cube);
+        }
+    }
+    else {
+        verificaCheckpoint1(checkpoint1, cube);
+    }
+}
+
+var tempoVolta1 = 0;
+var tempoVolta2 = 0;
+var tempoVolta3 = 0;
+var tempoVolta4 = 0;
+
+function armazenaTempoVolta(){
+    if (voltas == 1){
+        tempoVolta1 = anterior/1000;
+    }
+    if (voltas == 2){
+        tempoVolta2 = anterior/1000 - tempoVolta1
+    }
+    if (voltas == 3){
+        tempoVolta3 = anterior/1000 - tempoVolta2;
+    }
+    if (voltas == 4){
+        tempoVolta4 = anterior/1000 - tempoVolta3;
+    }
+}
 
 //-------------------------------------------------------------------------------
 // Camera
@@ -120,7 +255,7 @@ function aceleraCarro(aceleracaoAnterior)
 
         }
     }
-    console.log(aceleracao);
+    //console.log(aceleracao);
     aceleracaoAnterior = aceleracao
 }
 
@@ -137,7 +272,7 @@ function freiaCarro(freiaAnterior)
             cube.translateZ(freia/100);
         }
     }
-    console.log(freia);
+    //console.log(freia);
     freiaAnterior = freia
 }
 
@@ -166,13 +301,12 @@ function keyboardUpdate() {
     }
 
     if (keyboard.pressed("left")) {
-        cube.rotateY(degreesToRadians(2));
+        cube.rotateY(degreesToRadians(5));
     }
     else if (keyboard.pressed("right")) {
-        cube.rotateY(degreesToRadians(-2));
+        cube.rotateY(degreesToRadians(-5));
     }
 }
-
 
 
 //-------------------------------------------------------------------------------
@@ -189,6 +323,69 @@ var plane = createGroundPlaneWired(planeSize, planeSize, 80, 80);
 // add the plane to the scene
 scene.add(plane);
 
+
+
+//-------------------------------------------------------------------------------
+// Status da Partida
+//-------------------------------------------------------------------------------
+
+function geraStatus(){
+    var textoVoltas = document.createElement('div');
+    textoVoltas.style.position = 'absolute';
+    textoVoltas.style.backgroundColor = "white";
+    textoVoltas.innerHTML = "Voltas: ";
+    textoVoltas.style.top = 0 + 'px';
+    textoVoltas.style.left = window.innerWidth - 54 + 'px';
+    document.body.appendChild(textoVoltas);
+
+    var nDeVoltas = document.createElement('div');
+    nDeVoltas.style.position = 'absolute';
+    nDeVoltas.style.backgroundColor = "white";
+    nDeVoltas.innerHTML = voltas;
+    nDeVoltas.style.top = 0 + 'px';
+    nDeVoltas.style.left = window.innerWidth - 10 + 'px';
+    document.body.appendChild(nDeVoltas);
+
+    var tempoTotal = document.createElement('div');
+    tempoTotal.style.position = 'absolute';
+    tempoTotal.style.backgroundColor = "white";
+    tempoTotal.innerHTML = anterior/1000;
+    tempoTotal.style.top = 19 + 'px';
+    tempoTotal.style.left = window.innerWidth - 100 + 'px';
+    document.body.appendChild(tempoTotal);
+
+    var textotempoVolta1 = document.createElement('div');
+    textotempoVolta1.style.position = 'absolute';
+    textotempoVolta1.style.backgroundColor = "white";
+    textotempoVolta1.innerHTML = tempoVolta1;
+    textotempoVolta1.style.top = 39 + 'px';
+    textotempoVolta1.style.left = window.innerWidth - 100 + 'px';
+    document.body.appendChild(textotempoVolta1);
+
+    var textotempoVolta2 = document.createElement('div');
+    textotempoVolta2.style.position = 'absolute';
+    textotempoVolta2.style.backgroundColor = "white";
+    textotempoVolta2.innerHTML = tempoVolta2;
+    textotempoVolta2.style.top = 59 + 'px';
+    textotempoVolta2.style.left = window.innerWidth - 100 + 'px';
+    document.body.appendChild(textotempoVolta2);
+
+    var textotempoVolta3 = document.createElement('div');
+    textotempoVolta3.style.position = 'absolute';
+    textotempoVolta3.style.backgroundColor = "white";
+    textotempoVolta3.innerHTML = tempoVolta3;
+    textotempoVolta3.style.top = 79 + 'px';
+    textotempoVolta3.style.left = window.innerWidth - 100 + 'px';
+    document.body.appendChild(textotempoVolta3);
+
+    var textotempoVolta4 = document.createElement('div');
+    textotempoVolta4.style.position = 'absolute';
+    textotempoVolta4.style.backgroundColor = "white";
+    textotempoVolta4.innerHTML = tempoVolta4;
+    textotempoVolta4.style.top = 99 + 'px';
+    textotempoVolta4.style.left = window.innerWidth - 100 + 'px';
+    document.body.appendChild(textotempoVolta4);
+}
 
 
 //-------------------------------------------------------------------------------
@@ -229,12 +426,14 @@ function render(t)
 
   aceleraCarro(aceleracao);
   freiaCarro(freia);
+  verificaVoltas(cube);
   posAtual.copy(cube.position);
   cameraHolder.lookAt(posAtual)
   cameraHolder.rotateY(degreesToRadians(180))
 
   dt = (t - anterior) / 1000;
   anterior = t;
+  geraStatus();
   controlledRender(t);
   renderer.render(scene, camera) // Render scene
 }

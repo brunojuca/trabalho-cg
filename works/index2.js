@@ -92,7 +92,6 @@ function createPole(size)
 var checkpoint1 = createCheckpoint(radius);
 checkpoint1.position.set(0.0, 0.0, 10.0);
 scene.add(checkpoint1);
-
 //checkpoint
 var checkpoint2 = createCheckpoint(radius);
 checkpoint2.position.set(0.0, 0.0, 20.0);
@@ -126,6 +125,7 @@ function verificaCheckpoint1(checkpoint, cube){
     if (Math.abs(checkpoint.position.getComponent(0) - cube.position.getComponent(0)) < 5*radius &&
         Math.abs(checkpoint.position.getComponent(2) - cube.position.getComponent(2)) < 5*radius){
         colidiu1 = true;
+        checkpoint1.material.color.setHex(0xfada5e)
         console.log(colidiu1);
     }
 }
@@ -133,6 +133,7 @@ function verificaCheckpoint2(checkpoint, cube){
     if (Math.abs(checkpoint.position.getComponent(0) - cube.position.getComponent(0)) < 5*radius &&
         Math.abs(checkpoint.position.getComponent(2) - cube.position.getComponent(2)) < 5*radius){
         colidiu2 = true;
+        checkpoint2.material.color.setHex(0xfada5e)
         console.log(colidiu2);
     }
 }
@@ -140,6 +141,7 @@ function verificaCheckpoint3(checkpoint, cube){
     if (Math.abs(checkpoint.position.getComponent(0) - cube.position.getComponent(0)) < 5*radius &&
         Math.abs(checkpoint.position.getComponent(2) - cube.position.getComponent(2)) < 5*radius){
         colidiu3 = true;
+        checkpoint3.material.color.setHex(0xfada5e)
         console.log(colidiu3);
     }
 }
@@ -148,6 +150,7 @@ function verificaCheckpoint4(checkpoint, cube){
     if (Math.abs(checkpoint.position.getComponent(0) - cube.position.getComponent(0)) < 5*radius &&
         Math.abs(checkpoint.position.getComponent(2) - cube.position.getComponent(2)) < 5*radius){
         colidiu4 = true;
+        checkpoint4.material.color.setHex(0xfada5e)
         console.log(colidiu4);
     }
 }
@@ -160,9 +163,13 @@ function verificaVoltas(cube)
                 if (colidiu4){
                     voltas += 1;
                     colidiu1 = reset;
+                    checkpoint1.material.color.setHex(0xffffff)
                     colidiu2 = reset;
+                    checkpoint2.material.color.setHex(0xffffff)
                     colidiu3 = reset;
+                    checkpoint3.material.color.setHex(0xffffff)
                     colidiu4 = reset;
+                    checkpoint4.material.color.setHex(0xffffff)
                     console.log(voltas);
                     armazenaTempoVolta(voltas);
                 }
@@ -328,8 +335,8 @@ scene.add(plane);
 //-------------------------------------------------------------------------------
 // Status da Partida
 //-------------------------------------------------------------------------------
-
-function geraStatus(){
+var gerou = false;
+function geraStatusFinal(){
     var textoVoltas = document.createElement('div');
     textoVoltas.style.position = 'absolute';
     textoVoltas.style.backgroundColor = "white";
@@ -344,7 +351,7 @@ function geraStatus(){
     nDeVoltas.innerHTML = voltas;
     nDeVoltas.style.top = 0 + 'px';
     nDeVoltas.style.left = window.innerWidth - 10 + 'px';
-    document.body.appendChild(nDeVoltas);
+    document.body.appendChild(nDeVoltas)
 
     var tempoTotal = document.createElement('div');
     tempoTotal.style.position = 'absolute';
@@ -385,6 +392,8 @@ function geraStatus(){
     textotempoVolta4.style.top = 99 + 'px';
     textotempoVolta4.style.left = window.innerWidth - 100 + 'px';
     document.body.appendChild(textotempoVolta4);
+
+    gerou = true
 }
 
 
@@ -433,7 +442,9 @@ function render(t)
 
   dt = (t - anterior) / 1000;
   anterior = t;
-  geraStatus();
+  if(voltas >=4 && gerou == false){
+      geraStatusFinal();
+  }
   controlledRender(t);
   renderer.render(scene, camera) // Render scene
 }

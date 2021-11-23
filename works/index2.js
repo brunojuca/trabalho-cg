@@ -90,27 +90,28 @@ function createPole(size)
 
 //checkpoint
 var checkpoint1 = createCheckpoint(radius);
-checkpoint1.position.set(0.0, 0.0, 10.0);
+checkpoint1.position.set(0.0, 0.0, 0.0);
 scene.add(checkpoint1);
+
 //checkpoint
 var checkpoint2 = createCheckpoint(radius);
-checkpoint2.position.set(0.0, 0.0, 20.0);
+checkpoint2.position.set(40.0, 0.0, 40.0);
 scene.add(checkpoint2);
 
 //checkpoint
 var checkpoint3 = createCheckpoint(radius);
-checkpoint3.position.set(0.0, 0.0, 30.0);
+checkpoint3.position.set(0.0, 0.0, 80.0);
 scene.add(checkpoint3);
 
 //checkpoint
 var checkpoint4 = createCheckpoint(radius);
-checkpoint4.position.set(0.0, 0.0, 40.0);
+checkpoint4.position.set(-40.0, 0.0, 40.0);
 scene.add(checkpoint4);
 
 for (var i = 1; i <= 4; i++){
     //flag
     var flag = createPole(size);
-    flag.position.set(0.0, 10.0, 10.0*i);
+    flag.position.set(10.0*i, 10.0, 10.0*i);
     scene.add(flag);
 }
 

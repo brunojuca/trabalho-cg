@@ -16,10 +16,13 @@ import {initRenderer,
         createGroundPlaneWired,
         initDefaultBasicLight} from "../libs/util/util.js";
 
+const loader = new THREE.TextureLoader();
+const groundTexture = loader.load( 'texture/grass.jpg' );
+const skyTexture = loader.load( 'texture/sky.jpg' );
 
 var stats = new Stats();          // To show FPS information
 var scene = new THREE.Scene();    // Create main scene
-scene.background = new THREE.Color( 0x8cd3ff );
+scene.background = skyTexture;
 var renderer = initRenderer();    // View function in util/utils
 
 //camera
@@ -38,6 +41,26 @@ initDefaultBasicLight(scene, true);
 
 // Listen window size changes
 window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, false );
+
+
+
+//-------------------------------------------------------------------------------
+// Ambiente - Eixos e Plano
+//-------------------------------------------------------------------------------
+
+// Show axes (parameter is size of each axis)
+var axesHelper = new THREE.AxesHelper( 12 );
+scene.add( axesHelper );
+
+groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+groundTexture.repeat.set( 1000, 1000 );
+groundTexture.anisotropy = 16;
+var groundMaterial = new THREE.MeshStandardMaterial( { map: groundTexture } );
+var plane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), groundMaterial );
+plane.position.y = 0.0;
+plane.rotation.x = - Math.PI / 2;
+plane.position.y = 0.0;
+scene.add(plane);
 
 
 
@@ -475,28 +498,6 @@ function keyboardUpdate() {
 
 
 //-------------------------------------------------------------------------------
-// Ambiente - Eixos e Plano
-//-------------------------------------------------------------------------------
-
-// Show axes (parameter is size of each axis)
-var axesHelper = new THREE.AxesHelper( 12 );
-scene.add( axesHelper );
-
-const groundTexture = new THREE.TextureLoader().load( 'texture/grass.jpg' );
-groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-groundTexture.repeat.set( 10000, 10000 );
-groundTexture.anisotropy = 16;
-groundTexture.encoding = THREE.sRGBEncoding;
-var groundMaterial = new THREE.MeshStandardMaterial( { map: groundTexture } );
-var plane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), groundMaterial );
-plane.position.y = 0.0;
-plane.rotation.x = - Math.PI / 2;
-plane.position.y = 0.0;
-scene.add(plane);
-
-
-
-//-------------------------------------------------------------------------------
 // Status da Partida
 //-------------------------------------------------------------------------------
 var gerou = false;
@@ -602,6 +603,8 @@ function render(t)
   verificaVoltas(player);
   posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
   ghostPos.set(ghostguide.position.getComponent(0), ghostguide.position.getComponent(1), ghostguide.position.getComponent(2));
+  console.log(posAtual);
+  console.log(ghostPos);
   cameraHolder.lookAt(posAtual);
   cameraHolder.rotateY(degreesToRadians(180));
 

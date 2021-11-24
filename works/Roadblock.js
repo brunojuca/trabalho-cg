@@ -32,20 +32,26 @@ export default class Roadblock
     {
         var cubeGeometry = new THREE.BoxGeometry(this.LARGURA, this.ALTURA, this.COMPRIMENTO);
         var cor;
+        const roadTexture = new THREE.TextureLoader().load( 'texture/road1.jpeg' );
+        roadTexture.wrapS = roadTexture.wrapT = THREE.RepeatWrapping;
+        var roadMaterial = new THREE.MeshStandardMaterial( { map: roadTexture } );
         switch (this.blockType) {
             case "COMUM":
             case "CHECKPOINT":
                 cor = '#808080'; // cinza
+                var bloco = new THREE.Mesh( cubeGeometry,  roadMaterial  );
                 break;
             case "LARGADA":
                 cor = '#FADA5E'; // amarelo
+                var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
+                var bloco = new THREE.Mesh( cubeGeometry,  cubeMaterial  );
                 break;
             default:
                 cor = '#000000'; // preto
+                var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
+                var bloco = new THREE.Mesh( cubeGeometry,  cubeMaterial  );
 
         }
-        var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
-        var bloco = new THREE.Mesh( cubeGeometry, cubeMaterial );
         bloco.position.set(this.X, this.Z, this.Y);
         return bloco;
     }

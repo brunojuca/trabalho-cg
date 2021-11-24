@@ -91,15 +91,32 @@ function createPole(size)
     return flag;
 }
 
+function createPoleTop(size)
+{
+    var flagtopGeometry = new THREE.BoxGeometry(blocoSize+2*size, size, size);
+    var flagtopMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,0,0)'} );
+    var flagtop = new THREE.Mesh( flagtopGeometry, flagtopMaterial );
+    return flagtop;
+}
+
+const size = 1;
 var flags = [];
 var flagNumber = 4;
 for (var i = 0; i <= flagNumber-1; i++){
-    var flag = createPole(1);
+    var flag = createPole(size/2);
     flags.push(flag);
-    flags[i].position.set(-20 + 10.0*i, 10.0, 20 + 10.0*i);
     scene.add(flags[i]);
 }
+var flags2 = [];
+for(var j = 0; j <= flagNumber-1; j++){
+    var newFlag2 = flags[j].clone();
+    flags2.push(newFlag2);
+    scene.add(flags2[j]);
+}
+var flagTop = createPoleTop(size);
+scene.add(flagTop);
 
+console.log(flags2);
 var todosCheckpoints = [];
 function posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada){
     for(var k = 0; k <= flagNumber-1; k++){
@@ -107,6 +124,11 @@ function posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada){
         todosCheckpoints.push(checkpoint);
         if (k == flagNumber-1){
             todosCheckpoints[k].position.set(posicionamentoChegada[0].getComponent(0), 0.0, posicionamentoChegada[0].getComponent(2));
+            flagTop.position.set(posicionamentoChegada[0].getComponent(0), 5*size, posicionamentoChegada[0].getComponent(2));
+            for (var i = 0; i <= flagNumber-1; i++){
+                flags[i].position.set(posicionamentoChegada[0].getComponent(0)-blocoSize/2, size+size*i, posicionamentoChegada[0].getComponent(2));
+                flags2[i].position.set(posicionamentoChegada[0].getComponent(0)+blocoSize/2, size+size*i, posicionamentoChegada[0].getComponent(2));
+            }
             scene.add(todosCheckpoints[k]);
             return;
         }
@@ -114,6 +136,7 @@ function posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada){
         scene.add(todosCheckpoints[k]);
     }
 }
+
 
 function encontraPosicaoCheckpoints(){
     var posicaoCheckpoints = [];
@@ -166,7 +189,6 @@ scene.add(guideSphere);
 scene.add(ghostguide);
 
 //player
-const size = 1;
 var player = new Car;
 player.scale.set(0.2,0.2,0.2);
 player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
@@ -292,11 +314,11 @@ function armazenaTempoVolta(){
 //-------------------------------------------------------------------------------
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 var cameraHolder = new THREE.Object3D();
+player.add(cameraHolder);
 cameraHolder.add(camera);
-cameraHolder.position.set(70, 30, 20);
+cameraHolder.position.set(50, 20, 0);
 cameraHolder.lookAt(posAtual)
 cameraHolder.rotateY(degreesToRadians(180))
-cameraHolder.add(player);
 
 scene.add(player);
 scene.add(cameraHolder);
@@ -387,8 +409,8 @@ function testaRedutor(){
         flagRedutor2.material.color.setHex(0xfada5e);
     }
     else{
-        flagRedutor.material.color.setHex(0x0000ff);
-        flagRedutor2.material.color.setHex(0x0000ff);
+        flagRedutor.material.color.setHex(0x000000);
+        flagRedutor2.material.color.setHex(0x000000);
     }
 }
 

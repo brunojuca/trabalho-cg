@@ -31,11 +31,6 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
   camera.position.set(0, 0, 0);
   camera.up.set( 0, 5, 0 );
 
-var cameraHolder = new THREE.Object3D();
-cameraHolder.add(camera);
-cameraHolder.position.set(0, 10, 30);
-scene.add(cameraHolder);
-
 //light
 initDefaultBasicLight(scene, true);
 
@@ -339,7 +334,7 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
 var cameraHolder = new THREE.Object3D();
 player.add(cameraHolder);
 cameraHolder.add(camera);
-cameraHolder.position.set(50, 20, 0);
+cameraHolder.position.set(0, 20, 0);
 cameraHolder.lookAt(posAtual)
 cameraHolder.rotateY(degreesToRadians(180))
 
@@ -375,7 +370,7 @@ var carroFreiando = false; // control if animation is on or of
 function aceleraCarro(aceleracaoAnterior)
 {
     if(carroAcelerando){
-        if(aceleracao < 70){
+        if(aceleracao < 50){
             aceleracao += aceleracaoAnterior*dt;
         }
     }
@@ -391,7 +386,7 @@ function aceleraCarro(aceleracaoAnterior)
 function freiaCarro(freiaAnterior)
 {
     if(carroFreiando){
-        if(freia > -70){
+        if(freia > -50){
             freia += freiaAnterior/100;
         }
     }
@@ -467,12 +462,12 @@ function keyboardUpdate() {
     }
 
     if (keyboard.pressed("left")) {
-        if(aceleracao > 1){
+        if(aceleracao > 1 || freia < -1){
             player.turnLeft(5);
         }
     }
     else if (keyboard.pressed("right")) {
-        if(aceleracao > 1){
+        if(aceleracao > 1 || freia < -1){
             player.turnRight(5);
         }
     }

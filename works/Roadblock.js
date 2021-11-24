@@ -32,9 +32,13 @@ export default class Roadblock
     {
         var cubeGeometry = new THREE.BoxGeometry(this.LARGURA, this.ALTURA, this.COMPRIMENTO);
         var cor;
-        const roadTexture = new THREE.TextureLoader().load( 'texture/road1.jpeg' );
+        const loader = new THREE.TextureLoader();
+        const roadTexture = loader.load( 'texture/road1.jpeg' );
+        const goalTexture = loader.load( 'texture/checkers.png' );
         roadTexture.wrapS = roadTexture.wrapT = THREE.RepeatWrapping;
+        goalTexture.wrapS = goalTexture.wrapT = THREE.RepeatWrapping;
         var roadMaterial = new THREE.MeshStandardMaterial( { map: roadTexture } );
+        var goalMaterial = new THREE.MeshStandardMaterial( { map: goalTexture } );
         switch (this.blockType) {
             case "COMUM":
             case "CHECKPOINT":
@@ -44,7 +48,7 @@ export default class Roadblock
             case "LARGADA":
                 cor = '#FADA5E'; // amarelo
                 var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
-                var bloco = new THREE.Mesh( cubeGeometry,  cubeMaterial  );
+                var bloco = new THREE.Mesh( cubeGeometry,  goalMaterial  );
                 break;
             default:
                 cor = '#000000'; // preto

@@ -462,11 +462,18 @@ function keyboardUpdate() {
 var axesHelper = new THREE.AxesHelper( 12 );
 scene.add( axesHelper );
 
-// create the ground plane
-const planeSize = 800
-var plane = createGroundPlaneWired(planeSize, planeSize, 80, 80, 0x99CC99);
-// add the plane to the scene
+const groundTexture = new THREE.TextureLoader().load( 'texture/stone.jpg' );
+groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+groundTexture.repeat.set( 10000, 10000 );
+groundTexture.anisotropy = 16;
+groundTexture.encoding = THREE.sRGBEncoding;
+var groundMaterial = new THREE.MeshStandardMaterial( { map: groundTexture } );
+var plane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), groundMaterial );
+plane.position.y = 0.0;
+plane.rotation.x = - Math.PI / 2;
+plane.position.y = 0.0;
 scene.add(plane);
+
 
 
 //-------------------------------------------------------------------------------

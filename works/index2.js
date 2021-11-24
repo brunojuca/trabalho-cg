@@ -334,7 +334,7 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
 var cameraHolder = new THREE.Object3D();
 player.add(cameraHolder);
 cameraHolder.add(camera);
-cameraHolder.position.set(0, 20, 0);
+cameraHolder.position.set(40, 20, 0);
 cameraHolder.lookAt(posAtual)
 cameraHolder.rotateY(degreesToRadians(180))
 
@@ -375,7 +375,7 @@ function aceleraCarro(aceleracaoAnterior)
         }
     }
     else if(!carroAcelerando){
-        if (aceleracao > 1){
+        if (aceleracao > 1 && speedForward > 0){
             aceleracao -= aceleracaoAnterior*dt;
             player.accelerate(aceleracao/100);
         }
@@ -391,7 +391,7 @@ function freiaCarro(freiaAnterior)
         }
     }
     else if(!carroFreiando){
-        if (freia < -1 ){
+        if (freia < -1){
             freia -= freiaAnterior/100;
             player.accelerate(freia/100);
         }
@@ -446,6 +446,13 @@ function keyboardUpdate() {
     if (keyboard.pressed("X")){
         carroAcelerando = true;
         speedForward = (Speed/100 + aceleracao/100)*redutor;
+        //evita bug ao sair da pag
+        if(speedForward < -0.01){
+            speedForward = Speed;
+            aceleracao = 1;
+        }
+        console.log(speedForward);
+        console.log(speedBackward);
         player.accelerate(speedForward);
     }
     else if (keyboard.up("X")) {
@@ -455,6 +462,11 @@ function keyboardUpdate() {
     if(keyboard.pressed("down")) {
         carroFreiando = true
         speedBackward = (-Speed/100 + freia/100)*redutor;
+        //evita bug ao sair da pag
+        if(speedBackward > 0.01){
+            speedBackward = -Speed;
+            aceleracao = 1;
+        }
         player.accelerate(speedBackward);
     }
     else if (keyboard.up("down")) {

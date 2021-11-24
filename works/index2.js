@@ -67,6 +67,30 @@ function createCube(size)
 }
 
 //-------------------------------------------------------------------------------
+// Pista de teste
+//-------------------------------------------------------------------------------
+
+//plataforma
+const platformSize = 30;
+var platforms = [];
+var numPlatforms = 100;
+for (var i = 0; i <= numPlatforms; i++){
+    var platform = createPlatform(platformSize);
+    platforms.push(platform);
+    platforms[i].position.set(40.0*Math.sin(i), -platformSize/2, 40+40.0*Math.cos(i));
+    scene.add(platforms[i]);
+}
+
+//cria plataforma
+function createPlatform(size)
+{
+    var platformGeometry = new THREE.BoxGeometry(platformSize, platformSize, platformSize);
+    var platformMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,255,255)'} );
+    var platform = new THREE.Mesh( platformGeometry, platformMaterial );
+    return platform;
+}
+
+//-------------------------------------------------------------------------------
 // Checkpoints
 //-------------------------------------------------------------------------------
 
@@ -76,6 +100,7 @@ function createCheckpoint(radius)
     var checkpointGeometry = new THREE.SphereGeometry(5*radius, 32, 32);
     var checkpointMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,255,255)'} );
     var checkpoint = new THREE.Mesh( checkpointGeometry, checkpointMaterial );
+    checkpoint.visible = false;
     return checkpoint;
 }
 
@@ -83,7 +108,7 @@ function createCheckpoint(radius)
 function createPole(size)
 {
     var flagGeometry = new THREE.BoxGeometry(size, 2*size, size);
-    var flagMaterial = new THREE.MeshPhongMaterial( {color:'rgb(0,255,255)'} );
+    var flagMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,0,0)'} );
     var flag = new THREE.Mesh( flagGeometry, flagMaterial );
     return flag;
 }
@@ -108,11 +133,13 @@ var checkpoint4 = createCheckpoint(radius);
 checkpoint4.position.set(-40.0, 0.0, 40.0);
 scene.add(checkpoint4);
 
-for (var i = 1; i <= 4; i++){
-    //flag
+var flags = [];
+var flagNumber = 4;
+for (var i = 0; i <= flagNumber-1; i++){
     var flag = createPole(size);
-    flag.position.set(10.0*i, 10.0, 10.0*i);
-    scene.add(flag);
+    flags.push(flag);
+    flags[i].position.set(-20 + 10.0*i, 10.0, 20 + 10.0*i);
+    scene.add(flags[i]);
 }
 
 var colidiu1 = false;
@@ -126,7 +153,7 @@ function verificaCheckpoint1(checkpoint, cube){
     if (Math.abs(checkpoint.position.getComponent(0) - cube.position.getComponent(0)) < 5*radius &&
         Math.abs(checkpoint.position.getComponent(2) - cube.position.getComponent(2)) < 5*radius){
         colidiu1 = true;
-        checkpoint1.material.color.setHex(0xfada5e)
+        flags[0].material.color.setHex(0x00ff00)
         console.log(colidiu1);
     }
 }
@@ -134,7 +161,7 @@ function verificaCheckpoint2(checkpoint, cube){
     if (Math.abs(checkpoint.position.getComponent(0) - cube.position.getComponent(0)) < 5*radius &&
         Math.abs(checkpoint.position.getComponent(2) - cube.position.getComponent(2)) < 5*radius){
         colidiu2 = true;
-        checkpoint2.material.color.setHex(0xfada5e)
+        flags[1].material.color.setHex(0x00ff00)
         console.log(colidiu2);
     }
 }
@@ -142,7 +169,7 @@ function verificaCheckpoint3(checkpoint, cube){
     if (Math.abs(checkpoint.position.getComponent(0) - cube.position.getComponent(0)) < 5*radius &&
         Math.abs(checkpoint.position.getComponent(2) - cube.position.getComponent(2)) < 5*radius){
         colidiu3 = true;
-        checkpoint3.material.color.setHex(0xfada5e)
+        flags[2].material.color.setHex(0x00ff00)
         console.log(colidiu3);
     }
 }
@@ -151,7 +178,7 @@ function verificaCheckpoint4(checkpoint, cube){
     if (Math.abs(checkpoint.position.getComponent(0) - cube.position.getComponent(0)) < 5*radius &&
         Math.abs(checkpoint.position.getComponent(2) - cube.position.getComponent(2)) < 5*radius){
         colidiu4 = true;
-        checkpoint4.material.color.setHex(0xfada5e)
+        flags[3].material.color.setHex(0x00ff00)
         console.log(colidiu4);
     }
 }
@@ -164,13 +191,13 @@ function verificaVoltas(cube)
                 if (colidiu4){
                     voltas += 1;
                     colidiu1 = reset;
-                    checkpoint1.material.color.setHex(0xffffff)
+                    flags[0].material.color.setHex(0xff0000)
                     colidiu2 = reset;
-                    checkpoint2.material.color.setHex(0xffffff)
+                    flags[1].material.color.setHex(0xff0000)
                     colidiu3 = reset;
-                    checkpoint3.material.color.setHex(0xffffff)
+                    flags[2].material.color.setHex(0xff0000)
                     colidiu4 = reset;
-                    checkpoint4.material.color.setHex(0xffffff)
+                    flags[3].material.color.setHex(0xff0000)
                     console.log(voltas);
                     armazenaTempoVolta(voltas);
                 }
@@ -283,18 +310,50 @@ function freiaCarro(freiaAnterior)
     //console.log(freia);
     freiaAnterior = freia
 }
+var diffX = 0;
+var diffZ = 0;
+function verificaDesaceleraFora(){
+    testaRedutor();
+    for (var k = 0; k <= numPlatforms; k ++){
+        diffX = Math.abs(cube.position.getComponent(0) - platforms[k].position.getComponent(0));
+        diffZ = Math.abs(cube.position.getComponent(2) - platforms[k].position.getComponent(2));
+        if( diffX <= platformSize/2 && diffZ <= platformSize/2 ){
+            redutor = 1;
+            return;
+        }
+    }
+    redutor = 0.5;
+}
+
+var flagRedutor = createPole(size);
+flagRedutor.position.set(0.0,4*size,0.0);
+cube.add(flagRedutor);
+
+function testaRedutor(){
+    if (redutor == 1){
+        flagRedutor.material.color.setHex(0xff0000);
+    }
+    else{
+        flagRedutor.material.color.setHex(0x0000ff);
+    }
+}
 
 var keyboard = new KeyboardState();
-var Speed = 30;
+var Speed = 10;
 var aceleracao = 100;
 var freia = -100;
+var redutor = 1;
+var speedForward = 0;
+var speedBackward = 0;
 
 function keyboardUpdate() {
     keyboard.update();
 
     if (keyboard.pressed("X")){
         carroAcelerando = true;
-        cube.translateZ(Speed*dt + aceleracao/100);
+        speedForward = (Speed*dt + aceleracao/100)*redutor;
+        console.log(speedForward);
+        cube.translateZ(speedForward);
     }
     else if (keyboard.up("X")) {
         carroAcelerando = false;
@@ -302,7 +361,9 @@ function keyboardUpdate() {
 
     if(keyboard.pressed("down")) {
         carroFreiando = true
-        cube.translateZ(-Speed*dt + freia/100);
+        speedBackward = (-Speed*dt + freia/100)*redutor;
+        console.log(speedBackward);
+        cube.translateZ(speedBackward);
     }
     else if (keyboard.up("down")) {
         carroFreiando = false
@@ -434,6 +495,7 @@ function render(t)
   //trackballControls.update();
   keyboardUpdate();
 
+  verificaDesaceleraFora();
   aceleraCarro(aceleracao);
   freiaCarro(freia);
   verificaVoltas(cube);

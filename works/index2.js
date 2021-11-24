@@ -10,6 +10,7 @@ import {initRenderer,
         degreesToRadians,
         createGroundPlaneWired,
         initDefaultBasicLight} from "../libs/util/util.js";
+import { Car } from './car.js';
 
 
 var stats = new Stats();          // To show FPS information
@@ -44,8 +45,8 @@ sphere.position.set(0.0, 0.0, 2*radius);
 var posAtual = new THREE.Vector3(sphere.position.getComponent(0), radius, sphere.position.getComponent(2));
 posAtual.copy(sphere.position);
 //player
-const size = 1;
-var player = createplayer(size);
+const size = 2;
+var player = new Car();
 player.position.set(0.0, size/2, 0.0);
 player.add(sphere);
 
@@ -284,14 +285,15 @@ var carroFreiando = false; // control if animation is on or of
 function aceleraCarro(aceleracaoAnterior)
 {
     if(carroAcelerando){
-        if(aceleracao < 200){
+        if(aceleracao < 50){
             aceleracao += aceleracaoAnterior*dt;
         }
     }
     else if(!carroAcelerando){
         if (aceleracao > 50){
             aceleracao -= 2*aceleracaoAnterior*dt;
-            player.translateZ(aceleracao/100);
+            //player.translateZ(aceleracao/100);
+            player.accelerate(aceleracao/100);
 
         }
     }
@@ -309,7 +311,8 @@ function freiaCarro(freiaAnterior)
     else if(!carroFreiando){
         if (freia < -50 ){
             freia -= 2*freiaAnterior*dt;
-            player.translateZ(freia/100);
+            //player.translateZ(freia/100);
+            player.accelerate(freia/100);
         }
     }
     //console.log(freia);
@@ -358,7 +361,8 @@ function keyboardUpdate() {
         carroAcelerando = true;
         speedForward = (Speed*dt + aceleracao/100)*redutor;
         console.log(speedForward);
-        player.translateZ(speedForward);
+        //player.translateZ(speedForward);
+        player.accelerate(speedForward);
     }
     else if (keyboard.up("X")) {
         carroAcelerando = false;
@@ -368,17 +372,20 @@ function keyboardUpdate() {
         carroFreiando = true
         speedBackward = (-Speed*dt + freia/100)*redutor;
         console.log(speedBackward);
-        player.translateZ(speedBackward);
+        //player.translateZ(speedBackward);
+        player.accelerate(speedBackward);
     }
     else if (keyboard.up("down")) {
         carroFreiando = false
     }
 
     if (keyboard.pressed("left")) {
-        player.rotateY(degreesToRadians(5));
+        //player.rotateY(degreesToRadians(5));
+        player.turnLeft(5);
     }
     else if (keyboard.pressed("right")) {
-        player.rotateY(degreesToRadians(-5));
+        //player.rotateY(degreesToRadians(-5));
+        player.turnRight(5);
     }
 }
 

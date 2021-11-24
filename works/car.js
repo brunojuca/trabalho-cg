@@ -14,9 +14,13 @@ export class Car extends THREE.Group {
   ballWindow;
   headLight1;
   headLight2;
+  wheelAngle;
 
   constructor() {
     super();
+
+    this.wheelAngle = 0;
+
     // Axis
     this.frontAxis = this.createAxis();
     this.backAxis = this.createAxis();
@@ -62,6 +66,9 @@ export class Car extends THREE.Group {
     this.add(this.ballWindow);
     this.add(this.headLight1);
     this.add(this.headLight2);
+
+    this.rotateX(degreesToRadians(-90));
+    this.rotateZ(degreesToRadians(180));
   }
 
   createWheel() {
@@ -81,7 +88,7 @@ export class Car extends THREE.Group {
       color: "rgb(200,200,0)",
     });
 
-    var rimsQuantity = 10;
+    var rimsQuantity = 1;
     for (let i = 0; i < rimsQuantity; i++) {
       var rim = new THREE.Mesh(rimGeometry, rimMaterial);
       rim.rotateY(degreesToRadians((180 / rimsQuantity) * i));
@@ -179,16 +186,28 @@ export class Car extends THREE.Group {
     this.frontAxis.position.set(-3, 0, 0);
   }
 
-  accelerate() {
-    this.frontAxis.rotateY(degreesToRadians(1));
-    this.backAxis.rotateY(degreesToRadians(1));
+  accelerate(speed) {
+    //this.frontAxis.rotateY(degreesToRadians(-10));
+    //this.backAxis.rotateY(degreesToRadians(-10));
+
+    this.translateX(-speed);
   }
 
-  turnLeft() {
-    this.frontAxis.rotateZ(degreesToRadians(15));
+  turnLeft(degrees) {
+    if (this.wheelAngle > -5) {
+      this.frontAxis.rotateZ(degreesToRadians(3));
+      this.wheelAngle--;
+    }
+
+    this.rotateZ(degreesToRadians(degrees));
   }
 
-  turnRight() {
-    this.frontAxis.rotateZ(degreesToRadians(-15));
+  turnRight(degrees) {
+    if (this.wheelAngle < 5) {
+      this.frontAxis.rotateZ(degreesToRadians(-3));
+      this.wheelAngle++;
+    }
+
+    this.rotateZ(degreesToRadians(-degrees));
   }
 }

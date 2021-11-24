@@ -168,7 +168,7 @@ scene.add(ghostguide);
 //player
 const size = 1;
 var player = new Car;
-player.scale.set(0.5,0.5,0.5);
+player.scale.set(0.2,0.2,0.2);
 player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
 player.add(guideSphere);
 player.add(ghostguide);
@@ -199,24 +199,21 @@ function verificaCheckpoint1(checkpoint, player){
     if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < checkpointRadius &&
         Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
         colidiu1 = true;
-        flags[0].material.color.setHex(0x00ff00)
-        console.log(colidiu1);
+        flags[0].material.color.setHex(0x00ff00);
     }
 }
 function verificaCheckpoint2(checkpoint, player){
     if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < checkpointRadius &&
         Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
         colidiu2 = true;
-        flags[1].material.color.setHex(0x00ff00)
-        console.log(colidiu2);
+        flags[1].material.color.setHex(0x00ff00);
     }
 }
 function verificaCheckpoint3(checkpoint, player){
     if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < checkpointRadius &&
         Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
         colidiu3 = true;
-        flags[2].material.color.setHex(0x00ff00)
-        console.log(colidiu3);
+        flags[2].material.color.setHex(0x00ff00);
     }
 }
 
@@ -225,7 +222,6 @@ function verificaCheckpoint4(checkpoint, player){
         Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
         colidiu4 = true;
         flags[3].material.color.setHex(0x00ff00)
-        console.log(colidiu4);
     }
 }
 
@@ -339,12 +335,11 @@ function aceleraCarro(aceleracaoAnterior)
         }
     }
     else if(!carroAcelerando){
-        if (aceleracao > 20){
+        if (aceleracao > 1){
             aceleracao -= aceleracaoAnterior*dt;
             player.accelerate(aceleracao/100);
         }
     }
-    //console.log(aceleracao);
     aceleracaoAnterior = aceleracao
 }
 
@@ -352,16 +347,15 @@ function freiaCarro(freiaAnterior)
 {
     if(carroFreiando){
         if(freia > -70){
-            freia += freiaAnterior*dt;
+            freia += freiaAnterior/100;
         }
     }
     else if(!carroFreiando){
-        if (freia < -20 ){
-            freia -= freiaAnterior*dt;
+        if (freia < -1 ){
+            freia -= freiaAnterior/100;
             player.accelerate(freia/100);
         }
     }
-    //console.log(freia);
     freiaAnterior = freia
 }
 var diffX = 0;
@@ -399,9 +393,9 @@ function testaRedutor(){
 }
 
 var keyboard = new KeyboardState();
-var Speed = 10;
-var aceleracao = 20;
-var freia = -20;
+var Speed = 5;
+var aceleracao = 1;
+var freia = -1;
 var redutor = 1;
 var speedForward = 0;
 var speedBackward = 0;
@@ -411,7 +405,7 @@ function keyboardUpdate() {
 
     if (keyboard.pressed("X")){
         carroAcelerando = true;
-        speedForward = (Speed*dt + aceleracao/100)*redutor;
+        speedForward = (Speed/100 + aceleracao/100)*redutor;
         player.accelerate(speedForward);
     }
     else if (keyboard.up("X")) {
@@ -420,7 +414,7 @@ function keyboardUpdate() {
 
     if(keyboard.pressed("down")) {
         carroFreiando = true
-        speedBackward = (-Speed*dt + freia/100)*redutor;
+        speedBackward = (-Speed/100 + freia/100)*redutor;
         player.accelerate(speedBackward);
     }
     else if (keyboard.up("down")) {
@@ -428,10 +422,14 @@ function keyboardUpdate() {
     }
 
     if (keyboard.pressed("left")) {
-        player.turnLeft(5);
+        if(aceleracao > 1){
+            player.turnLeft(5);
+        }
     }
     else if (keyboard.pressed("right")) {
-        player.turnRight(5);
+        if(aceleracao > 1){
+            player.turnRight(5);
+        }
     }
 
     if (keyboard.pressed("1")){
@@ -462,7 +460,7 @@ function keyboardUpdate() {
 var axesHelper = new THREE.AxesHelper( 12 );
 scene.add( axesHelper );
 
-const groundTexture = new THREE.TextureLoader().load( 'texture/stone.jpg' );
+const groundTexture = new THREE.TextureLoader().load( 'texture/grass.jpg' );
 groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
 groundTexture.repeat.set( 10000, 10000 );
 groundTexture.anisotropy = 16;

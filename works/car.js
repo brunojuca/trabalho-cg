@@ -12,6 +12,7 @@ export class Car extends THREE.Group {
   backWindow;
   frontWindow;
   ballWindow;
+  noseWindow;
   headLight1;
   headLight2;
   wheelAngle;
@@ -42,7 +43,13 @@ export class Car extends THREE.Group {
     // Windows
     this.backWindow = this.createWindow(1.6, 1.6, 2.5);
     this.frontWindow = this.createWindow(0.8, 1.2, 3);
+    this.earWindow = this.createBallWindow();
+    this.earWindow2 = this.createBallWindow();
+    this.earWindow.scale.set(1, 1, 0.3);
+    this.earWindow2.scale.set(1, 1, 0.3);
     this.ballWindow = this.createBallWindow();
+    this.noseWindow = this.createBallWindow();
+    this.noseWindow.scale.set(0.6, 0.5, 1);
 
     this.positionWindows();
 
@@ -62,7 +69,10 @@ export class Car extends THREE.Group {
     this.add(this.body);
     this.add(this.backWindow);
     this.add(this.frontWindow);
+    this.add(this.earWindow);
+    this.add(this.earWindow2)
     this.add(this.ballWindow);
+    this.add(this.noseWindow);
     this.add(this.headLight1);
     this.add(this.headLight2);
   }
@@ -165,7 +175,11 @@ export class Car extends THREE.Group {
     this.frontWindow.position.set(0.0, 1.7, 0.5);
     this.frontWindow.rotateX(degreesToRadians(90));
 
+    this.earWindow.position.set(-1.5, 3.5, -2.0);
+    this.earWindow2.position.set(1.5, 3.5, -2.0);
+
     this.ballWindow.position.set(0.0, 1.7, 1.9);
+    this.noseWindow.position.set(0.0, 2.4, 2.5);
   }
 
   positionBody() {

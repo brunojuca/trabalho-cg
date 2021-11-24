@@ -148,17 +148,30 @@ posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada);
 //-------------------------------------------------------------------------------
 
 //guia
-const radius = 0.5
+const radius = 1
 var guideSphere = createSphere(radius);
 guideSphere.position.set(0.0, 0.0, 2*radius);
-var posAtual = new THREE.Vector3(guideSphere.position.getComponent(0), radius, guideSphere.position.getComponent(2));
-posAtual.copy(guideSphere.position);
+
+var posAtual = new THREE.Vector3(0, 0, 0);
+posAtual.set(guideSphere.position.getComponent(0), guideSphere.position.getComponent(1), guideSphere.position.getComponent(2));
+
+//ghost guia
+const desvio = 20;
+var ghostguide = createSphere(radius);
+ghostguide.position.set(0.0, 0.0, 2*radius + desvio);
+var ghostPos = new THREE.Vector3(0, 0, 0);
+ghostPos.set(ghostguide.position.getComponent(0), ghostguide.position.getComponent(1), ghostguide.position.getComponent(2));
+console.log(ghostguide);
+scene.add(guideSphere);
+scene.add(ghostguide);
 
 //player
 const size = 1;
 var player = new Car;
+player.scale.set(0.5,0.5,0.5);
 player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
 player.add(guideSphere);
+player.add(ghostguide);
 
 //cria esfera guia
 function createSphere(radius)
@@ -166,10 +179,9 @@ function createSphere(radius)
     var guideSphereGeometry = new THREE.SphereGeometry(radius, 32, 32);
     var guideSphereMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,0,0)'} );
     var guideSphere = new THREE.Mesh( guideSphereGeometry, guideSphereMaterial );
-    guideSphere.visible = false;
+    //guideSphere.visible = false;
     return guideSphere;
 }
-
 
 
 //-------------------------------------------------------------------------------
@@ -268,11 +280,11 @@ function armazenaTempoVolta(){
         tempoTodasVoltas.push(tempoVolta2);
     }
     if (voltas == 3){
-        var tempoVolta3 = anterior/1000 - tempoTodasVoltas[1];
+        var tempoVolta3 = anterior/1000 - tempoTodasVoltas[0] - tempoTodasVoltas[1];
         tempoTodasVoltas.push(tempoVolta3);
     }
     if (voltas == 4){
-        var tempoVolta4 = anterior/1000 - tempoTodasVoltas[2];
+        var tempoVolta4 = anterior/1000 - tempoTodasVoltas[0] - tempoTodasVoltas[1] - tempoTodasVoltas[2];
         tempoTodasVoltas.push(tempoVolta4);
     }
 }
@@ -286,7 +298,7 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
 var cameraHolder = new THREE.Object3D();
 cameraHolder.add(camera);
 cameraHolder.position.set(-50, 20, 0);
-cameraHolder.lookAt(posAtual)
+cameraHolder.lookAt(ghostPos)
 cameraHolder.rotateY(degreesToRadians(180))
 player.add(cameraHolder);
 
@@ -328,7 +340,7 @@ function aceleraCarro(aceleracaoAnterior)
     }
     else if(!carroAcelerando){
         if (aceleracao > 20){
-            aceleracao -= 2*aceleracaoAnterior*dt;
+            aceleracao -= aceleracaoAnterior*dt;
             player.accelerate(aceleracao/100);
         }
     }
@@ -345,7 +357,7 @@ function freiaCarro(freiaAnterior)
     }
     else if(!carroFreiando){
         if (freia < -20 ){
-            freia -= 2*freiaAnterior*dt;
+            freia -= freiaAnterior*dt;
             player.accelerate(freia/100);
         }
     }
@@ -400,7 +412,6 @@ function keyboardUpdate() {
     if (keyboard.pressed("X")){
         carroAcelerando = true;
         speedForward = (Speed*dt + aceleracao/100)*redutor;
-        //console.log(speedForward);
         player.accelerate(speedForward);
     }
     else if (keyboard.up("X")) {
@@ -410,7 +421,6 @@ function keyboardUpdate() {
     if(keyboard.pressed("down")) {
         carroFreiando = true
         speedBackward = (-Speed*dt + freia/100)*redutor;
-        //console.log(speedBackward);
         player.accelerate(speedBackward);
     }
     else if (keyboard.up("down")) {
@@ -564,9 +574,12 @@ function render(t)
   aceleraCarro(aceleracao);
   freiaCarro(freia);
   verificaVoltas(player);
-  posAtual.copy(player.position);
-  cameraHolder.lookAt(posAtual)
-  cameraHolder.rotateY(degreesToRadians(180))
+  posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));;
+  console.log(posAtual);
+  ghostPos.set(ghostguide.position.getComponent(0), ghostguide.position.getComponent(1), ghostguide.position.getComponent(2));
+  console.log(ghostPos);
+  cameraHolder.lookAt(ghostPos);
+  cameraHolder.rotateY(degreesToRadians(180));
 
   dt = (t - anterior) / 1000;
   anterior = t;

@@ -19,6 +19,7 @@ import {initRenderer,
 
 var stats = new Stats();          // To show FPS information
 var scene = new THREE.Scene();    // Create main scene
+scene.background = new THREE.Color( 0x8cd3ff );
 var renderer = initRenderer();    // View function in util/utils
 
 //camera
@@ -161,7 +162,6 @@ var ghostguide = createSphere(radius);
 ghostguide.position.set(0.0, 0.0, 2*radius + desvio);
 var ghostPos = new THREE.Vector3(0, 0, 0);
 ghostPos.set(ghostguide.position.getComponent(0), ghostguide.position.getComponent(1), ghostguide.position.getComponent(2));
-console.log(ghostguide);
 scene.add(guideSphere);
 scene.add(ghostguide);
 
@@ -297,10 +297,10 @@ function armazenaTempoVolta(){
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 var cameraHolder = new THREE.Object3D();
 cameraHolder.add(camera);
-cameraHolder.position.set(-50, 20, 0);
-cameraHolder.lookAt(ghostPos)
+cameraHolder.position.set(70, 30, 20);
+cameraHolder.lookAt(posAtual)
 cameraHolder.rotateY(degreesToRadians(180))
-player.add(cameraHolder);
+cameraHolder.add(player);
 
 scene.add(player);
 scene.add(cameraHolder);
@@ -464,10 +464,9 @@ scene.add( axesHelper );
 
 // create the ground plane
 const planeSize = 800
-var plane = createGroundPlaneWired(planeSize, planeSize, 80, 80);
+var plane = createGroundPlaneWired(planeSize, planeSize, 80, 80, 0x99CC99);
 // add the plane to the scene
 scene.add(plane);
-
 
 
 //-------------------------------------------------------------------------------
@@ -574,11 +573,9 @@ function render(t)
   aceleraCarro(aceleracao);
   freiaCarro(freia);
   verificaVoltas(player);
-  posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));;
-  console.log(posAtual);
+  posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
   ghostPos.set(ghostguide.position.getComponent(0), ghostguide.position.getComponent(1), ghostguide.position.getComponent(2));
-  console.log(ghostPos);
-  cameraHolder.lookAt(ghostPos);
+  cameraHolder.lookAt(posAtual);
   cameraHolder.rotateY(degreesToRadians(180));
 
   dt = (t - anterior) / 1000;

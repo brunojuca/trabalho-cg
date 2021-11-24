@@ -6,18 +6,62 @@ export class Car extends THREE.Group {
   wheel2;
   wheel3;
   wheel4;
+  frontAxis;
+  backAxis;
+  body;
+  backWindow;
+  frontWindow;
+  ballWindow;
+  headLight1;
+  headLight2;
 
   constructor() {
     super();
+    // Axis
+    this.frontAxis = this.createAxis();
+    this.backAxis = this.createAxis();
+
+    this.positionAxis();
+
+    // Wheels
     this.wheel1 = this.createWheel();
     this.wheel2 = this.createWheel();
     this.wheel3 = this.createWheel();
     this.wheel4 = this.createWheel();
-    this.positionWheels();
-    this.add(this.wheel1);
-    this.add(this.wheel2);
-    this.add(this.wheel3);
-    this.add(this.wheel4);
+
+    this.positionWheels(); // relative to axis position
+
+    // Body
+    this.body = this.createBody();
+
+    this.positionBody();
+
+    // Windows
+    this.backWindow = this.createWindow(1.6, 1.6, 2.5);
+    this.frontWindow = this.createWindow(0.8, 1.2, 3);
+    this.ballWindow = this.createBallWindow();
+
+    this.positionWindows();
+
+    // HeadLights
+    this.headLight1 = this.createHeadLight();
+    this.headLight2 = this.createHeadLight();
+
+    this.positionHeadLights();
+
+    this.frontAxis.add(this.wheel1);
+    this.frontAxis.add(this.wheel2);
+    this.backAxis.add(this.wheel3);
+    this.backAxis.add(this.wheel4);
+
+    this.add(this.frontAxis);
+    this.add(this.backAxis);
+    this.add(this.body);
+    this.add(this.backWindow);
+    this.add(this.frontWindow);
+    this.add(this.ballWindow);
+    this.add(this.headLight1);
+    this.add(this.headLight2);
   }
 
   createWheel() {
@@ -36,11 +80,11 @@ export class Car extends THREE.Group {
     var rimMaterial = new THREE.MeshPhongMaterial({
       color: "rgb(200,200,0)",
     });
-    
+
     var rimsQuantity = 10;
     for (let i = 0; i < rimsQuantity; i++) {
       var rim = new THREE.Mesh(rimGeometry, rimMaterial);
-      rim.rotateY(degreesToRadians(180/rimsQuantity*i));
+      rim.rotateY(degreesToRadians((180 / rimsQuantity) * i));
       group.add(rim);
     }
 
@@ -51,9 +95,100 @@ export class Car extends THREE.Group {
     return group;
   }
 
+  createAxis() {
+    var axisGeometry = new THREE.CylinderGeometry(0.1, 0.1, 4, 50, 10);
+    var axisMaterial = new THREE.MeshPhongMaterial({
+      color: "rgb(255,255,255)",
+    });
+    var axis = new THREE.Mesh(axisGeometry, axisMaterial);
+
+    return axis;
+  }
+
+  createBody() {
+    var bodyGeometry = new THREE.BoxGeometry(8, 3, 1.6, 1, 1, 1);
+    var bodyMaterial = new THREE.MeshPhongMaterial({ color: "rgb(255,0,0)" });
+    var body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+
+    return body;
+  }
+
+  createWindow(radius1, radius2, lenght) {
+    var windowGeometry = new THREE.CylinderGeometry(
+      radius1,
+      radius2,
+      lenght,
+      50,
+      10
+    );
+    var windowMaterial = new THREE.MeshPhongMaterial({
+      color: "rgb(50,50,50)",
+    });
+    var window = new THREE.Mesh(windowGeometry, windowMaterial);
+
+    return window;
+  }
+
+  createBallWindow() {
+    var ballGeometry = new THREE.SphereGeometry(0.8, 50, 50);
+    var ballMaterial = new THREE.MeshPhongMaterial({
+      color: "rgb(50,50,50)",
+    });
+    var ball = new THREE.Mesh(ballGeometry, ballMaterial);
+
+    return ball;
+  }
+
+  createHeadLight() {
+    var lightGeometry = new THREE.SphereGeometry(0.4, 50, 50);
+    var lightMaterial = new THREE.MeshPhongMaterial({
+      color: "rgb(255,255,255)",
+    });
+    var light = new THREE.Mesh(lightGeometry, lightMaterial);
+
+    return light;
+  }
+
+  positionHeadLights() {
+    this.headLight1.position.set(-3.8, 0.8, 0.5);
+    this.headLight2.position.set(-3.8, -0.8, 0.5);
+  }
+
+  positionWindows() {
+    this.backWindow.position.set(1.4, 0, 1.4);
+
+    this.frontWindow.position.set(-1.5, 0, 1.2);
+    this.frontWindow.rotateZ(degreesToRadians(90));
+
+    this.ballWindow.position.set(-2.9, 0, 1.2);
+  }
+
+  positionBody() {
+    this.body.position.set(0, 0, 0.5);
+  }
+
   positionWheels() {
-    this.wheel2.position.set(0.0, 4, 0.0);
-    this.wheel3.position.set(6, 0, 0.0);
-    this.wheel4.position.set(6, 4, 0.0);
+    this.wheel1.position.set(0, -2, 0.0);
+    this.wheel2.position.set(0, 2, 0.0);
+    this.wheel3.position.set(0, -2, 0.0);
+    this.wheel4.position.set(0, 2, 0.0);
+  }
+
+  positionAxis() {
+    this.backAxis.position.set(3, 0, 0);
+    this.frontAxis.position.set(-3, 0, 0);
+  }
+
+  accelerate() {
+    this.frontAxis.rotateY(degreesToRadians(1));
+    this.backAxis.rotateY(degreesToRadians(1));
+  }
+
+  turnLeft() {
+    this.frontAxis.rotateZ(degreesToRadians(15));
+  }
+
+  turnRight() {
+    this.frontAxis.rotateZ(degreesToRadians(-15));
   }
 }

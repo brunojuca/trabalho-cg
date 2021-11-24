@@ -10,11 +10,11 @@ export default class Roadblock
         this.X = x * largura;
         this.Y = y * comprimento;
         this.Z = z * altura;
-        
+
         switch (blockType) {
             case 1:
                 this.blockType = "COMUM";
-                break; 
+                break;
             case 2:
                 this.blockType = "LARGADA";
                 break;
@@ -28,7 +28,7 @@ export default class Roadblock
         this.bloco = this.criaBloco();
     }
 
-    criaBloco() 
+    criaBloco()
     {
         var cubeGeometry = new THREE.BoxGeometry(this.LARGURA, this.ALTURA, this.COMPRIMENTO);
         var cor;
@@ -50,4 +50,7 @@ export default class Roadblock
         return bloco;
     }
 
+    getBlockType(){
+        return this.blockType;
+    }
 }

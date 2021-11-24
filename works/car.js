@@ -14,9 +14,12 @@ export class Car extends THREE.Group {
   ballWindow;
   headLight1;
   headLight2;
+  wheelAngle;
 
   constructor() {
     super();
+    this.wheelAngle = 0;
+
     // Axis
     this.frontAxis = this.createAxis();
     this.backAxis = this.createAxis();
@@ -81,7 +84,7 @@ export class Car extends THREE.Group {
       color: "rgb(200,200,0)",
     });
 
-    var rimsQuantity = 10;
+    var rimsQuantity = 1;
     for (let i = 0; i < rimsQuantity; i++) {
       var rim = new THREE.Mesh(rimGeometry, rimMaterial);
       rim.rotateY(degreesToRadians((180 / rimsQuantity) * i));
@@ -106,7 +109,7 @@ export class Car extends THREE.Group {
   }
 
   createBody() {
-    var bodyGeometry = new THREE.BoxGeometry(8, 3, 1.6, 1, 1, 1);
+    var bodyGeometry = new THREE.BoxGeometry(3, 1.8, 7, 1, 1, 1);
     var bodyMaterial = new THREE.MeshPhongMaterial({ color: "rgb(255,0,0)" });
     var body = new THREE.Mesh(bodyGeometry, bodyMaterial);
 
@@ -123,6 +126,7 @@ export class Car extends THREE.Group {
     );
     var windowMaterial = new THREE.MeshPhongMaterial({
       color: "rgb(50,50,50)",
+      opacity: 0,
     });
     var window = new THREE.Mesh(windowGeometry, windowMaterial);
 
@@ -150,21 +154,22 @@ export class Car extends THREE.Group {
   }
 
   positionHeadLights() {
-    this.headLight1.position.set(-3.8, 0.8, 0.5);
-    this.headLight2.position.set(-3.8, -0.8, 0.5);
+    this.headLight1.position.set(0.8, 0.8, 3.3);
+    this.headLight2.position.set(-0.8, 0.8, 3.3);
   }
 
   positionWindows() {
-    this.backWindow.position.set(1.4, 0, 1.4);
+    this.backWindow.position.set(0.0, 1.7, -1.6);
+    this.backWindow.rotateZ(degreesToRadians(90));
 
-    this.frontWindow.position.set(-1.5, 0, 1.2);
-    this.frontWindow.rotateZ(degreesToRadians(90));
+    this.frontWindow.position.set(0.0, 1.7, 0.5);
+    this.frontWindow.rotateX(degreesToRadians(90));
 
-    this.ballWindow.position.set(-2.9, 0, 1.2);
+    this.ballWindow.position.set(0.0, 1.7, 1.9);
   }
 
   positionBody() {
-    this.body.position.set(0, 0, 0.5);
+    this.body.position.set(0, 0.6, 0);
   }
 
   positionWheels() {
@@ -175,20 +180,38 @@ export class Car extends THREE.Group {
   }
 
   positionAxis() {
-    this.backAxis.position.set(3, 0, 0);
-    this.frontAxis.position.set(-3, 0, 0);
+    this.backAxis.position.set(0, 0, -2.5);
+    this.backAxis.rotateZ(degreesToRadians(90));
+    this.frontAxis.position.set(0, 0, 2.5);
+    this.frontAxis.rotateZ(degreesToRadians(90));
   }
 
-  accelerate() {
-    this.frontAxis.rotateY(degreesToRadians(1));
-    this.backAxis.rotateY(degreesToRadians(1));
+  accelerate(speed) {
+    this.translateZ(speed);
+    this.wheel1.rotateY(degreesToRadians(-10));
+    this.wheel2.rotateY(degreesToRadians(-10));
+    this.wheel3.rotateY(degreesToRadians(-10));
+    this.wheel4.rotateY(degreesToRadians(-10));
   }
 
-  turnLeft() {
-    this.frontAxis.rotateZ(degreesToRadians(15));
+  turnLeft(degrees) {
+    if (this.wheelAngle > -5) {
+      this.frontAxis.rotateX(degreesToRadians(3));
+      this.wheelAngle--;
+    }
+
+    this.rotateY(degreesToRadians(degrees));
   }
 
-  turnRight() {
-    this.frontAxis.rotateZ(degreesToRadians(-15));
+  turnRight(degrees) {
+    if (this.wheelAngle < 5) {
+      this.frontAxis.rotateX(degreesToRadians(-3));
+      this.wheelAngle++;
+    }
+
+    this.rotateY(degreesToRadians(-degrees));
   }
+
+
+
 }

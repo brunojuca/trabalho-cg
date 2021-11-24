@@ -10,7 +10,7 @@ export default class Pista {
             this.roadblocks[i] = 0;
         }
     }
-    carregaPista(pista) 
+    carregaPista(pista)
     {
         this.LINHAS = pista.length;
         this.COLUNAS = pista[0]?.length ?? 0;
@@ -24,11 +24,11 @@ export default class Pista {
         }
     }
 
-    montaPista() 
+    montaPista()
     {
         var blockArray = [];
-        for (let i=0; i<this.LINHAS; i++) {
-            for (let j=0; j<this.COLUNAS; j++) {
+        for (let j=0; j<this.COLUNAS; j++) {
+            for (let i=0; i<this.LINHAS; i++) {
                 if (this.roadblocks[i][j] != 0) {
                     var bloco = new Roadblock(i, j, 0, this.roadblocks[i][j]);
                     blockArray.push(bloco);

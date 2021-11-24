@@ -2,6 +2,11 @@ import * as THREE from  '../build/three.module.js';
 import Stats from       '../build/jsm/libs/stats.module.js';
 import {GUI} from       '../build/jsm/libs/dat.gui.module.js';
 import KeyboardState from '../libs/util/KeyboardState.js';
+import {pista1 as pista1} from './pistas/pista1.js';
+import {pista2 as pista2} from './pistas/pista2.js';
+import Pista from './Pista.js';
+import { Car } from './car.js';
+
 //import {TrackballControls} from '../build/jsm/controls/TrackballControls.js';
 import {initRenderer,
         initCamera,
@@ -34,67 +39,37 @@ initDefaultBasicLight(scene, true);
 window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, false );
 
 
-//-------------------------------------------------------------------------------
-// Carro de teste
-//-------------------------------------------------------------------------------
-//sphere
-const radius = 0.5
-var sphere = createSphere(radius);
-sphere.position.set(0.0, 0.0, 2*radius);
-var posAtual = new THREE.Vector3(sphere.position.getComponent(0), radius, sphere.position.getComponent(2));
-posAtual.copy(sphere.position);
-//player
-const size = 1;
-var player = createplayer(size);
-player.position.set(0.0, size/2, 0.0);
-player.add(sphere);
-
-//cria esfera
-function createSphere(radius)
-{
-    var sphereGeometry = new THREE.SphereGeometry(radius, 32, 32);
-    var sphereMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,0,0)'} );
-    var sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
-    return sphere;
-}
-//cria cubo
-function createplayer(size)
-{
-    var playerGeometry = new THREE.BoxGeometry(size, size, size);
-    var playerMaterial = new THREE.MeshPhongMaterial( {color:'rgb(0,255,255)'} );
-    var player = new THREE.Mesh( playerGeometry, playerMaterial );
-    return player;
-}
 
 //-------------------------------------------------------------------------------
-// Pista de teste
+// Pista Real
 //-------------------------------------------------------------------------------
 
-//plataforma
-const platformSize = 10;
+//pista
+var pista = new Pista();
 var platforms = [];
-var numPlatforms = 100;
-for (var i = 0; i <= numPlatforms; i++){
-    var platform = createPlatform(platformSize);
-    platforms.push(platform);
-    platforms[i].position.set(40.0*Math.sin(i), -platformSize/2, 40+40.0*Math.cos(i));
-    scene.add(platforms[i]);
+var blocoSize = 0;
+
+function selecaoPista(pistaescolhida){
+    pista.carregaPista(pistaescolhida);
+    platforms = [];
+    platforms = pista.montaPista();
+    for (let i = 0; i < platforms.length; i++) {
+        scene.add(platforms[i].bloco);
+    }
+    blocoSize = platforms[0].LARGURA;
 }
+selecaoPista(pista1);
 
-//cria plataforma
-function createPlatform(size)
-{
-    var platformGeometry = new THREE.BoxGeometry(platformSize, platformSize, platformSize);
-    var platformMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,255,255)'} );
-    var platform = new THREE.Mesh( platformGeometry, platformMaterial );
-    return platform;
+function limpaPista(pistaAserRemovida){
+    for (let i = 0; i < platforms.length; i++) {
+        scene.remove(platforms[i].bloco);
+    }
 }
-
 //-------------------------------------------------------------------------------
-// Checkpoints
+// Setagem dos Checkpoints
 //-------------------------------------------------------------------------------
 
-var checkpointRadius = platformSize;
+const checkpointRadius = blocoSize;
 
 //cria checkpoint
 function createCheckpoint(checkpointRadius)
@@ -115,34 +90,91 @@ function createPole(size)
     return flag;
 }
 
-//checkpoint
-var checkpoint1 = createCheckpoint(checkpointRadius);
-checkpoint1.position.set(0.0, 0.0, 0.0);
-scene.add(checkpoint1);
-
-//checkpoint
-var checkpoint2 = createCheckpoint(checkpointRadius);
-checkpoint2.position.set(40.0, 0.0, 40.0);
-scene.add(checkpoint2);
-
-//checkpoint
-var checkpoint3 = createCheckpoint(checkpointRadius);
-checkpoint3.position.set(0.0, 0.0, 80.0);
-scene.add(checkpoint3);
-
-//checkpoint
-var checkpoint4 = createCheckpoint(checkpointRadius);
-checkpoint4.position.set(-40.0, 0.0, 40.0);
-scene.add(checkpoint4);
-
 var flags = [];
 var flagNumber = 4;
 for (var i = 0; i <= flagNumber-1; i++){
-    var flag = createPole(size);
+    var flag = createPole(1);
     flags.push(flag);
     flags[i].position.set(-20 + 10.0*i, 10.0, 20 + 10.0*i);
     scene.add(flags[i]);
 }
+
+var todosCheckpoints = [];
+function posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada){
+    for(var k = 0; k <= flagNumber-1; k++){
+        var checkpoint = createCheckpoint(checkpointRadius);
+        todosCheckpoints.push(checkpoint);
+        if (k == flagNumber-1){
+            todosCheckpoints[k].position.set(posicionamentoChegada[0].getComponent(0), 0.0, posicionamentoChegada[0].getComponent(2));
+            scene.add(todosCheckpoints[k]);
+            return;
+        }
+        todosCheckpoints[k].position.set(posicionamentoCheckpoints[flagNumber-2-k].getComponent(0), 0.0, posicionamentoCheckpoints[flagNumber-2-k].getComponent(2));
+        scene.add(todosCheckpoints[k]);
+    }
+}
+
+function encontraPosicaoCheckpoints(){
+    var posicaoCheckpoints = [];
+    for (var k = 0; k < platforms.length; k ++){
+        if(platforms[k].getBlockType() == "CHECKPOINT"){
+            var posicaoNova = new THREE.Vector3;
+            posicaoNova.copy(platforms[k].bloco.position);
+            posicaoCheckpoints.push(posicaoNova);
+        }
+    }
+    return posicaoCheckpoints;
+}
+//garantir q a posicao da largada vai ser sempre o ultimo checkpoint
+function encontraPosicaoChegada(){
+    var posicaoChegada = [];
+    for (var k = 0; k < platforms.length; k ++){
+        if(platforms[k].getBlockType() == "LARGADA"){
+            var posicaoNova = new THREE.Vector3;
+            posicaoNova.copy(platforms[k].bloco.position);
+            posicaoChegada.push(posicaoNova);
+        }
+    }
+    return posicaoChegada;
+}
+var posicionamentoCheckpoints = encontraPosicaoCheckpoints();
+var posicionamentoChegada = encontraPosicaoChegada();
+posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada);
+
+
+
+//-------------------------------------------------------------------------------
+// Carro
+//-------------------------------------------------------------------------------
+
+//guia
+const radius = 0.5
+var guideSphere = createSphere(radius);
+guideSphere.position.set(0.0, 0.0, 2*radius);
+var posAtual = new THREE.Vector3(guideSphere.position.getComponent(0), radius, guideSphere.position.getComponent(2));
+posAtual.copy(guideSphere.position);
+
+//player
+const size = 1;
+var player = new Car;
+player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
+player.add(guideSphere);
+
+//cria esfera guia
+function createSphere(radius)
+{
+    var guideSphereGeometry = new THREE.SphereGeometry(radius, 32, 32);
+    var guideSphereMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,0,0)'} );
+    var guideSphere = new THREE.Mesh( guideSphereGeometry, guideSphereMaterial );
+    guideSphere.visible = false;
+    return guideSphere;
+}
+
+
+
+//-------------------------------------------------------------------------------
+// Verificação das voltas
+//-------------------------------------------------------------------------------
 
 var colidiu1 = false;
 var colidiu2 = false;
@@ -152,24 +184,24 @@ var reset = false;
 var voltas = 0;
 
 function verificaCheckpoint1(checkpoint, player){
-    if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < 5*radius &&
-        Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < 5*radius){
+    if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < checkpointRadius &&
+        Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
         colidiu1 = true;
         flags[0].material.color.setHex(0x00ff00)
         console.log(colidiu1);
     }
 }
 function verificaCheckpoint2(checkpoint, player){
-    if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < 5*radius &&
-        Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < 5*radius){
+    if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < checkpointRadius &&
+        Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
         colidiu2 = true;
         flags[1].material.color.setHex(0x00ff00)
         console.log(colidiu2);
     }
 }
 function verificaCheckpoint3(checkpoint, player){
-    if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < 5*radius &&
-        Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < 5*radius){
+    if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < checkpointRadius &&
+        Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
         colidiu3 = true;
         flags[2].material.color.setHex(0x00ff00)
         console.log(colidiu3);
@@ -177,12 +209,23 @@ function verificaCheckpoint3(checkpoint, player){
 }
 
 function verificaCheckpoint4(checkpoint, player){
-    if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < 5*radius &&
-        Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < 5*radius){
+    if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < checkpointRadius &&
+        Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
         colidiu4 = true;
         flags[3].material.color.setHex(0x00ff00)
         console.log(colidiu4);
     }
+}
+
+function resetaVoltaAtual(){
+    colidiu1 = reset;
+    flags[0].material.color.setHex(0xff0000)
+    colidiu2 = reset;
+    flags[1].material.color.setHex(0xff0000)
+    colidiu3 = reset;
+    flags[2].material.color.setHex(0xff0000)
+    colidiu4 = reset;
+    flags[3].material.color.setHex(0xff0000)
 }
 
 function verificaVoltas(player)
@@ -192,31 +235,24 @@ function verificaVoltas(player)
             if (colidiu3){
                 if (colidiu4){
                     voltas += 1;
-                    colidiu1 = reset;
-                    flags[0].material.color.setHex(0xff0000)
-                    colidiu2 = reset;
-                    flags[1].material.color.setHex(0xff0000)
-                    colidiu3 = reset;
-                    flags[2].material.color.setHex(0xff0000)
-                    colidiu4 = reset;
-                    flags[3].material.color.setHex(0xff0000)
+                    resetaVoltaAtual();
                     console.log(voltas);
                     armazenaTempoVolta(voltas);
                 }
                 else {
-                    verificaCheckpoint4(checkpoint4, player);
+                    verificaCheckpoint4(todosCheckpoints[3], player);
                 }
             }
             else {
-                verificaCheckpoint3(checkpoint3, player);
+                verificaCheckpoint3(todosCheckpoints[2], player);
             }
         }
         else {
-            verificaCheckpoint2(checkpoint2, player);
+            verificaCheckpoint2(todosCheckpoints[1], player);
         }
     }
     else {
-        verificaCheckpoint1(checkpoint1, player);
+        verificaCheckpoint1(todosCheckpoints[0], player);
     }
 }
 
@@ -240,6 +276,8 @@ function armazenaTempoVolta(){
         tempoTodasVoltas.push(tempoVolta4);
     }
 }
+
+
 
 //-------------------------------------------------------------------------------
 // Camera
@@ -273,7 +311,7 @@ scene.add(virtualCamera);
 
 
 //-------------------------------------------------------------------------------
-// Movimentação
+// Movimentação e Verificação de Saiu Pista
 //-------------------------------------------------------------------------------
 
 //animation control
@@ -284,15 +322,14 @@ var carroFreiando = false; // control if animation is on or of
 function aceleraCarro(aceleracaoAnterior)
 {
     if(carroAcelerando){
-        if(aceleracao < 200){
+        if(aceleracao < 70){
             aceleracao += aceleracaoAnterior*dt;
         }
     }
     else if(!carroAcelerando){
-        if (aceleracao > 50){
+        if (aceleracao > 20){
             aceleracao -= 2*aceleracaoAnterior*dt;
-            player.translateZ(aceleracao/100);
-
+            player.accelerate(aceleracao/100);
         }
     }
     //console.log(aceleracao);
@@ -302,14 +339,14 @@ function aceleraCarro(aceleracaoAnterior)
 function freiaCarro(freiaAnterior)
 {
     if(carroFreiando){
-        if(freia > -200){
+        if(freia > -70){
             freia += freiaAnterior*dt;
         }
     }
     else if(!carroFreiando){
-        if (freia < -50 ){
+        if (freia < -20 ){
             freia -= 2*freiaAnterior*dt;
-            player.translateZ(freia/100);
+            player.accelerate(freia/100);
         }
     }
     //console.log(freia);
@@ -319,10 +356,10 @@ var diffX = 0;
 var diffZ = 0;
 function verificaDesaceleraFora(){
     testaRedutor();
-    for (var k = 0; k <= numPlatforms; k ++){
-        diffX = Math.abs(player.position.getComponent(0) - platforms[k].position.getComponent(0));
-        diffZ = Math.abs(player.position.getComponent(2) - platforms[k].position.getComponent(2));
-        if( diffX <= platformSize/2 && diffZ <= platformSize/2 ){
+    for (var k = 0; k < platforms.length; k ++){
+        diffX = Math.abs(player.position.getComponent(0) - platforms[k].bloco.position.getComponent(0));
+        diffZ = Math.abs(player.position.getComponent(2) - platforms[k].bloco.position.getComponent(2));
+        if( diffX <= blocoSize/2 && diffZ <= blocoSize/2 ){
             redutor = 1;
             return;
         }
@@ -331,12 +368,12 @@ function verificaDesaceleraFora(){
 }
 
 var flagRedutor = createPole(size);
-flagRedutor.position.set(0.0,4*size,0.0);
+flagRedutor.position.set(0.0, 2*size, -0.5);
 player.add(flagRedutor);
 
 function testaRedutor(){
     if (redutor == 1){
-        flagRedutor.material.color.setHex(0xff0000);
+        flagRedutor.material.color.setHex(0xfada5e);
     }
     else{
         flagRedutor.material.color.setHex(0x0000ff);
@@ -345,8 +382,8 @@ function testaRedutor(){
 
 var keyboard = new KeyboardState();
 var Speed = 10;
-var aceleracao = 50;
-var freia = -50;
+var aceleracao = 20;
+var freia = -20;
 var redutor = 1;
 var speedForward = 0;
 var speedBackward = 0;
@@ -357,8 +394,8 @@ function keyboardUpdate() {
     if (keyboard.pressed("X")){
         carroAcelerando = true;
         speedForward = (Speed*dt + aceleracao/100)*redutor;
-        console.log(speedForward);
-        player.translateZ(speedForward);
+        //console.log(speedForward);
+        player.accelerate(speedForward);
     }
     else if (keyboard.up("X")) {
         carroAcelerando = false;
@@ -367,18 +404,35 @@ function keyboardUpdate() {
     if(keyboard.pressed("down")) {
         carroFreiando = true
         speedBackward = (-Speed*dt + freia/100)*redutor;
-        console.log(speedBackward);
-        player.translateZ(speedBackward);
+        //console.log(speedBackward);
+        player.accelerate(speedBackward);
     }
     else if (keyboard.up("down")) {
         carroFreiando = false
     }
 
     if (keyboard.pressed("left")) {
-        player.rotateY(degreesToRadians(5));
+        player.turnLeft(5);
     }
     else if (keyboard.pressed("right")) {
-        player.rotateY(degreesToRadians(-5));
+        player.turnRight(5);
+    }
+
+    if (keyboard.pressed("1")){
+        limpaPista(pista2);
+        selecaoPista(pista1);
+        resetaVoltaAtual();
+        voltas = 0;
+        player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
+        player.lookAt(0,0,100000)
+    }
+    if (keyboard.pressed("2")){
+        limpaPista(pista1);
+        selecaoPista(pista2);
+        resetaVoltaAtual();
+        voltas = 0;
+        player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
+        player.lookAt(0,0,100000)
     }
 }
 
@@ -470,7 +524,6 @@ function geraStatusFinal(){
 //-------------------------------------------------------------------------------
 
 var dt, anterior = 0;
-
 render();
 
 function controlledRender()

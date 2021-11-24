@@ -368,15 +368,21 @@ function verificaDesaceleraFora(){
 }
 
 var flagRedutor = createPole(size);
-flagRedutor.position.set(0.0, 2*size, -0.5);
+var flagRedutor2 = createPole(size);
+flagRedutor.position.set(-0.7, 2*size, -0.5);
+flagRedutor2.position.set(0.7, 2*size, -0.5);
+
 player.add(flagRedutor);
+player.add(flagRedutor2);
 
 function testaRedutor(){
     if (redutor == 1){
         flagRedutor.material.color.setHex(0xfada5e);
+        flagRedutor2.material.color.setHex(0xfada5e);
     }
     else{
         flagRedutor.material.color.setHex(0x0000ff);
+        flagRedutor2.material.color.setHex(0x0000ff);
     }
 }
 

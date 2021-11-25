@@ -70,7 +70,7 @@ export class Car extends THREE.Group {
     this.add(this.backWindow);
     this.add(this.frontWindow);
     this.add(this.earWindow);
-    this.add(this.earWindow2)
+    this.add(this.earWindow2);
     this.add(this.ballWindow);
     this.add(this.noseWindow);
     this.add(this.headLight1);
@@ -226,6 +226,11 @@ export class Car extends THREE.Group {
     this.rotateY(degreesToRadians(-degrees));
   }
 
-
-
+  defaultUpdate() {
+    // if (Math.abs(this.wheelAngle) < 5) {
+    //   if (this.wheelAngle > 0) this.frontAxis.rotateX(degreesToRadians(1));
+    //   else if (this.wheelAngle < 0)
+    //     this.frontAxis.rotateX(degreesToRadians(-1));
+    // }
+  }
 }

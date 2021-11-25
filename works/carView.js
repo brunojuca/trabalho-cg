@@ -6,7 +6,8 @@ import {initRenderer,
         InfoBox,
         onWindowResize,
         initDefaultSpotlight,
-        initDefaultBasicLight} from "../libs/util/util.js";
+        initDefaultBasicLight,
+        degreesToRadians} from "../libs/util/util.js";
 import { Car } from './car.js';
 
 var stats = new Stats();          // To show FPS information
@@ -33,12 +34,14 @@ var planeMaterial = new THREE.MeshBasicMaterial({
     side: THREE.DoubleSide,
 });
 var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+
 // add the plane to the scene
 scene.add(plane);
 
 var cube = new Car();
 // position the cube
 cube.position.set(0.0, 0.0, 1.0);
+cube.rotateX(degreesToRadians(90));
 // add the cube to the scene
 scene.add(cube);
 

@@ -191,27 +191,23 @@ posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada);
 
 //guia
 const radius = 1
-var guideSphere = createSphere(radius);
-guideSphere.position.set(0.0, 0.0, 2*radius);
-
-var posAtual = new THREE.Vector3(0, 0, 0);
-posAtual.set(guideSphere.position.getComponent(0), guideSphere.position.getComponent(1), guideSphere.position.getComponent(2));
 
 //ghost guia
 const desvio = 20;
 var ghostguide = createSphere(radius);
 ghostguide.position.set(0.0, 0.0, 2*radius + desvio);
-var ghostPos = new THREE.Vector3(0, 0, 0);
-ghostPos.set(ghostguide.position.getComponent(0), ghostguide.position.getComponent(1), ghostguide.position.getComponent(2));
-scene.add(guideSphere);
-scene.add(ghostguide);
+//var ghostPos = new THREE.Vector3(0, 0, 0);
+//ghostPos.set(ghostguide.position.getComponent(0), ghostguide.position.getComponent(1), ghostguide.position.getComponent(2));
+
 
 //player
 var player = new Car;
 player.scale.set(0.2,0.2,0.2);
 player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
-player.add(guideSphere);
 player.add(ghostguide);
+
+var posAtual = new THREE.Vector3(0, 0, 0);
+posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
 
 //cria esfera guia
 function createSphere(radius)
@@ -330,13 +326,13 @@ function armazenaTempoVolta(){
 //-------------------------------------------------------------------------------
 // Camera
 //-------------------------------------------------------------------------------
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+//camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 var cameraHolder = new THREE.Object3D();
-player.add(cameraHolder);
 cameraHolder.add(camera);
-cameraHolder.position.set(40, 20, 0);
+cameraHolder.position.set(60, 20, 0);
 cameraHolder.lookAt(posAtual)
 cameraHolder.rotateY(degreesToRadians(180))
+//player.add(cameraHolder);
 
 scene.add(player);
 scene.add(cameraHolder);
@@ -448,15 +444,20 @@ function keyboardUpdate() {
         speedForward = (Speed/100 + aceleracao/100)*redutor;
         //evita bug ao sair da pag
         if(speedForward < -0.01){
-            speedForward = Speed;
+            speedForward = 1;
             aceleracao = 1;
         }
         console.log(speedForward);
         console.log(speedBackward);
         player.accelerate(speedForward);
+        //mover ate ponto fantasma (target, fantasma)
+        
+
     }
     else if (keyboard.up("X")) {
         carroAcelerando = false;
+        //mover de volta para o carro (target, carro)
+
     }
 
     if(keyboard.pressed("down")) {
@@ -464,7 +465,7 @@ function keyboardUpdate() {
         speedBackward = (-Speed/100 + freia/100)*redutor;
         //evita bug ao sair da pag
         if(speedBackward > 0.01){
-            speedBackward = -Speed;
+            speedBackward = -1;
             aceleracao = 1;
         }
         player.accelerate(speedBackward);
@@ -607,12 +608,14 @@ function render(t)
   verificaDesaceleraFora();
   aceleraCarro(aceleracao);
   freiaCarro(freia);
+  player.defaultUpdate();
   verificaVoltas(player);
   posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
-  ghostPos.set(ghostguide.position.getComponent(0), ghostguide.position.getComponent(1), ghostguide.position.getComponent(2));
-  console.log(posAtual);
-  console.log(ghostPos);
-  cameraHolder.lookAt(posAtual);
+  //ghostPos.set(ghostguide.position.getComponent(0), ghostguide.position.getComponent(1), ghostguide.position.getComponent(2));
+  //console.log(posAtual);
+  console.log(ghostguide.position);
+  cameraHolder.lookAt(ghostguide.getWorldPosition());
+  cameraHolder.position.set(player.position.getComponent(0)+10, player.position.getComponent(1)+10, player.position.getComponent(2)-10);
   cameraHolder.rotateY(degreesToRadians(180));
 
   dt = (t - anterior) / 1000;

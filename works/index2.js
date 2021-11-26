@@ -67,6 +67,7 @@ scene.add(plane);
 var pista = new Pista();
 var platforms = [];
 var blocoSize = 0;
+var pistaAtual = 1;
 
 function selecaoPista(pistaescolhida){
     pista.carregaPista(pistaescolhida);
@@ -196,15 +197,15 @@ const radius = 1
 const desvio = 20;
 var ghostguide = createSphere(radius);
 ghostguide.position.set(0.0, 0.0, 2*radius + desvio);
-//var ghostPos = new THREE.Vector3(0, 0, 0);
-//ghostPos.set(ghostguide.position.getComponent(0), ghostguide.position.getComponent(1), ghostguide.position.getComponent(2));
-
+let target = createSphere(radius);
+target.position.set(0.0, 0.0, 2*radius +desvio/2);
 
 //player
 var player = new Car;
 player.scale.set(0.2,0.2,0.2);
 player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
 player.add(ghostguide);
+player.add(target);
 
 var posAtual = new THREE.Vector3(0, 0, 0);
 posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
@@ -304,19 +305,19 @@ var tempoTodasVoltas = [];
 
 function armazenaTempoVolta(){
     if (voltas == 1){
-        var tempoVolta1 = anterior/1000;
+        var tempoVolta1 = anterior/1000 - tempoJogoAnterior;
         tempoTodasVoltas.push(tempoVolta1);
     }
     if (voltas == 2){
-        var tempoVolta2 = anterior/1000 - tempoTodasVoltas[0];
+        var tempoVolta2 = anterior/1000 - tempoTodasVoltas[0] - tempoJogoAnterior;
         tempoTodasVoltas.push(tempoVolta2);
     }
     if (voltas == 3){
-        var tempoVolta3 = anterior/1000 - tempoTodasVoltas[0] - tempoTodasVoltas[1];
+        var tempoVolta3 = anterior/1000 - tempoTodasVoltas[0] - tempoTodasVoltas[1] - tempoJogoAnterior;
         tempoTodasVoltas.push(tempoVolta3);
     }
     if (voltas == 4){
-        var tempoVolta4 = anterior/1000 - tempoTodasVoltas[0] - tempoTodasVoltas[1] - tempoTodasVoltas[2];
+        var tempoVolta4 = anterior/1000 - tempoTodasVoltas[0] - tempoTodasVoltas[1] - tempoTodasVoltas[2] - tempoJogoAnterior;
         tempoTodasVoltas.push(tempoVolta4);
     }
 }
@@ -337,7 +338,32 @@ cameraHolder.rotateY(degreesToRadians(180))
 scene.add(player);
 scene.add(cameraHolder);
 
+var cameraMovendo = true;
 
+function moveCamera(target, newPos)
+{
+    if (cameraMovendo) {
+        var distX = target.getWorldPosition().x - newPos.getWorldPosition().x;
+        var distY = target.getWorldPosition().y - newPos.getWorldPosition().y;
+        var distZ = target.getWorldPosition().z - newPos.getWorldPosition().z;
+        var distancia = Math.sqrt(distX**2 + distY**2 + distZ**2);
+        var speedX = 0.01;
+        var speedY = 0.01;
+        var speedZ = 0.01;
+        if (Math.abs(distX) >= 0.01)
+            target.position.x -= distX*speedX;
+        if (Math.abs(distY) >= 0.01)
+            target.position.y -= distY*speedY;
+        if (Math.abs(distZ) >= 0.01)
+            target.position.z -= distZ*speedZ;
+        if (distancia < 0.2) {
+            target.position.x = newPos.getWorldPosition().x;
+            target.position.y = newPos.getWorldPosition().y;
+            target.position.z = newPos.getWorldPosition().z;
+            mover = false;
+        }
+    }
+}
 
 //-------------------------------------------------------------------------------
 // Virtual camera - minimapa (se alguem conseguir descobrir pq a virtualCamera ta mostrando a normal)
@@ -435,6 +461,7 @@ var freia = -1;
 var redutor = 1;
 var speedForward = 0;
 var speedBackward = 0;
+var tempoJogoAnterior = 0;
 
 function keyboardUpdate() {
     keyboard.update();
@@ -451,7 +478,7 @@ function keyboardUpdate() {
         console.log(speedBackward);
         player.accelerate(speedForward);
         //mover ate ponto fantasma (target, fantasma)
-        
+        moveCamera(target, ghostguide);
 
     }
     else if (keyboard.up("X")) {
@@ -469,6 +496,8 @@ function keyboardUpdate() {
             aceleracao = 1;
         }
         player.accelerate(speedBackward);
+        moveCamera(target, ghostguide);
+
     }
     else if (keyboard.up("down")) {
         carroFreiando = false
@@ -485,19 +514,41 @@ function keyboardUpdate() {
         }
     }
 
-    if (keyboard.pressed("1")){
+    if (keyboard.pressed("1") && pistaAtual != 1){
+        pistaAtual = 1;
         limpaPista(pista2);
         selecaoPista(pista1);
         resetaVoltaAtual();
         voltas = 0;
+        
+        aceleracao = 1;
+        freia = -1;
+        speedBackward = 0;
+        speedForward = 0;
+        tempoTodasVoltas = [];
+        tempoJogoAnterior = anterior/1000;
+
+        gerou = false;
+
         player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
         player.lookAt(0,0,100000)
     }
-    if (keyboard.pressed("2")){
+    if (keyboard.pressed("2") && pistaAtual != 2){
+        pistaAtual = 2;
         limpaPista(pista1);
         selecaoPista(pista2);
         resetaVoltaAtual();
         voltas = 0;
+
+        aceleracao = 1;
+        freia = -1;
+        speedBackward = 0;
+        speedForward = 0;
+        tempoTodasVoltas = [];
+        tempoJogoAnterior = anterior/1000;
+
+        gerou = false;
+
         player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
         player.lookAt(0,0,100000)
     }
@@ -515,7 +566,7 @@ function geraStatusFinal(){
     textoVoltas.style.backgroundColor = "white";
     textoVoltas.innerHTML = "Voltas: ";
     textoVoltas.style.top = 0 + 'px';
-    textoVoltas.style.left = window.innerWidth - 54 + 'px';
+    textoVoltas.style.left = window.innerWidth - 66 + 'px';
     document.body.appendChild(textoVoltas);
 
     var nDeVoltas = document.createElement('div');
@@ -529,7 +580,7 @@ function geraStatusFinal(){
     var tempoTotal = document.createElement('div');
     tempoTotal.style.position = 'absolute';
     tempoTotal.style.backgroundColor = "white";
-    tempoTotal.innerHTML = anterior/1000;
+    tempoTotal.innerHTML = anterior/1000 - tempoJogoAnterior;
     tempoTotal.style.top = 19 + 'px';
     tempoTotal.style.left = window.innerWidth - 100 + 'px';
     document.body.appendChild(tempoTotal);
@@ -573,6 +624,17 @@ function geraStatusFinal(){
 //-------------------------------------------------------------------------------
 // Render
 //-------------------------------------------------------------------------------
+
+var controls = new InfoBox();
+  controls.add("Controles: ");
+  controls.addParagraph();
+  controls.add("Use keyboard to interact:");
+  controls.add("* Left/Right arrows to turn left/right");
+  controls.add("* Down arrow to go backwards");
+  controls.add("* X to accelerate");
+  controls.add("* Space to change camera view");
+  controls.add("* 1/2 buttons to change maps");
+  controls.show();
 
 var dt, anterior = 0;
 render();

@@ -5,7 +5,7 @@ import KeyboardState from '../libs/util/KeyboardState.js';
 import {pista1 as pista1} from './pistas/pista1.js';
 import {pista2 as pista2} from './pistas/pista2.js';
 import Pista from './Pista.js';
-import { Car } from './car.js';
+import { Car } from './Car.js';
 import {assetsManager} from './assetsManager.js';
 
 //import {TrackballControls} from '../build/jsm/controls/TrackballControls.js';
@@ -19,7 +19,8 @@ import {initRenderer,
 
 const loader = new THREE.TextureLoader();
 const groundTexture = loader.load( 'texture/grass.jpg' );
-const skyTexture = loader.load( 'texture/coconutMall.jpg' );
+const skyTexture = loader.load( 'texture/sky.jpg' );
+const skyTextureSecret = loader.load( 'texture/coconutMall.jpg' );
 const flagTexture = loader.load( 'texture/coconutFlag.png' );
 
 const poleTexture = loader.load( 'texture/coconutFlagPole.png' );
@@ -31,8 +32,8 @@ assetsMng.loadAudio("winRace", "./assets/winRace.mp3");
 
 var stats = new Stats();          // To show FPS information
 var scene = new THREE.Scene();    // Create main scene
-scene.background = skyTexture;
 var renderer = initRenderer();    // View function in util/utils
+scene.background = skyTexture;
 
 //camera
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -56,6 +57,7 @@ groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
 groundTexture.repeat.set( 1000, 1000 );
 groundTexture.anisotropy = 16;
 var groundMaterial = new THREE.MeshStandardMaterial( { map: groundTexture } );
+//var plane = createGroundPlaneWired(1500, 1500, 80, 80);
 var plane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), groundMaterial );
 plane.position.y = 0.0;
 plane.rotation.x = - Math.PI / 2;
@@ -199,7 +201,7 @@ posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada);
 const radius = 1
 
 //ghost guia
-const desvio = 20;
+const desvio = 10;
 var ghostguide = createSphere(radius);
 ghostguide.position.set(0.0, 0.0, 2*radius + desvio);
 let target = createSphere(radius);
@@ -207,10 +209,10 @@ target.position.set(0.0, 0.0, 2*radius +desvio/2);
 
 //player
 var player = new Car;
-player.scale.set(0.2,0.2,0.2);
+player.scale.set(0.1,0.1,0.1);
 player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
 player.add(ghostguide);
-player.add(target);
+//player.add(target);
 
 var posAtual = new THREE.Vector3(0, 0, 0);
 posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
@@ -397,8 +399,8 @@ var carroFreiando = false; // control if animation is on or of
 function aceleraCarro(aceleracaoAnterior)
 {
     if(carroAcelerando){
-        if(aceleracao < 50){
-            aceleracao += aceleracaoAnterior*dt;
+        if(aceleracao < 30){
+            aceleracao += aceleracaoAnterior/100;
         }
     }
     else if(!carroAcelerando){
@@ -413,7 +415,7 @@ function aceleraCarro(aceleracaoAnterior)
 function freiaCarro(freiaAnterior)
 {
     if(carroFreiando){
-        if(freia > -50){
+        if(freia > -30){
             freia += freiaAnterior/100;
         }
     }
@@ -557,7 +559,10 @@ function keyboardUpdate() {
         player.lookAt(0,0,100000)
     }
     if (keyboard.down("0")){
+        scene.background = skyTextureSecret;
         assetsMng.play("coconutMall");
+        controls.add("* 0 to play Coconut Mall");
+        scene.remove(plane);
     }
 
 }
@@ -643,7 +648,6 @@ var controls = new InfoBox();
   controls.add("* X to accelerate");
   controls.add("* Space to change camera view");
   controls.add("* 1/2 buttons to change maps");
-  controls.add("* 0 to play Coconut Mall");
   controls.show();
 
 var dt, anterior = 0;
@@ -687,7 +691,7 @@ function render(t)
   //console.log(posAtual);
   console.log(ghostguide.position);
   cameraHolder.lookAt(ghostguide.getWorldPosition());
-  cameraHolder.position.set(player.position.getComponent(0)+10, player.position.getComponent(1)+6, player.position.getComponent(2)-10);
+  cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+4, player.position.getComponent(2)-10);
   cameraHolder.rotateY(degreesToRadians(180));
 
   dt = (t - anterior) / 1000;

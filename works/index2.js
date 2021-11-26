@@ -6,6 +6,7 @@ import {pista1 as pista1} from './pistas/pista1.js';
 import {pista2 as pista2} from './pistas/pista2.js';
 import Pista from './Pista.js';
 import { Car } from './car.js';
+import {assetsManager} from './assetsManager.js';
 
 //import {TrackballControls} from '../build/jsm/controls/TrackballControls.js';
 import {initRenderer,
@@ -18,7 +19,15 @@ import {initRenderer,
 
 const loader = new THREE.TextureLoader();
 const groundTexture = loader.load( 'texture/grass.jpg' );
-const skyTexture = loader.load( 'texture/sky.jpg' );
+const skyTexture = loader.load( 'texture/coconutMall.jpg' );
+const flagTexture = loader.load( 'texture/coconutFlag.png' );
+
+const poleTexture = loader.load( 'texture/coconutFlagPole.png' );
+
+var assetsMng = new assetsManager();
+assetsMng.loadAudio("coconutMall", "./assets/coconutMall.mp3");
+assetsMng.loadAudio("startRace", "./assets/startRace.mp3");
+assetsMng.loadAudio("winRace", "./assets/winRace.mp3");
 
 var stats = new Stats();          // To show FPS information
 var scene = new THREE.Scene();    // Create main scene
@@ -42,10 +51,6 @@ window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, 
 //-------------------------------------------------------------------------------
 // Ambiente - Eixos e Plano
 //-------------------------------------------------------------------------------
-
-// Show axes (parameter is size of each axis)
-var axesHelper = new THREE.AxesHelper( 12 );
-scene.add( axesHelper );
 
 groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
 groundTexture.repeat.set( 1000, 1000 );
@@ -104,16 +109,16 @@ function createCheckpoint(checkpointRadius)
 //cria pole
 function createPole(size)
 {
-    var flagGeometry = new THREE.BoxGeometry(size, 2*size, size);
-    var flagMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,0,0)'} );
-    var flag = new THREE.Mesh( flagGeometry, flagMaterial );
-    return flag;
+    var poleGeometry = new THREE.BoxGeometry(size, 2*size, size);
+    var poleMaterial = new THREE.MeshStandardMaterial( { map: poleTexture } );
+    var pole = new THREE.Mesh( poleGeometry, poleMaterial );
+    return pole;
 }
 
 function createPoleTop(size)
 {
     var flagtopGeometry = new THREE.BoxGeometry(blocoSize+2*size, size, size);
-    var flagtopMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,0,0)'} );
+    var flagtopMaterial = new THREE.MeshStandardMaterial( { map: flagTexture } );
     var flagtop = new THREE.Mesh( flagtopGeometry, flagtopMaterial );
     return flagtop;
 }
@@ -477,14 +482,12 @@ function keyboardUpdate() {
         console.log(speedForward);
         console.log(speedBackward);
         player.accelerate(speedForward);
-        //mover ate ponto fantasma (target, fantasma)
+        player.defaultUpdate();
         moveCamera(target, ghostguide);
-
     }
     else if (keyboard.up("X")) {
         carroAcelerando = false;
-        //mover de volta para o carro (target, carro)
-
+        player.defaultUpdate();
     }
 
     if(keyboard.pressed("down")) {
@@ -496,11 +499,12 @@ function keyboardUpdate() {
             aceleracao = 1;
         }
         player.accelerate(speedBackward);
+        player.defaultUpdate();
         moveCamera(target, ghostguide);
-
     }
     else if (keyboard.up("down")) {
         carroFreiando = false
+        player.defaultUpdate();
     }
 
     if (keyboard.pressed("left")) {
@@ -520,7 +524,7 @@ function keyboardUpdate() {
         selecaoPista(pista1);
         resetaVoltaAtual();
         voltas = 0;
-        
+
         aceleracao = 1;
         freia = -1;
         speedBackward = 0;
@@ -552,6 +556,10 @@ function keyboardUpdate() {
         player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
         player.lookAt(0,0,100000)
     }
+    if (keyboard.down("0")){
+        assetsMng.play("coconutMall");
+    }
+
 }
 
 
@@ -561,6 +569,7 @@ function keyboardUpdate() {
 //-------------------------------------------------------------------------------
 var gerou = false;
 function geraStatusFinal(){
+    assetsMng.play("winRace");
     var textoVoltas = document.createElement('div');
     textoVoltas.style.position = 'absolute';
     textoVoltas.style.backgroundColor = "white";
@@ -634,9 +643,12 @@ var controls = new InfoBox();
   controls.add("* X to accelerate");
   controls.add("* Space to change camera view");
   controls.add("* 1/2 buttons to change maps");
+  controls.add("* 0 to play Coconut Mall");
   controls.show();
 
 var dt, anterior = 0;
+assetsMng.play("startRace");
+
 render();
 
 function controlledRender()
@@ -650,7 +662,6 @@ function controlledRender()
   renderer.setClearColor("rgb(80, 70, 170)");
   renderer.clear();   // Clean the window
   renderer.render(scene, camera);
-
   // Set virtual camera viewport
   var offset = 30;
   renderer.setViewport(offset, height-vcHeidth-offset, vcWidth, vcHeidth);  // Set virtual camera viewport
@@ -666,7 +677,6 @@ function render(t)
   requestAnimationFrame(render);
   //trackballControls.update();
   keyboardUpdate();
-
   verificaDesaceleraFora();
   aceleraCarro(aceleracao);
   freiaCarro(freia);
@@ -677,7 +687,7 @@ function render(t)
   //console.log(posAtual);
   console.log(ghostguide.position);
   cameraHolder.lookAt(ghostguide.getWorldPosition());
-  cameraHolder.position.set(player.position.getComponent(0)+10, player.position.getComponent(1)+10, player.position.getComponent(2)-10);
+  cameraHolder.position.set(player.position.getComponent(0)+10, player.position.getComponent(1)+6, player.position.getComponent(2)-10);
   cameraHolder.rotateY(degreesToRadians(180));
 
   dt = (t - anterior) / 1000;

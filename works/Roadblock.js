@@ -2,7 +2,7 @@ import * as THREE from "../build/three.module.js";
 
 export default class Roadblock
 {
-    constructor(x, y, z, blockType, largura=10, comprimento=10, altura=0.3) {
+    constructor(x, y, z, blockType, scene, largura=10, comprimento=10, altura=0.3) {
         this.LARGURA = largura;
         this.COMPRIMENTO = comprimento;
         this.ALTURA = altura;
@@ -58,6 +58,12 @@ export default class Roadblock
 
         }
         bloco.position.set(this.X, this.Z, this.Y);
+
+        var outlineGeo = new THREE.BoxGeometry(this.LARGURA, this.ALTURA+0.1, this.COMPRIMENTO);
+        var outlineMat = new THREE.MeshBasicMaterial({color : "#000000", side: THREE.BackSide});
+        var outline = new THREE.Mesh(outlineGeo, outlineMat);
+        bloco.add(outline);
+
         return bloco;
     }
 

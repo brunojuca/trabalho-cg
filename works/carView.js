@@ -78,6 +78,10 @@ function keyboardUpdate() {
     player.turnRight(0);
   }
 
+  if (keyboard.pressed("space")){
+    window.location.href = "index.html";
+  }
+
   if (keyboard.down("0")){
     carroGirando = true;
     assetsMng.play("ROTS");

@@ -21,9 +21,7 @@ const loader = new THREE.TextureLoader();
 const groundTexture = loader.load( 'texture/grass.jpg' );
 const skyTexture = loader.load( 'texture/sky.jpg' );
 const skyTextureSecret = loader.load( 'texture/coconutMall.jpg' );
-const flagTexture = loader.load( 'texture/coconutFlag.png' );
-
-const poleTexture = loader.load( 'texture/coconutFlagPole.png' );
+const flagTexture = loader.load( 'texture/coconutFlagPole.png' );
 
 var assetsMng = new assetsManager();
 assetsMng.loadAudio("coconutMall", "./assets/coconutMall.mp3");
@@ -39,7 +37,8 @@ scene.background = skyTexture;
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.lookAt(0, 0, 0);
   camera.position.set(0, 0, 0);
-  camera.up.set( 0, 5, 0 );
+  camera.up.set( 0, 10, 0 );
+  camera.fov = 20;
 
 //light
 initDefaultBasicLight(scene, true);
@@ -112,7 +111,7 @@ function createCheckpoint(checkpointRadius)
 function createPole(size)
 {
     var poleGeometry = new THREE.BoxGeometry(size, 2*size, size);
-    var poleMaterial = new THREE.MeshStandardMaterial( { map: poleTexture } );
+    var poleMaterial = new THREE.MeshStandardMaterial( { map: flagTexture } );
     var pole = new THREE.Mesh( poleGeometry, poleMaterial );
     return pole;
 }
@@ -142,7 +141,6 @@ for(var j = 0; j <= flagNumber-1; j++){
 var flagTop = createPoleTop(size);
 scene.add(flagTop);
 
-console.log(flags2);
 var todosCheckpoints = [];
 function posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada){
     for(var k = 0; k <= flagNumber-1; k++){
@@ -204,8 +202,6 @@ const radius = 1
 const desvio = 10;
 var ghostguide = createSphere(radius);
 ghostguide.position.set(0.0, 0.0, 2*radius + desvio);
-let target = createSphere(radius);
-target.position.set(0.0, 0.0, 2*radius +desvio/2);
 
 //player
 var player = new Car;
@@ -223,7 +219,7 @@ function createSphere(radius)
     var guideSphereGeometry = new THREE.SphereGeometry(radius, 32, 32);
     var guideSphereMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,0,0)'} );
     var guideSphere = new THREE.Mesh( guideSphereGeometry, guideSphereMaterial );
-    //guideSphere.visible = false;
+    guideSphere.visible = false;
     return guideSphere;
 }
 
@@ -288,7 +284,6 @@ function verificaVoltas(player)
                 if (colidiu4){
                     voltas += 1;
                     resetaVoltaAtual();
-                    console.log(voltas);
                     armazenaTempoVolta(voltas);
                 }
                 else {
@@ -345,33 +340,6 @@ cameraHolder.rotateY(degreesToRadians(180))
 scene.add(player);
 scene.add(cameraHolder);
 
-var cameraMovendo = true;
-
-function moveCamera(target, newPos)
-{
-    if (cameraMovendo) {
-        var distX = target.getWorldPosition().x - newPos.getWorldPosition().x;
-        var distY = target.getWorldPosition().y - newPos.getWorldPosition().y;
-        var distZ = target.getWorldPosition().z - newPos.getWorldPosition().z;
-        var distancia = Math.sqrt(distX**2 + distY**2 + distZ**2);
-        var speedX = 0.01;
-        var speedY = 0.01;
-        var speedZ = 0.01;
-        if (Math.abs(distX) >= 0.01)
-            target.position.x -= distX*speedX;
-        if (Math.abs(distY) >= 0.01)
-            target.position.y -= distY*speedY;
-        if (Math.abs(distZ) >= 0.01)
-            target.position.z -= distZ*speedZ;
-        if (distancia < 0.2) {
-            target.position.x = newPos.getWorldPosition().x;
-            target.position.y = newPos.getWorldPosition().y;
-            target.position.z = newPos.getWorldPosition().z;
-            mover = false;
-        }
-    }
-}
-
 //-------------------------------------------------------------------------------
 // Virtual camera - minimapa (se alguem conseguir descobrir pq a virtualCamera ta mostrando a normal)
 //-------------------------------------------------------------------------------
@@ -400,12 +368,12 @@ function aceleraCarro(aceleracaoAnterior)
 {
     if(carroAcelerando){
         if(aceleracao < 30){
-            aceleracao += aceleracaoAnterior/100;
+            aceleracao += redutor*aceleracaoAnterior/100;
         }
     }
     else if(!carroAcelerando){
         if (aceleracao > 1 && speedForward > 0){
-            aceleracao -= aceleracaoAnterior*dt;
+            aceleracao -= redutor*aceleracaoAnterior*dt;
             player.accelerate(aceleracao/100);
         }
     }
@@ -416,12 +384,12 @@ function freiaCarro(freiaAnterior)
 {
     if(carroFreiando){
         if(freia > -30){
-            freia += freiaAnterior/100;
+            freia += redutor*freiaAnterior/100;
         }
     }
     else if(!carroFreiando){
         if (freia < -1){
-            freia -= freiaAnterior/100;
+            freia -= redutor*freiaAnterior/100;
             player.accelerate(freia/100);
         }
     }
@@ -430,12 +398,15 @@ function freiaCarro(freiaAnterior)
 var diffX = 0;
 var diffZ = 0;
 function verificaDesaceleraFora(){
+    console.log(redutor);
     testaRedutor();
     for (var k = 0; k < platforms.length; k ++){
         diffX = Math.abs(player.position.getComponent(0) - platforms[k].bloco.position.getComponent(0));
         diffZ = Math.abs(player.position.getComponent(2) - platforms[k].bloco.position.getComponent(2));
-        if( diffX <= blocoSize/2 && diffZ <= blocoSize/2 ){
-            redutor = 1;
+        if( diffX <= blocoSize/2 && diffZ <= blocoSize/2){
+            if (redutor < 1){
+                redutor += 0.005;
+            }
             return;
         }
     }
@@ -476,16 +447,13 @@ function keyboardUpdate() {
     if (keyboard.pressed("X")){
         carroAcelerando = true;
         speedForward = (Speed/100 + aceleracao/100)*redutor;
-        //evita bug ao sair da pag
+        //evita bug ao sair da pag pelos cálculos que continuam sendo feitos em segundo plano no browser
         if(speedForward < -0.01){
             speedForward = 1;
             aceleracao = 1;
         }
-        console.log(speedForward);
-        console.log(speedBackward);
         player.accelerate(speedForward);
         player.defaultUpdate();
-        moveCamera(target, ghostguide);
     }
     else if (keyboard.up("X")) {
         carroAcelerando = false;
@@ -495,14 +463,13 @@ function keyboardUpdate() {
     if(keyboard.pressed("down")) {
         carroFreiando = true
         speedBackward = (-Speed/100 + freia/100)*redutor;
-        //evita bug ao sair da pag
+        //evita bug ao sair da pag pelos cálculos que continuam sendo feitos em segundo plano no browser
         if(speedBackward > 0.01){
             speedBackward = -1;
             aceleracao = 1;
         }
         player.accelerate(speedBackward);
         player.defaultUpdate();
-        moveCamera(target, ghostguide);
     }
     else if (keyboard.up("down")) {
         carroFreiando = false
@@ -558,6 +525,11 @@ function keyboardUpdate() {
         player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
         player.lookAt(0,0,100000)
     }
+
+    if (keyboard.pressed("space")){
+        window.location.href = "carView.html";
+    }
+
     if (keyboard.down("0")){
         scene.background = skyTextureSecret;
         assetsMng.play("coconutMall");
@@ -687,11 +659,8 @@ function render(t)
   player.defaultUpdate();
   verificaVoltas(player);
   posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
-  //ghostPos.set(ghostguide.position.getComponent(0), ghostguide.position.getComponent(1), ghostguide.position.getComponent(2));
-  //console.log(posAtual);
-  console.log(ghostguide.position);
   cameraHolder.lookAt(ghostguide.getWorldPosition());
-  cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+4, player.position.getComponent(2)-10);
+  cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+6, player.position.getComponent(2)-10);
   cameraHolder.rotateY(degreesToRadians(180));
 
   dt = (t - anterior) / 1000;

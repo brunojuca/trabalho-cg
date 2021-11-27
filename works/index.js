@@ -341,18 +341,33 @@ scene.add(player);
 scene.add(cameraHolder);
 
 //-------------------------------------------------------------------------------
-// Virtual camera - minimapa (se alguem conseguir descobrir pq a virtualCamera ta mostrando a normal)
+// Virtual camera - minimapa
 //-------------------------------------------------------------------------------
-var lookAtVec   = new THREE.Vector3( 0.0, 0.0, 0.0 );
-var camPosition = new THREE.Vector3( 0.0, 2.2, 0.0 );
+var lookAtVec   = new THREE.Vector3( 20.0, 0.0, 20.0 );
+var virtualCamPosition = new THREE.Vector3( 20.0, 300.0, 20.0 );
 var vcWidth = 200;
 var vcHeidth = 200;
 var virtualCamera = new THREE.PerspectiveCamera(45, vcWidth/vcHeidth, 1.0, 20.0);
-  virtualCamera.position.copy(camPosition);
+  virtualCamera.position.copy(virtualCamPosition);
   virtualCamera.lookAt(lookAtVec);
+  virtualCamera.far = 400;
+  virtualCamera.fov = 10;
+  virtualCamera.updateProjectionMatrix();
 
 scene.add(virtualCamera);
 
+var playerIcon = createPlayerIcon(10*radius);
+playerIcon.position.set(0.0, 100.0, 0.0);
+
+//cria icone player minimapa
+function createPlayerIcon(radius)
+{
+    var playerIconGeometry = new THREE.SphereGeometry(radius, 32, 32);
+    var playerIconMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,0,0)'} );
+    var playerIcon = new THREE.Mesh( playerIconGeometry, playerIconMaterial );
+    return playerIcon;
+}
+player.add(playerIcon);
 
 
 //-------------------------------------------------------------------------------
@@ -669,5 +684,4 @@ function render(t)
       geraStatusFinal();
   }
   controlledRender(t);
-  renderer.render(scene, camera) // Render scene
 }

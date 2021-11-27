@@ -19,7 +19,9 @@ import {initRenderer,
 
 const loader = new THREE.TextureLoader();
 const groundTexture = loader.load( 'texture/grass.jpg' );
+const groundTexture2 = loader.load( 'texture/sand.jpg' );
 const skyTexture = loader.load( 'texture/sky.jpg' );
+const skyTexture2 = loader.load( 'texture/sunsky.png' );
 const skyTextureSecret = loader.load( 'texture/coconutMall.jpg' );
 const flagTexture = loader.load( 'texture/coconutFlagPole.png' );
 
@@ -56,13 +58,23 @@ groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
 groundTexture.repeat.set( 1000, 1000 );
 groundTexture.anisotropy = 16;
 var groundMaterial = new THREE.MeshStandardMaterial( { map: groundTexture } );
-//var plane = createGroundPlaneWired(1500, 1500, 80, 80);
-var plane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), groundMaterial );
-plane.position.y = 0.0;
-plane.rotation.x = - Math.PI / 2;
-plane.position.y = 0.0;
-scene.add(plane);
 
+groundTexture2.wrapS = groundTexture2.wrapT = THREE.RepeatWrapping;
+groundTexture2.repeat.set( 1000, 1000 );
+groundTexture2.anisotropy = 16;
+var ground2Material = new THREE.MeshStandardMaterial( { map: groundTexture2 } );
+//var plane = createGroundPlaneWired(1500, 1500, 80, 80);
+var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), groundMaterial );
+var plane2 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground2Material );
+plane1.position.y = 0.0;
+plane1.rotation.x = - Math.PI / 2;
+plane1.position.y = 0.0;
+plane2.position.y = 0.0;
+plane2.rotation.x = - Math.PI / 2;
+plane2.position.y = 0.0;
+plane2.visible = false;
+scene.add(plane1);
+scene.add(plane2);
 
 
 //-------------------------------------------------------------------------------
@@ -437,9 +449,9 @@ player.add(flagRedutor);
 player.add(flagRedutor2);
 
 function testaRedutor(){
-    if (redutor == 1){
-        flagRedutor.material.color.setHex(0xfada5e);
-        flagRedutor2.material.color.setHex(0xfada5e);
+    if (redutor >= 1){
+        flagRedutor.material.color.setHex(0xff0000);
+        flagRedutor2.material.color.setHex(0xff0000);
     }
     else{
         flagRedutor.material.color.setHex(0x000000);
@@ -455,6 +467,7 @@ var redutor = 1;
 var speedForward = 0;
 var speedBackward = 0;
 var tempoJogoAnterior = 0;
+var panoramico = false;
 
 function keyboardUpdate() {
     keyboard.update();
@@ -520,6 +533,9 @@ function keyboardUpdate() {
 
         player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
         player.lookAt(0,0,100000)
+        scene.background = skyTexture;
+        plane1.visible = true;
+        plane2.visible = false;
     }
     if (keyboard.pressed("2") && pistaAtual != 2){
         pistaAtual = 2;
@@ -539,10 +555,22 @@ function keyboardUpdate() {
 
         player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
         player.lookAt(0,0,100000)
+        scene.background = skyTexture2;
+        plane1.visible = false;
+        plane2.visible = true;
     }
 
     if (keyboard.pressed("space")){
         window.location.href = "carView.html";
+    }
+
+
+
+    if (keyboard.pressed(",")){
+        panoramico = true;
+    }
+    else if (keyboard.pressed(".")){
+        panoramico = false;
     }
 
     if (keyboard.down("0")){
@@ -676,6 +704,9 @@ function render(t)
   posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
   cameraHolder.lookAt(ghostguide.getWorldPosition());
   cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+6, player.position.getComponent(2)-10);
+  if (panoramico){
+    cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+4, player.position.getComponent(2)-10);
+  }
   cameraHolder.rotateY(degreesToRadians(180));
 
   dt = (t - anterior) / 1000;

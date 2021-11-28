@@ -357,14 +357,14 @@ scene.add(cameraHolder);
 // Virtual camera - minimapa
 //-------------------------------------------------------------------------------
 var lookAtVec   = new THREE.Vector3( 20.0, 0.0, 20.0 );
-var virtualCamPosition = new THREE.Vector3( 20.0, 300.0, 20.0 );
+var virtualCamPosition = new THREE.Vector3( 20.0, 600.0, 20.0 );
 var vcWidth = 200;
-var vcHeidth = 200;
-var virtualCamera = new THREE.PerspectiveCamera(45, vcWidth/vcHeidth, 1.0, 20.0);
+var vcHeight = 200;
+var virtualCamera = new THREE.PerspectiveCamera(45, vcWidth/vcHeight, 1.0, 20.0);
   virtualCamera.position.copy(virtualCamPosition);
   virtualCamera.lookAt(lookAtVec);
-  virtualCamera.far = 400;
-  virtualCamera.fov = 10;
+  virtualCamera.far = 800;
+  virtualCamera.fov = 5;
   virtualCamera.updateProjectionMatrix();
 
 scene.add(virtualCamera);
@@ -715,9 +715,9 @@ function controlledRender()
   renderer.clear();   // Clean the window
   renderer.render(scene, camera);
   // Set virtual camera viewport
-  var offset = 30;
-  renderer.setViewport(offset, height-vcHeidth-offset, vcWidth, vcHeidth);  // Set virtual camera viewport
-  renderer.setScissor(offset, height-vcHeidth-offset, vcWidth, vcHeidth); // Set scissor with the same size as the viewport
+  var offset = 20;
+  renderer.setViewport(offset, height-vcHeight-offset, vcWidth, vcHeight);  // Set virtual camera viewport
+  renderer.setScissor(offset, height-vcHeight-offset, vcWidth, vcHeight); // Set scissor with the same size as the viewport
   renderer.setScissorTest(true); // Enable scissor to paint only the scissor are (i.e., the small viewport)
   renderer.setClearColor("rgb(60, 50, 150)");  // Use a darker clear color in the small viewport
   renderer.render(scene, virtualCamera);  // Render scene of the virtual camera
@@ -752,10 +752,10 @@ function render(t)
 
   verificaVoltas(player);
   delay+=1;
-  if(delay%15 == 0){
+  if(delay%15 == 0 && gerou == false){
       geraStatusFinal();
   }
-  if(delay%16 == 0){
+  if(delay%16 == 0 && gerou == false){
     limpaStatusFinal();
   }
 

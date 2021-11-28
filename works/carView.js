@@ -18,6 +18,7 @@ const loader = new THREE.TextureLoader();
 const goldTexture = loader.load( 'texture/gold.jpg' );
 const metallicTexture = loader.load( 'texture/platform.png' );
 var metallicMaterial = new THREE.MeshStandardMaterial( { map: metallicTexture } );
+var plataformaGeo = new THREE.CylinderGeometry(10, 10, 3, 40);
 
 var assetsMng = new assetsManager();
 assetsMng.loadAudio("ROTS", "./assets/ridersOnTheStorm.mp3");
@@ -28,30 +29,11 @@ var scene = new THREE.Scene(); // Create main scene
 var renderer = initRenderer(); // View function in util/utils
 var camera = initCamera(new THREE.Vector3(0, -30, 15)); // Init camera in this position
 
-var plataformaGeo = new THREE.CylinderGeometry(10, 10, 3, 40);
-var plataformaMat = new THREE.MeshPhongMaterial();
-var plataforma = new THREE.Mesh(plataformaGeo, plataformaMat);
-plataforma.position.set(0, 0, -1.5);
-plataforma.rotateX(degreesToRadians(90));
-scene.add(plataforma);
-
 // Enable mouse rotation, pan, zoom etc.
 var trackballControls = new TrackballControls(camera, renderer.domElement);
 
 //light
 initDefaultSpotlight(scene, new THREE.Vector3(35, 20, 30)); // Use default light
-
-// create the ground plane
-var planeGeometry = new THREE.PlaneGeometry(20, 20);
-planeGeometry.translate(0.0, 0.0, -0.02); // To avoid conflict with the axeshelper
-var planeMaterial = new THREE.MeshBasicMaterial({
-  color: "rgba(150, 150, 150)",
-  side: THREE.DoubleSide,
-});
-var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-
-// add the plane to the scene
-//scene.add(plane);
 
 var player = new Car();
 // position the player
@@ -87,7 +69,6 @@ function keyboardUpdate() {
     assetsMng.play("ROTS");
     scene.background = goldTexture;
     controls.add("0 to Ride on the Storm");
-    var metallicMaterial = new THREE.MeshStandardMaterial( { map: metallicTexture } );
     var metalPlatform = new THREE.Mesh(plataformaGeo, metallicMaterial);
     metalPlatform.position.set(0, 0, -1.5);
     metalPlatform.rotateX(degreesToRadians(90));

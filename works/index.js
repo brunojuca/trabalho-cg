@@ -26,9 +26,9 @@ const skyTextureSecret = loader.load( 'texture/coconutMall.jpg' );
 const flagTexture = loader.load( 'texture/coconutFlagPole.png' );
 
 var assetsMng = new assetsManager();
-assetsMng.loadAudio("coconutMall", "./assets/coconutMall.mp3");
-assetsMng.loadAudio("startRace", "./assets/startRace.mp3");
-assetsMng.loadAudio("winRace", "./assets/winRace.mp3");
+assetsMng.loadAudio("coconutMall", "./soundassets/coconutMall.mp3");
+assetsMng.loadAudio("startRace", "./soundassets/startRace.mp3");
+assetsMng.loadAudio("winRace", "./soundassets/winRace.mp3");
 
 var stats = new Stats();          // To show FPS information
 var scene = new THREE.Scene();    // Create main scene
@@ -77,6 +77,7 @@ scene.add(plane1);
 scene.add(plane2);
 
 
+
 //-------------------------------------------------------------------------------
 // Pista Real
 //-------------------------------------------------------------------------------
@@ -104,8 +105,11 @@ function limpaPista(){
         scene.remove(platforms[i].bloco);
     }
 }
+
+
+
 //-------------------------------------------------------------------------------
-// Setagem dos Checkpoints
+// Setagem dos Checkpoints e do Modelo da Chegada
 //-------------------------------------------------------------------------------
 
 const checkpointRadius = blocoSize;
@@ -128,7 +132,7 @@ function createPole(size)
     var pole = new THREE.Mesh( poleGeometry, poleMaterial );
     return pole;
 }
-
+//cria topo pole
 function createPoleTop(size)
 {
     var flagtopGeometry = new THREE.BoxGeometry(blocoSize+2*size, size, size);
@@ -222,7 +226,6 @@ var player = new Car;
 player.scale.set(0.1,0.1,0.1);
 player.position.set(posicionamentoChegada[0].getComponent(0) + size, size, posicionamentoChegada[0].getComponent(2) - size);
 player.add(ghostguide);
-//player.add(target);
 
 var posAtual = new THREE.Vector3(0, 0, 0);
 posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
@@ -270,7 +273,6 @@ function verificaCheckpoint3(checkpoint, player){
         flags[2].material.color.setHex(0x00ff00);
     }
 }
-
 function verificaCheckpoint4(checkpoint, player){
     if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < checkpointRadius &&
         Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
@@ -318,9 +320,7 @@ function verificaVoltas(player)
 }
 
 var tempoTodasVoltas = [0,0,0,0];
-
 function armazenaTempoVoltaAlternativa(){
-    //console.log(tempoTodasVoltas);
     if (voltas < 4){
         tempoTodasVoltas[3] = anterior/1000 - tempoTodasVoltas[0] - tempoTodasVoltas[1] - tempoTodasVoltas[2] - tempoJogoAnterior;
         if (voltas < 3){
@@ -340,13 +340,12 @@ function armazenaTempoVoltaAlternativa(){
 //-------------------------------------------------------------------------------
 // Camera
 //-------------------------------------------------------------------------------
-//camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+
 var cameraHolder = new THREE.Object3D();
 cameraHolder.add(camera);
 cameraHolder.position.set(60, 20, 0);
 cameraHolder.lookAt(posAtual)
 cameraHolder.rotateY(degreesToRadians(180))
-//player.add(cameraHolder);
 
 scene.add(player);
 scene.add(cameraHolder);
@@ -384,7 +383,7 @@ player.add(playerIcon);
 
 
 //-------------------------------------------------------------------------------
-// Movimentação e Verificação de Saiu Pista
+// Movimentação e Verificação se Saiu Pista
 //-------------------------------------------------------------------------------
 
 //animation control
@@ -407,7 +406,6 @@ function aceleraCarro(aceleracaoAnterior)
     }
     aceleracaoAnterior = aceleracao
 }
-
 function freiaCarro(freiaAnterior)
 {
     if(carroFreiando){
@@ -423,16 +421,15 @@ function freiaCarro(freiaAnterior)
     }
     freiaAnterior = freia
 }
+
+//verifica se saiu da pista
 var diffX = 0;
 var diffZ = 0;
 function verificaDesaceleraFora(){
-    //console.log(redutor);
     testaRedutor();
     for (var k = 0; k < platforms.length; k ++){
         diffX = Math.abs(player.position.getComponent(0) - size - platforms[k].bloco.position.getComponent(0));
-        //console.log("diffX: " + diffX);
         diffZ = Math.abs(player.position.getComponent(2) + size - platforms[k].bloco.position.getComponent(2));
-        //console.log(diffZ);
         if( diffX <= blocoSize/2 && diffZ <= blocoSize/2){
             if (redutor < 1){
                 redutor += 0.005;
@@ -443,6 +440,7 @@ function verificaDesaceleraFora(){
     redutor = 0.5;
 }
 
+//estético, indicador do redutor acoplado ao carro
 var flagRedutor = createPole(size);
 var flagRedutor2 = createPole(size);
 flagRedutor.position.set(-0.7, 2*size, -0.5);
@@ -462,6 +460,7 @@ function testaRedutor(){
     }
 }
 
+//controles
 var keyboard = new KeyboardState();
 var Speed = 5;
 var aceleracao = 1;
@@ -478,7 +477,7 @@ function keyboardUpdate() {
     if (keyboard.pressed("X")){
         carroAcelerando = true;
         speedForward = (Speed/100 + aceleracao/100)*redutor;
-        //evita bug ao sair da pag pelos cálculos que continuam sendo feitos em segundo plano no browser
+        //evita bug ao sair da pag, devido aos cálculos que continuam sendo feitos em segundo plano pelo browser
         if(speedForward < -0.01){
             speedForward = 1;
             aceleracao = 1;
@@ -494,7 +493,7 @@ function keyboardUpdate() {
     if(keyboard.pressed("down")) {
         carroFreiando = true
         speedBackward = (-Speed/100 + freia/100)*redutor;
-        //evita bug ao sair da pag pelos cálculos que continuam sendo feitos em segundo plano no browser
+        //evita bug ao sair da pag, devido aos cálculos que continuam sendo feitos em segundo plano pelo browser
         if(speedBackward > 0.01){
             speedBackward = -1;
             aceleracao = 1;
@@ -540,7 +539,7 @@ function keyboardUpdate() {
         plane1.visible = true;
         plane2.visible = false;
     }
-    if (keyboard.pressed("2") && pistaAtual != 2){
+    else if (keyboard.pressed("2") && pistaAtual != 2){
         pistaAtual = 2;
         limpaPista(pista1);
         selecaoPista(pista2);
@@ -568,14 +567,13 @@ function keyboardUpdate() {
     }
 
 
-
+    //extras
     if (keyboard.pressed(",")){
         panoramico = true;
     }
     else if (keyboard.pressed(".")){
         panoramico = false;
     }
-
     if (keyboard.down("0")){
         scene.background = skyTextureSecret;
         assetsMng.play("coconutMall");
@@ -583,7 +581,6 @@ function keyboardUpdate() {
         plane1.visible = false;
         plane2.visible = false;
     }
-
 }
 
 
@@ -731,6 +728,7 @@ function render(t)
   //trackballControls.update();
 
   //movimentação do player
+
   keyboardUpdate();
   verificaDesaceleraFora();
   aceleraCarro(aceleracao);
@@ -738,15 +736,17 @@ function render(t)
   player.defaultUpdate();
 
   //setagem de camera
+
   posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
   cameraHolder.lookAt(ghostguide.getWorldPosition(new THREE.Vector3()));
-  cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+6, player.position.getComponent(2)-10);
+  cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+8, player.position.getComponent(2)-10);
   if (panoramico){
       cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+4, player.position.getComponent(2)-10);
   }
   cameraHolder.rotateY(degreesToRadians(180));
 
   //controle de voltas
+
   //dt = (t - anterior) / 1000;
   anterior = t;
 

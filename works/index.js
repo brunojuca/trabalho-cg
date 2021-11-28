@@ -95,10 +95,11 @@ function selecaoPista(pistaescolhida){
         scene.add(platforms[i].bloco);
     }
     blocoSize = platforms[0].LARGURA;
+    //console.log(blocoSize);
 }
 selecaoPista(pista1);
 
-function limpaPista(pistaAserRemovida){
+function limpaPista(){
     for (let i = 0; i < platforms.length; i++) {
         scene.remove(platforms[i].bloco);
     }
@@ -160,10 +161,10 @@ function posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada){
         todosCheckpoints.push(checkpoint);
         if (k == flagNumber-1){
             todosCheckpoints[k].position.set(posicionamentoChegada[0].getComponent(0), 0.0, posicionamentoChegada[0].getComponent(2));
-            flagTop.position.set(posicionamentoChegada[0].getComponent(0), 5*size, posicionamentoChegada[0].getComponent(2));
+            flagTop.position.set(posicionamentoChegada[0].getComponent(0), 5*size - size/2, posicionamentoChegada[0].getComponent(2) + size);
             for (var i = 0; i <= flagNumber-1; i++){
-                flags[i].position.set(posicionamentoChegada[0].getComponent(0)-blocoSize/2, size+size*i, posicionamentoChegada[0].getComponent(2));
-                flags2[i].position.set(posicionamentoChegada[0].getComponent(0)+blocoSize/2, size+size*i, posicionamentoChegada[0].getComponent(2));
+                flags[i].position.set(posicionamentoChegada[0].getComponent(0)-blocoSize/2 - size/2, size+size*i - size/2, posicionamentoChegada[0].getComponent(2) + size);
+                flags2[i].position.set(posicionamentoChegada[0].getComponent(0)+blocoSize/2 + size/2, size+size*i - size/2, posicionamentoChegada[0].getComponent(2) + size);
             }
             scene.add(todosCheckpoints[k]);
             return;
@@ -219,7 +220,7 @@ ghostguide.position.set(0.0, 0.0, 2*radius + desvio);
 //player
 var player = new Car;
 player.scale.set(0.1,0.1,0.1);
-player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
+player.position.set(posicionamentoChegada[0].getComponent(0) + size, size, posicionamentoChegada[0].getComponent(2) - size);
 player.add(ghostguide);
 //player.add(target);
 
@@ -319,7 +320,7 @@ function verificaVoltas(player)
 var tempoTodasVoltas = [0,0,0,0];
 
 function armazenaTempoVoltaAlternativa(){
-    console.log(tempoTodasVoltas);
+    //console.log(tempoTodasVoltas);
     if (voltas < 4){
         tempoTodasVoltas[3] = anterior/1000 - tempoTodasVoltas[0] - tempoTodasVoltas[1] - tempoTodasVoltas[2] - tempoJogoAnterior;
         if (voltas < 3){
@@ -400,7 +401,7 @@ function aceleraCarro(aceleracaoAnterior)
     }
     else if(!carroAcelerando){
         if (aceleracao > 1 && speedForward > 0){
-            aceleracao -= redutor*aceleracaoAnterior/100;
+            aceleracao -= redutor*aceleracaoAnterior/10;
             player.accelerate(aceleracao/100);
         }
     }
@@ -416,7 +417,7 @@ function freiaCarro(freiaAnterior)
     }
     else if(!carroFreiando){
         if (freia < -1){
-            freia -= redutor*freiaAnterior/100;
+            freia -= redutor*freiaAnterior/10;
             player.accelerate(freia/100);
         }
     }
@@ -425,11 +426,13 @@ function freiaCarro(freiaAnterior)
 var diffX = 0;
 var diffZ = 0;
 function verificaDesaceleraFora(){
-    console.log(redutor);
+    //console.log(redutor);
     testaRedutor();
     for (var k = 0; k < platforms.length; k ++){
-        diffX = Math.abs(player.position.getComponent(0) - platforms[k].bloco.position.getComponent(0));
-        diffZ = Math.abs(player.position.getComponent(2) - platforms[k].bloco.position.getComponent(2));
+        diffX = Math.abs(player.position.getComponent(0) - size - platforms[k].bloco.position.getComponent(0));
+        //console.log("diffX: " + diffX);
+        diffZ = Math.abs(player.position.getComponent(2) + size - platforms[k].bloco.position.getComponent(2));
+        //console.log(diffZ);
         if( diffX <= blocoSize/2 && diffZ <= blocoSize/2){
             if (redutor < 1){
                 redutor += 0.005;
@@ -531,7 +534,7 @@ function keyboardUpdate() {
 
         gerou = false;
 
-        player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
+        player.position.set(posicionamentoChegada[0].getComponent(0) + size, size, posicionamentoChegada[0].getComponent(2) - size);
         player.lookAt(0,0,100000)
         scene.background = skyTexture;
         plane1.visible = true;
@@ -553,7 +556,7 @@ function keyboardUpdate() {
 
         gerou = false;
 
-        player.position.set(posicionamentoChegada[0].getComponent(0), size, posicionamentoChegada[0].getComponent(2));
+        player.position.set(posicionamentoChegada[0].getComponent(0) + size, size, posicionamentoChegada[0].getComponent(2) - size);
         player.lookAt(0,0,100000)
         scene.background = skyTexture2;
         plane1.visible = false;
@@ -577,7 +580,8 @@ function keyboardUpdate() {
         scene.background = skyTextureSecret;
         assetsMng.play("coconutMall");
         controls.add("* 0 to play Coconut Mall");
-        scene.remove(plane);
+        plane1.visible = false;
+        plane2.visible = false;
     }
 
 }
@@ -735,7 +739,7 @@ function render(t)
 
   //setagem de camera
   posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
-  cameraHolder.lookAt(ghostguide.getWorldPosition());
+  cameraHolder.lookAt(ghostguide.getWorldPosition(new THREE.Vector3()));
   cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+6, player.position.getComponent(2)-10);
   if (panoramico){
       cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+4, player.position.getComponent(2)-10);

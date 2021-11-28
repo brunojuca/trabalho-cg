@@ -21,7 +21,7 @@ var metallicMaterial = new THREE.MeshStandardMaterial( { map: metallicTexture } 
 var plataformaGeo = new THREE.CylinderGeometry(10, 10, 3, 40);
 
 var assetsMng = new assetsManager();
-assetsMng.loadAudio("ROTS", "./assets/ridersOnTheStorm.mp3");
+assetsMng.loadAudio("ROTS", "./soundAssets/ridersOnTheStorm.mp3");
 var carroGirando = false;
 
 var stats = new Stats(); // To show FPS information
@@ -70,7 +70,7 @@ function keyboardUpdate() {
     scene.background = goldTexture;
     controls.add("0 to Ride on the Storm");
     var metalPlatform = new THREE.Mesh(plataformaGeo, metallicMaterial);
-    metalPlatform.position.set(0, 0, -1.5);
+    metalPlatform.position.set(0, 0, -1.8);
     metalPlatform.rotateX(degreesToRadians(90));
     scene.add(metalPlatform);
   }

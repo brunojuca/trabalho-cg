@@ -26,9 +26,9 @@ const skyTextureSecret = loader.load( 'texture/coconutMall.jpg' );
 const flagTexture = loader.load( 'texture/coconutFlagPole.png' );
 
 var assetsMng = new assetsManager();
-assetsMng.loadAudio("coconutMall", "./soundassets/coconutMall.mp3");
-assetsMng.loadAudio("startRace", "./soundassets/startRace.mp3");
-assetsMng.loadAudio("winRace", "./soundassets/winRace.mp3");
+assetsMng.loadAudio("coconutMall", "./soundAssets/coconutMall.mp3");
+assetsMng.loadAudio("startRace", "./soundAssets/startRace.mp3");
+assetsMng.loadAudio("winRace", "./soundAssets/winRace.mp3");
 
 var stats = new Stats();          // To show FPS information
 var scene = new THREE.Scene();    // Create main scene

@@ -74,8 +74,6 @@ export class Car extends THREE.Group {
 
     this.positionHeadLights();
 
-    this.frontAxis.add(this.wheel1);
-    this.frontAxis.add(this.wheel2);
     this.backAxis.add(this.wheel3);
     this.backAxis.add(this.wheel4);
 
@@ -204,8 +202,6 @@ export class Car extends THREE.Group {
   }
 
   positionWheels() {
-    this.wheel1.position.set(0, -2, 0.0);
-    this.wheel2.position.set(0, 2, 0.0);
     this.wheel3.position.set(0, -2, 0.0);
     this.wheel4.position.set(0, 2, 0.0);
   }
@@ -228,7 +224,6 @@ export class Car extends THREE.Group {
 
   turnLeft(degrees) {
     if (this.wheelAngle >= -30) {
-      this.frontAxis.rotateX(degreesToRadians(3));
       this.wheel1Holder.rotateX(degreesToRadians(3));
       this.wheel2Holder.rotateX(degreesToRadians(3));
       this.wheelAngle -= 3;
@@ -239,7 +234,6 @@ export class Car extends THREE.Group {
 
   turnRight(degrees) {
     if (this.wheelAngle <= 30) {
-      this.frontAxis.rotateX(degreesToRadians(-3));
       this.wheel1Holder.rotateX(degreesToRadians(-3));
       this.wheel2Holder.rotateX(degreesToRadians(-3));
       this.wheelAngle += 3;
@@ -249,24 +243,20 @@ export class Car extends THREE.Group {
 
   defaultUpdate() {
     if (this.wheelAngle >= 30) {
-      this.frontAxis.rotateX(degreesToRadians(3));
       this.wheel1Holder.rotateX(degreesToRadians(3));
       this.wheel2Holder.rotateX(degreesToRadians(3));
       this.wheelAngle -= 3;
       return;
     } else if (this.wheelAngle <= -30) {
-      this.frontAxis.rotateX(degreesToRadians(-3));
       this.wheel1Holder.rotateX(degreesToRadians(-3));
       this.wheel2Holder.rotateX(degreesToRadians(-3));
       this.wheelAngle += 3;
       return;
     } else if (this.wheelAngle > 0) {
-      this.frontAxis.rotateX(degreesToRadians(1));
       this.wheel1Holder.rotateX(degreesToRadians(1));
       this.wheel2Holder.rotateX(degreesToRadians(1));
       this.wheelAngle--;
     } else if (this.wheelAngle < 0) {
-      this.frontAxis.rotateX(degreesToRadians(-1));
       this.wheel1Holder.rotateX(degreesToRadians(-1));
       this.wheel2Holder.rotateX(degreesToRadians(-1));
       this.wheelAngle++;

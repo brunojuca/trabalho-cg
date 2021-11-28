@@ -185,7 +185,8 @@ function encontraPosicaoCheckpoints(){
     }
     return posicaoCheckpoints;
 }
-//garantir q a posicao da largada vai ser sempre o ultimo checkpoint
+
+//garantir q a posicao do ultimo checkpoint vai ser sempre a largada
 function encontraPosicaoChegada(){
     var posicaoChegada = [];
     for (var k = 0; k < platforms.length; k ++){
@@ -290,13 +291,13 @@ function resetaVoltaAtual(){
 
 function verificaVoltas(player)
 {
+    armazenaTempoVoltaAlternativa(voltas);
     if (colidiu1){
         if (colidiu2){
             if (colidiu3){
                 if (colidiu4){
                     voltas += 1;
                     resetaVoltaAtual();
-                    armazenaTempoVolta(voltas);
                 }
                 else {
                     verificaCheckpoint4(todosCheckpoints[3], player);
@@ -315,24 +316,21 @@ function verificaVoltas(player)
     }
 }
 
-var tempoTodasVoltas = [];
+var tempoTodasVoltas = [0,0,0,0];
 
-function armazenaTempoVolta(){
-    if (voltas == 1){
-        var tempoVolta1 = anterior/1000 - tempoJogoAnterior;
-        tempoTodasVoltas.push(tempoVolta1);
-    }
-    if (voltas == 2){
-        var tempoVolta2 = anterior/1000 - tempoTodasVoltas[0] - tempoJogoAnterior;
-        tempoTodasVoltas.push(tempoVolta2);
-    }
-    if (voltas == 3){
-        var tempoVolta3 = anterior/1000 - tempoTodasVoltas[0] - tempoTodasVoltas[1] - tempoJogoAnterior;
-        tempoTodasVoltas.push(tempoVolta3);
-    }
-    if (voltas == 4){
-        var tempoVolta4 = anterior/1000 - tempoTodasVoltas[0] - tempoTodasVoltas[1] - tempoTodasVoltas[2] - tempoJogoAnterior;
-        tempoTodasVoltas.push(tempoVolta4);
+function armazenaTempoVoltaAlternativa(){
+    console.log(tempoTodasVoltas);
+    if (voltas < 4){
+        tempoTodasVoltas[3] = anterior/1000 - tempoTodasVoltas[0] - tempoTodasVoltas[1] - tempoTodasVoltas[2] - tempoJogoAnterior;
+        if (voltas < 3){
+            tempoTodasVoltas[2] = anterior/1000 - tempoTodasVoltas[0] - tempoTodasVoltas[1] - tempoJogoAnterior;
+            if (voltas < 2){
+                tempoTodasVoltas[1] = anterior/1000 - tempoTodasVoltas[0] - tempoJogoAnterior;
+                if (voltas < 1){
+                    tempoTodasVoltas[0] = anterior/1000 - tempoJogoAnterior;
+                }
+            }
+        }
     }
 }
 
@@ -351,6 +349,8 @@ cameraHolder.rotateY(degreesToRadians(180))
 
 scene.add(player);
 scene.add(cameraHolder);
+
+
 
 //-------------------------------------------------------------------------------
 // Virtual camera - minimapa
@@ -400,7 +400,7 @@ function aceleraCarro(aceleracaoAnterior)
     }
     else if(!carroAcelerando){
         if (aceleracao > 1 && speedForward > 0){
-            aceleracao -= redutor*aceleracaoAnterior*dt;
+            aceleracao -= redutor*aceleracaoAnterior/100;
             player.accelerate(aceleracao/100);
         }
     }
@@ -587,10 +587,16 @@ function keyboardUpdate() {
 //-------------------------------------------------------------------------------
 // Status da Partida
 //-------------------------------------------------------------------------------
+
 var gerou = false;
+
 function geraStatusFinal(){
-    assetsMng.play("winRace");
+    if(voltas >= flagNumber && gerou == false){
+        assetsMng.play("winRace");
+        gerou = true
+    }
     var textoVoltas = document.createElement('div');
+    textoVoltas.setAttribute("id", "txt0");
     textoVoltas.style.position = 'absolute';
     textoVoltas.style.backgroundColor = "white";
     textoVoltas.innerHTML = "Voltas: ";
@@ -599,6 +605,7 @@ function geraStatusFinal(){
     document.body.appendChild(textoVoltas);
 
     var nDeVoltas = document.createElement('div');
+    nDeVoltas.setAttribute("id", "txt1");
     nDeVoltas.style.position = 'absolute';
     nDeVoltas.style.backgroundColor = "white";
     nDeVoltas.innerHTML = voltas;
@@ -607,6 +614,7 @@ function geraStatusFinal(){
     document.body.appendChild(nDeVoltas)
 
     var tempoTotal = document.createElement('div');
+    tempoTotal.setAttribute("id", "txt2");
     tempoTotal.style.position = 'absolute';
     tempoTotal.style.backgroundColor = "white";
     tempoTotal.innerHTML = anterior/1000 - tempoJogoAnterior;
@@ -615,6 +623,7 @@ function geraStatusFinal(){
     document.body.appendChild(tempoTotal);
 
     var textotempoVolta1 = document.createElement('div');
+    textotempoVolta1.setAttribute("id", "txt3");
     textotempoVolta1.style.position = 'absolute';
     textotempoVolta1.style.backgroundColor = "white";
     textotempoVolta1.innerHTML = tempoTodasVoltas[0];
@@ -623,6 +632,7 @@ function geraStatusFinal(){
     document.body.appendChild(textotempoVolta1);
 
     var textotempoVolta2 = document.createElement('div');
+    textotempoVolta2.setAttribute("id", "txt4");
     textotempoVolta2.style.position = 'absolute';
     textotempoVolta2.style.backgroundColor = "white";
     textotempoVolta2.innerHTML = tempoTodasVoltas[1];
@@ -631,6 +641,7 @@ function geraStatusFinal(){
     document.body.appendChild(textotempoVolta2);
 
     var textotempoVolta3 = document.createElement('div');
+    textotempoVolta3.setAttribute("id", "txt5");
     textotempoVolta3.style.position = 'absolute';
     textotempoVolta3.style.backgroundColor = "white";
     textotempoVolta3.innerHTML = tempoTodasVoltas[2];
@@ -639,6 +650,7 @@ function geraStatusFinal(){
     document.body.appendChild(textotempoVolta3);
 
     var textotempoVolta4 = document.createElement('div');
+    textotempoVolta4.setAttribute("id", "txt6");
     textotempoVolta4.style.position = 'absolute';
     textotempoVolta4.style.backgroundColor = "white";
     textotempoVolta4.innerHTML = tempoTodasVoltas[3];
@@ -646,8 +658,25 @@ function geraStatusFinal(){
     textotempoVolta4.style.left = window.innerWidth - 100 + 'px';
     document.body.appendChild(textotempoVolta4);
 
-    gerou = true
 }
+
+function limpaStatusFinal(){
+    var txt0 = document.getElementById("txt0");
+    txt0.remove();
+    var txt1 = document.getElementById("txt1");
+    txt1.remove();
+    var txt2 = document.getElementById("txt2");
+    txt2.remove();
+    var txt3 = document.getElementById("txt3");
+    txt3.remove();
+    var txt4 = document.getElementById("txt4");
+    txt4.remove();
+    var txt5 = document.getElementById("txt5");
+    txt5.remove();
+    var txt6 = document.getElementById("txt6");
+    txt6.remove();
+}
+
 
 
 //-------------------------------------------------------------------------------
@@ -690,29 +719,41 @@ function controlledRender()
   renderer.render(scene, virtualCamera);  // Render scene of the virtual camera
 }
 
+var delay = 0;
 function render(t)
 {
-  stats.update(); // Update FPS
+  stats.update();
   requestAnimationFrame(render);
   //trackballControls.update();
+
+  //movimentação do player
   keyboardUpdate();
   verificaDesaceleraFora();
   aceleraCarro(aceleracao);
   freiaCarro(freia);
   player.defaultUpdate();
-  verificaVoltas(player);
+
+  //setagem de camera
   posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
   cameraHolder.lookAt(ghostguide.getWorldPosition());
   cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+6, player.position.getComponent(2)-10);
   if (panoramico){
-    cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+4, player.position.getComponent(2)-10);
+      cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+4, player.position.getComponent(2)-10);
   }
   cameraHolder.rotateY(degreesToRadians(180));
 
-  dt = (t - anterior) / 1000;
+  //controle de voltas
+  //dt = (t - anterior) / 1000;
   anterior = t;
-  if(voltas >= flagNumber && gerou == false){
+
+  verificaVoltas(player);
+  delay+=1;
+  if(delay%15 == 0){
       geraStatusFinal();
   }
+  if(delay%16 == 0){
+    limpaStatusFinal();
+  }
+
   controlledRender(t);
 }

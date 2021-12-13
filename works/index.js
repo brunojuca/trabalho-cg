@@ -6,6 +6,7 @@ import {pista1 as pista1} from './pistas/pista1.js';
 import {pista2 as pista2} from './pistas/pista2.js';
 import Pista from './Pista.js';
 import { Car } from './Car.js';
+import { Turbina } from './turbina.js';
 import {assetsManager} from './assetsManager.js';
 
 //import {TrackballControls} from '../build/jsm/controls/TrackballControls.js';
@@ -16,6 +17,7 @@ import {initRenderer,
         degreesToRadians,
         createGroundPlaneWired,
         initDefaultBasicLight} from "../libs/util/util.js";
+import Roadblock from './Roadblock.js';
 
 const loader = new THREE.TextureLoader();
 const groundTexture = loader.load( 'texture/grass.jpg' );
@@ -27,6 +29,7 @@ const flagTexture = loader.load( 'texture/coconutFlagPole.png' );
 
 var assetsMng = new assetsManager();
 assetsMng.loadAudio("coconutMall", "./soundAssets/coconutMall.mp3");
+assetsMng.loadAudio("bigBlue", "./soundAssets/bigBlue.mp3");
 assetsMng.loadAudio("startRace", "./soundAssets/startRace.mp3");
 assetsMng.loadAudio("winRace", "./soundAssets/winRace.mp3");
 
@@ -174,6 +177,9 @@ function posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada){
             return;
         }
         todosCheckpoints[k].position.set(posicionamentoCheckpoints[flagNumber-2-k].getComponent(0), 0.0, posicionamentoCheckpoints[flagNumber-2-k].getComponent(2));
+        if(pistaAtual == 2){
+            todosCheckpoints.reverse();
+        }
         scene.add(todosCheckpoints[k]);
     }
 }
@@ -203,10 +209,16 @@ function encontraPosicaoChegada(){
     }
     return posicaoChegada;
 }
+
 var posicionamentoCheckpoints = encontraPosicaoCheckpoints();
 var posicionamentoChegada = encontraPosicaoChegada();
 posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada);
 
+function resetaPosicaoCheckpointMudancaPista(){
+    posicionamentoCheckpoints = encontraPosicaoCheckpoints();
+    posicionamentoChegada = encontraPosicaoChegada();
+    posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada);
+}
 
 
 //-------------------------------------------------------------------------------
@@ -223,7 +235,7 @@ ghostguide.position.set(0.0, 0.0, 2*radius + desvio);
 
 //player
 var player = new Car;
-player.scale.set(0.1,0.1,0.1);
+player.scale.set(0.8,0.8,0.8);
 player.position.set(posicionamentoChegada[0].getComponent(0) + size, size, posicionamentoChegada[0].getComponent(2) - size);
 player.add(ghostguide);
 
@@ -355,15 +367,15 @@ scene.add(cameraHolder);
 //-------------------------------------------------------------------------------
 // Virtual camera - minimapa
 //-------------------------------------------------------------------------------
-var lookAtVec   = new THREE.Vector3( 20.0, 0.0, 20.0 );
-var virtualCamPosition = new THREE.Vector3( 20.0, 600.0, 20.0 );
+var lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2, 0.0, blocoSize*pista.COLUNAS/2 );
+var virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2, 600.0, blocoSize*pista.COLUNAS/2 );
 var vcWidth = 200;
 var vcHeight = 200;
 var virtualCamera = new THREE.PerspectiveCamera(45, vcWidth/vcHeight, 1.0, 20.0);
   virtualCamera.position.copy(virtualCamPosition);
   virtualCamera.lookAt(lookAtVec);
   virtualCamera.far = 800;
-  virtualCamera.fov = 5;
+  virtualCamera.fov = 60;
   virtualCamera.updateProjectionMatrix();
 
 scene.add(virtualCamera);
@@ -382,6 +394,104 @@ function createPlayerIcon(radius)
 player.add(playerIcon);
 
 
+
+//-------------------------------------------------------------------------------
+// Eolics
+//-------------------------------------------------------------------------------
+
+var eolics = [];
+
+function carregaEolics(){
+    eolics = [];
+    for (let i = 0; i < 21; i++) {
+        var eolicTurbine = new Turbina();
+        eolicTurbine.rotateY(degreesToRadians(180));
+        eolics.push(eolicTurbine);
+        eolics[i].position.set(-600+100*i, 0.0, 500.0);
+        scene.add(eolics[i]);
+    }
+}
+
+var scenicEolics = [];
+var scenicTemp = [];
+function carregaScenaryEolics(){
+    for(let j = 0; j < 10; j++){
+        scenicTemp = [];
+        for (let i = 0; i < 21; i++) {
+            var eolicTurbine = new Turbina();
+            eolicTurbine.rotateY(degreesToRadians(180));
+            scenicTemp.push(eolicTurbine);
+        }
+        scenicEolics.push(scenicTemp)
+        for (let i = 0; i < 21; i++) {
+            scenicEolics[j][i].position.set(-600+100*i, 0.0, 500.0 + 200*j);
+            console.log(scenicEolics[j][i].position);
+            scene.add(scenicEolics[j][i]);
+        }
+    }
+}
+
+function limpaEolics(){
+    for (let i = 0; i < eolics.length; i++) {
+        scene.remove(eolics[i]);
+    }
+    for(let j = 0; j < 10; j++){
+        for (let i = 0; i < 21; i++) {
+            scene.remove(scenicEolics[j][i]);
+        }
+    }
+}
+
+var eolicsSpeed = 5.0;
+
+function SpinBlades()
+{
+    for (let i = 0; i < eolics.length; i++) {
+        eolics[i].defaultUpdate(eolicsSpeed + eolics[i].turbo);
+    }
+    for(let j = 0; j < 10; j++){
+        for (let i = 0; i < 21; i++) {
+           scenicEolics[j][i].defaultUpdate(eolicsSpeed + eolics[i].turbo*1/(j*10));
+        }
+    }
+}
+
+function verificaEolicTurbo(eolicsEmK){
+    if(aceleracao > speedMax){
+        if(eolicsEmK.turbo <= 10){
+        eolicsEmK.turbo += speedForward;
+        }
+    }
+    else if(freia < -speedMax){
+        if(eolicsEmK.turbo <= 10){
+        eolicsEmK.turbo -= speedBackward;
+        }
+    }
+}
+
+function resetaEolicsTurbo(eolicsEmKReset){
+    if(eolicsEmKReset.turbo > 0.1){
+        eolicsEmKReset.turbo -= 0.01;
+    }
+}
+
+var diffEolicsX = 0;
+var diffEolicsZ = 0;
+function verificaProximidadeEolic(){
+  for (var k = 0; k < eolics.length; k ++){
+      diffEolicsX = Math.abs(player.position.getComponent(0) - 1 - eolics[k].position.getComponent(0));
+      diffEolicsZ = Math.abs(player.position.getComponent(2) + 1 - eolics[k].position.getComponent(2));
+      if( diffEolicsX <= 50 && diffEolicsZ <= 50){
+        verificaEolicTurbo(eolics[k]);
+      }
+      else{
+        resetaEolicsTurbo(eolics[k]);
+      }
+  }
+}
+
+
+
 //-------------------------------------------------------------------------------
 // Movimentação e Verificação se Saiu Pista
 //-------------------------------------------------------------------------------
@@ -389,12 +499,12 @@ player.add(playerIcon);
 //animation control
 var carroAcelerando = false; // control if animation is on or of
 var carroFreiando = false; // control if animation is on or of
-
+var speedMax = 200;
 //acelera e freia o carro
 function aceleraCarro(aceleracaoAnterior)
 {
     if(carroAcelerando){
-        if(aceleracao < 30){
+        if(aceleracao < speedMax){
             aceleracao += redutor*aceleracaoAnterior/100;
         }
     }
@@ -409,7 +519,7 @@ function aceleraCarro(aceleracaoAnterior)
 function freiaCarro(freiaAnterior)
 {
     if(carroFreiando){
-        if(freia > -30){
+        if(freia > -speedMax){
             freia += redutor*freiaAnterior/100;
         }
     }
@@ -439,7 +549,6 @@ function verificaDesaceleraFora(){
     }
     redutor = 0.5;
 }
-
 //estético, indicador do redutor acoplado ao carro
 var flagRedutor = createPole(size);
 var flagRedutor2 = createPole(size);
@@ -462,7 +571,7 @@ function testaRedutor(){
 
 //controles
 var keyboard = new KeyboardState();
-var Speed = 5;
+var Speed = 20;
 var aceleracao = 1;
 var freia = -1;
 var redutor = 1;
@@ -521,7 +630,9 @@ function keyboardUpdate() {
         pistaAtual = 1;
         limpaPista(pista2);
         selecaoPista(pista1);
+        limpaEolics();
         resetaVoltaAtual();
+        resetaPosicaoCheckpointMudancaPista();
         voltas = 0;
 
         aceleracao = 1;
@@ -543,7 +654,10 @@ function keyboardUpdate() {
         pistaAtual = 2;
         limpaPista(pista1);
         selecaoPista(pista2);
+        carregaEolics();
+        carregaScenaryEolics();
         resetaVoltaAtual();
+        resetaPosicaoCheckpointMudancaPista();
         voltas = 0;
 
         aceleracao = 1;
@@ -556,10 +670,11 @@ function keyboardUpdate() {
         gerou = false;
 
         player.position.set(posicionamentoChegada[0].getComponent(0) + size, size, posicionamentoChegada[0].getComponent(2) - size);
-        player.lookAt(0,0,100000)
+        player.lookAt(0,0,-100000)
         scene.background = skyTexture2;
         plane1.visible = false;
         plane2.visible = true;
+        assetsMng.play("bigBlue");
     }
 
     if (keyboard.pressed("space")){
@@ -723,41 +838,44 @@ function controlledRender()
 var delay = 0;
 function render(t)
 {
-  stats.update();
-  requestAnimationFrame(render);
-  //trackballControls.update();
+    stats.update();
+    requestAnimationFrame(render);
+    //trackballControls.update();
 
-  //movimentação do player
+    //movimentação do player
+    keyboardUpdate();
+    verificaDesaceleraFora();
+    verificaProximidadeEolic();
+    aceleraCarro(aceleracao);
+    freiaCarro(freia);
+    player.defaultUpdate();
 
-  keyboardUpdate();
-  verificaDesaceleraFora();
-  aceleraCarro(aceleracao);
-  freiaCarro(freia);
-  player.defaultUpdate();
+    //setagem de camera
 
-  //setagem de camera
+    posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
+    cameraHolder.lookAt(ghostguide.getWorldPosition(new THREE.Vector3()));
+    cameraHolder.position.set(player.position.getComponent(0)+40, player.position.getComponent(1)+40, player.position.getComponent(2)-50);
+    if (panoramico){
+      cameraHolder.position.set(player.position.getComponent(0)+40, player.position.getComponent(1)+15, player.position.getComponent(2)-50);
+    }
+    if(pistaAtual == 2){
+        SpinBlades();
+    }
+    cameraHolder.rotateY(degreesToRadians(180));
 
-  posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
-  cameraHolder.lookAt(ghostguide.getWorldPosition(new THREE.Vector3()));
-  cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+8, player.position.getComponent(2)-10);
-  if (panoramico){
-      cameraHolder.position.set(player.position.getComponent(0)+8, player.position.getComponent(1)+4, player.position.getComponent(2)-10);
-  }
-  cameraHolder.rotateY(degreesToRadians(180));
+    //controle de voltas
 
-  //controle de voltas
+    //dt = (t - anterior) / 1000;
+    anterior = t;
 
-  //dt = (t - anterior) / 1000;
-  anterior = t;
+    verificaVoltas(player);
+    delay+=1;
+    if(delay%15 == 0 && gerou == false){
+        geraStatusFinal();
+    }
+    if(delay%16 == 0 && gerou == false){
+        limpaStatusFinal();
+    }
 
-  verificaVoltas(player);
-  delay+=1;
-  if(delay%15 == 0 && gerou == false){
-      geraStatusFinal();
-  }
-  if(delay%16 == 0 && gerou == false){
-    limpaStatusFinal();
-  }
-
-  controlledRender(t);
+    controlledRender(t);
 }

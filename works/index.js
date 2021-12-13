@@ -8,6 +8,11 @@ import Pista from './Pista.js';
 import { Car } from './Car.js';
 import { Turbina } from './turbina.js';
 import {assetsManager} from './assetsManager.js';
+import { EffectComposer } from '../build/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from '../build/jsm/postprocessing/RenderPass.js';
+import { PixelShader } from '../build/jsm/shaders/PixelShader.js';
+import { ShaderPass } from '../build/jsm/postprocessing/ShaderPass.js';
+import { UnrealBloomPass } from '../build/jsm/postprocessing/UnrealBloomPass.js';
 
 //import {TrackballControls} from '../build/jsm/controls/TrackballControls.js';
 import {initRenderer,
@@ -30,12 +35,14 @@ const flagTexture = loader.load( 'texture/coconutFlagPole.png' );
 var assetsMng = new assetsManager();
 assetsMng.loadAudio("coconutMall", "./soundAssets/coconutMall.mp3");
 assetsMng.loadAudio("bigBlue", "./soundAssets/bigBlue.mp3");
+assetsMng.loadAudio("moonviewHighway", "./soundAssets/moonviewHighway.mp3");
 assetsMng.loadAudio("startRace", "./soundAssets/startRace.mp3");
 assetsMng.loadAudio("winRace", "./soundAssets/winRace.mp3");
 
 var stats = new Stats();          // To show FPS information
 var scene = new THREE.Scene();    // Create main scene
 var renderer = initRenderer();    // View function in util/utils
+renderer.toneMapping = THREE.ReinhardToneMapping;
 scene.background = skyTexture;
 
 //camera
@@ -236,7 +243,7 @@ ghostguide.position.set(0.0, 0.0, 2*radius + desvio);
 //player
 var player = new Car;
 player.scale.set(0.8,0.8,0.8);
-player.position.set(posicionamentoChegada[0].getComponent(0) + size, size, posicionamentoChegada[0].getComponent(2) - size);
+player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.2*size, posicionamentoChegada[0].getComponent(2) - size);
 player.add(ghostguide);
 
 var posAtual = new THREE.Vector3(0, 0, 0);
@@ -367,18 +374,32 @@ scene.add(cameraHolder);
 //-------------------------------------------------------------------------------
 // Virtual camera - minimapa
 //-------------------------------------------------------------------------------
-var lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2, 0.0, blocoSize*pista.COLUNAS/2 );
-var virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2, 600.0, blocoSize*pista.COLUNAS/2 );
+var lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+var virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 600.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+
 var vcWidth = 200;
 var vcHeight = 200;
 var virtualCamera = new THREE.PerspectiveCamera(45, vcWidth/vcHeight, 1.0, 20.0);
   virtualCamera.position.copy(virtualCamPosition);
   virtualCamera.lookAt(lookAtVec);
-  virtualCamera.far = 800;
-  virtualCamera.fov = 60;
+  virtualCamera.far = 8000;
+  virtualCamera.fov = 30;
   virtualCamera.updateProjectionMatrix();
 
 scene.add(virtualCamera);
+
+function atualizaMinimapa(){
+    if(pistaAtual == 1){
+        lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+        virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 600, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+    }
+    else if(pistaAtual == 2){
+        lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+        virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 2000, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+    }
+    virtualCamera.position.copy(virtualCamPosition);
+    virtualCamera.lookAt(lookAtVec);
+}
 
 var playerIcon = createPlayerIcon(10*radius);
 playerIcon.position.set(0.0, 100.0, 0.0);
@@ -394,6 +415,29 @@ function createPlayerIcon(radius)
 player.add(playerIcon);
 
 
+
+//-------------------------------------------------------------------------------
+// SpotLights
+//-------------------------------------------------------------------------------
+var ambientColor = "rgb(100,100,100)";
+var ambientspotLight = new THREE.AmbientLight(ambientColor);
+scene.add( ambientspotLight );
+//setSpotLight(ambientspotLight, "ambientLight", new THREE.Vector3(0,0,0));
+
+function setSpotLight(spotLight, lightName, position)
+{
+  spotLight.position.copy(position);
+  spotLight.shadow.mapSize.width = 1024;
+  spotLight.shadow.mapSize.height = 1024;
+  spotLight.angle = degreesToRadians(40);
+  spotLight.castShadow = true;
+  spotLight.decay = 2;
+  spotLight.penumbra = 0.5;
+  spotLight.name = lightName;
+
+  scene.add(spotLight);
+  //lightArray.push( spotLight );
+}
 
 //-------------------------------------------------------------------------------
 // Eolics
@@ -415,7 +459,7 @@ function carregaEolics(){
 var scenicEolics = [];
 var scenicTemp = [];
 function carregaScenaryEolics(){
-    for(let j = 0; j < 10; j++){
+    for(let j = 0; j < 5; j++){
         scenicTemp = [];
         for (let i = 0; i < 21; i++) {
             var eolicTurbine = new Turbina();
@@ -425,7 +469,6 @@ function carregaScenaryEolics(){
         scenicEolics.push(scenicTemp)
         for (let i = 0; i < 21; i++) {
             scenicEolics[j][i].position.set(-600+100*i, 0.0, 500.0 + 200*j);
-            console.log(scenicEolics[j][i].position);
             scene.add(scenicEolics[j][i]);
         }
     }
@@ -435,7 +478,7 @@ function limpaEolics(){
     for (let i = 0; i < eolics.length; i++) {
         scene.remove(eolics[i]);
     }
-    for(let j = 0; j < 10; j++){
+    for(let j = 0; j < 5; j++){
         for (let i = 0; i < 21; i++) {
             scene.remove(scenicEolics[j][i]);
         }
@@ -449,7 +492,7 @@ function SpinBlades()
     for (let i = 0; i < eolics.length; i++) {
         eolics[i].defaultUpdate(eolicsSpeed + eolics[i].turbo);
     }
-    for(let j = 0; j < 10; j++){
+    for(let j = 0; j < 5; j++){
         for (let i = 0; i < 21; i++) {
            scenicEolics[j][i].defaultUpdate(eolicsSpeed + eolics[i].turbo*1/(j*10));
         }
@@ -627,12 +670,14 @@ function keyboardUpdate() {
     }
 
     if (keyboard.pressed("1") && pistaAtual != 1){
+        renderer.toneMappingExposure = Math.pow(0.8, 4.0);
         pistaAtual = 1;
         limpaPista(pista2);
         selecaoPista(pista1);
         limpaEolics();
         resetaVoltaAtual();
         resetaPosicaoCheckpointMudancaPista();
+        atualizaMinimapa();
         voltas = 0;
 
         aceleracao = 1;
@@ -644,13 +689,18 @@ function keyboardUpdate() {
 
         gerou = false;
 
+        player.alternaSpotLight(pistaAtual);
         player.position.set(posicionamentoChegada[0].getComponent(0) + size, size, posicionamentoChegada[0].getComponent(2) - size);
         player.lookAt(0,0,100000)
         scene.background = skyTexture;
         plane1.visible = true;
         plane2.visible = false;
+        assetsMng.stop();
+        assetsMng.play("moonviewHighway");
     }
     else if (keyboard.pressed("2") && pistaAtual != 2){
+        renderer.toneMappingExposure = Math.pow(1.1, 4.0);
+        params.pixelizar = true
         pistaAtual = 2;
         limpaPista(pista1);
         selecaoPista(pista2);
@@ -658,6 +708,7 @@ function keyboardUpdate() {
         carregaScenaryEolics();
         resetaVoltaAtual();
         resetaPosicaoCheckpointMudancaPista();
+        atualizaMinimapa();
         voltas = 0;
 
         aceleracao = 1;
@@ -668,12 +719,13 @@ function keyboardUpdate() {
         tempoJogoAnterior = anterior/1000;
 
         gerou = false;
-
-        player.position.set(posicionamentoChegada[0].getComponent(0) + size, size, posicionamentoChegada[0].getComponent(2) - size);
+        player.alternaSpotLight(pistaAtual);
+        player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.2*size, posicionamentoChegada[0].getComponent(2) - size);
         player.lookAt(0,0,-100000)
         scene.background = skyTexture2;
         plane1.visible = false;
         plane2.visible = true;
+        assetsMng.stop();
         assetsMng.play("bigBlue");
     }
 
@@ -717,7 +769,7 @@ function geraStatusFinal(){
     textoVoltas.style.backgroundColor = "white";
     textoVoltas.innerHTML = "Voltas: ";
     textoVoltas.style.top = 0 + 'px';
-    textoVoltas.style.left = window.innerWidth - 66 + 'px';
+    textoVoltas.style.left = window.innerWidth - 366 + 'px';
     document.body.appendChild(textoVoltas);
 
     var nDeVoltas = document.createElement('div');
@@ -726,7 +778,7 @@ function geraStatusFinal(){
     nDeVoltas.style.backgroundColor = "white";
     nDeVoltas.innerHTML = voltas;
     nDeVoltas.style.top = 0 + 'px';
-    nDeVoltas.style.left = window.innerWidth - 10 + 'px';
+    nDeVoltas.style.left = window.innerWidth - 310 + 'px';
     document.body.appendChild(nDeVoltas)
 
     var tempoTotal = document.createElement('div');
@@ -735,7 +787,7 @@ function geraStatusFinal(){
     tempoTotal.style.backgroundColor = "white";
     tempoTotal.innerHTML = anterior/1000 - tempoJogoAnterior;
     tempoTotal.style.top = 19 + 'px';
-    tempoTotal.style.left = window.innerWidth - 100 + 'px';
+    tempoTotal.style.left = window.innerWidth - 400 + 'px';
     document.body.appendChild(tempoTotal);
 
     var textotempoVolta1 = document.createElement('div');
@@ -744,7 +796,7 @@ function geraStatusFinal(){
     textotempoVolta1.style.backgroundColor = "white";
     textotempoVolta1.innerHTML = tempoTodasVoltas[0];
     textotempoVolta1.style.top = 39 + 'px';
-    textotempoVolta1.style.left = window.innerWidth - 100 + 'px';
+    textotempoVolta1.style.left = window.innerWidth - 400 + 'px';
     document.body.appendChild(textotempoVolta1);
 
     var textotempoVolta2 = document.createElement('div');
@@ -753,7 +805,7 @@ function geraStatusFinal(){
     textotempoVolta2.style.backgroundColor = "white";
     textotempoVolta2.innerHTML = tempoTodasVoltas[1];
     textotempoVolta2.style.top = 59 + 'px';
-    textotempoVolta2.style.left = window.innerWidth - 100 + 'px';
+    textotempoVolta2.style.left = window.innerWidth - 400 + 'px';
     document.body.appendChild(textotempoVolta2);
 
     var textotempoVolta3 = document.createElement('div');
@@ -762,7 +814,7 @@ function geraStatusFinal(){
     textotempoVolta3.style.backgroundColor = "white";
     textotempoVolta3.innerHTML = tempoTodasVoltas[2];
     textotempoVolta3.style.top = 79 + 'px';
-    textotempoVolta3.style.left = window.innerWidth - 100 + 'px';
+    textotempoVolta3.style.left = window.innerWidth - 400 + 'px';
     document.body.appendChild(textotempoVolta3);
 
     var textotempoVolta4 = document.createElement('div');
@@ -771,7 +823,7 @@ function geraStatusFinal(){
     textotempoVolta4.style.backgroundColor = "white";
     textotempoVolta4.innerHTML = tempoTodasVoltas[3];
     textotempoVolta4.style.top = 99 + 'px';
-    textotempoVolta4.style.left = window.innerWidth - 100 + 'px';
+    textotempoVolta4.style.left = window.innerWidth - 400 + 'px';
     document.body.appendChild(textotempoVolta4);
 
 }
@@ -796,8 +848,79 @@ function limpaStatusFinal(){
 
 
 //-------------------------------------------------------------------------------
+// GUI
+//-------------------------------------------------------------------------------
+let params = {
+    //pixel
+    pixelSize: 2,
+    pixelizar: false,
+    //bloom
+    exposure: 0.8,
+    bloomStrength: 1.5,
+    bloomThreshold: 0,
+    bloomRadius: 0,
+    bloomTrue: false
+};
+
+var gui = new GUI();
+gui.add(params, 'pixelSize').min(2).max(32).step(2);
+gui.add(params, 'pixelizar');
+gui.add(params, 'exposure', 0.1, 2.0).onChange(function (value){
+    renderer.toneMappingExposure = Math.pow( value, 4.0);
+});
+gui.add(params, 'bloomThreshold', 0.0, 1.0).onChange(function (value){
+    bloomPass.threshold = Number(value);
+});
+gui.add(params, 'bloomStrength', 0.0, 3.0).onChange(function (value){
+    bloomPass.strength = Number(value);
+});
+gui.add(params, 'bloomRadius', 0.0, 1.0).onChange(function (value){
+    bloomPass.radius = Number(value);
+});
+gui.add(params, 'bloomTrue');
+
+
+//-------------------------------------------------------------------------------
+// PostProcessing - PixelPass
+//-------------------------------------------------------------------------------
+
+let pixelComposer;
+pixelComposer = new EffectComposer(renderer);
+
+const renderPass = new RenderPass( scene, camera );
+pixelComposer.addPass( renderPass );
+
+//PixelPass
+let pixelPass = new ShaderPass(PixelShader);
+pixelPass.uniforms[ "resolution" ].value = new THREE.Vector2(window.innerWidth, window.innerHeight);
+pixelPass.uniforms[ "resolution" ].value.multiplyScalar(window.devicePixelRatio);
+pixelComposer.addPass( pixelPass );
+
+function updateGUI(){
+    pixelPass.uniforms[ "pixelSize" ].value = params.pixelSize;
+}
+
+//-------------------------------------------------------------------------------
+// PostProcessing - BloomPass
+//-------------------------------------------------------------------------------
+
+let bloomComposer;
+bloomComposer = new EffectComposer(renderer);
+bloomComposer.addPass( renderPass );
+
+//BloomPass
+let bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+bloomPass.threshold = params.bloomThreshold;
+bloomPass.strength = params.bloomStrength;
+bloomPass.radius = params.bloomRadius;
+bloomComposer.addPass( pixelPass );
+renderer.toneMappingExposure = Math.pow(0.8, 4.0);
+
+
+//-------------------------------------------------------------------------------
 // Render
 //-------------------------------------------------------------------------------
+
 
 var controls = new InfoBox();
   controls.add("Controles: ");
@@ -813,9 +936,11 @@ var controls = new InfoBox();
 var dt, anterior = 0;
 assetsMng.play("startRace");
 
+
+
 render();
 
-function controlledRender()
+function controlledRender(t)
 {
   var width = window.innerWidth;
   var height = window.innerHeight;
@@ -825,7 +950,16 @@ function controlledRender()
   renderer.setScissorTest(false); // Disable scissor to paint the entire window
   renderer.setClearColor("rgb(80, 70, 170)");
   renderer.clear();   // Clean the window
-  renderer.render(scene, camera);
+  if(params.pixelizar){
+    updateGUI();
+    pixelComposer.render();
+  }
+  else if(params.bloomTrue){
+    bloomComposer.render();
+  }
+  else {
+    renderer.render(scene, camera);
+  }
   // Set virtual camera viewport
   var offset = 20;
   renderer.setViewport(offset, height-vcHeight-offset, vcWidth, vcHeight);  // Set virtual camera viewport
@@ -834,6 +968,7 @@ function controlledRender()
   renderer.setClearColor("rgb(60, 50, 150)");  // Use a darker clear color in the small viewport
   renderer.render(scene, virtualCamera);  // Render scene of the virtual camera
 }
+
 
 var delay = 0;
 function render(t)
@@ -858,9 +993,6 @@ function render(t)
     if (panoramico){
       cameraHolder.position.set(player.position.getComponent(0)+40, player.position.getComponent(1)+15, player.position.getComponent(2)-50);
     }
-    if(pistaAtual == 2){
-        SpinBlades();
-    }
     cameraHolder.rotateY(degreesToRadians(180));
 
     //controle de voltas
@@ -875,6 +1007,9 @@ function render(t)
     }
     if(delay%16 == 0 && gerou == false){
         limpaStatusFinal();
+    }
+    if(pistaAtual == 2){
+        SpinBlades();
     }
 
     controlledRender(t);

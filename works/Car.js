@@ -24,7 +24,8 @@ export class Car extends THREE.Group {
     super();
     this.wheelAngle = 0;
     this.rotation = 1;
-
+    var neonColor = "rgb(0,255,255)";
+    var neonColor2 = "rgb(255,0,0)";
     // Axis
     this.frontAxis = this.createAxis();
     this.backAxis = this.createAxis();
@@ -77,6 +78,17 @@ export class Car extends THREE.Group {
     this.backAxis.add(this.wheel3);
     this.backAxis.add(this.wheel4);
 
+
+    //UndergroundSpotLight
+    this.underSpotLight1 = new THREE.SpotLight(neonColor);
+    this.setSpotLight(this.underSpotLight1, "NeonLights", new THREE.Vector3(0,20,0));
+
+    this.underSpotLight2 = new THREE.SpotLight(neonColor2);
+    this.setSpotLight(this.underSpotLight2, "NeonLights", new THREE.Vector3(0,20,0));
+    this.underSpotLight2.visible = false;
+
+    this.add( this.underSpotLight1 );
+    this.add( this.underSpotLight2 );
     this.add(this.frontAxis);
     this.add(this.backAxis);
     this.add(this.body);
@@ -90,6 +102,29 @@ export class Car extends THREE.Group {
     this.add(this.headLight2);
     this.add(this.wheel1Holder);
     this.add(this.wheel2Holder);
+  }
+
+  alternaSpotLight(pistaAtual){
+    if (pistaAtual == 1){
+      this.underSpotLight1.visible = true;
+      this.underSpotLight2.visible = false;
+    }
+    else if (pistaAtual == 2){
+      this.underSpotLight1.visible = false;
+      this.underSpotLight2.visible = true;
+    }
+  }
+
+  setSpotLight(spotLight, lightName, position)
+  {
+    spotLight.position.copy(position);
+    spotLight.shadow.mapSize.width = 1024;
+    spotLight.shadow.mapSize.height = 1024;
+    spotLight.angle = degreesToRadians(180);
+    spotLight.castShadow = true;
+    spotLight.decay = 1;
+    spotLight.penumbra = 10.5;
+    spotLight.name = lightName;
   }
 
   createWheel() {

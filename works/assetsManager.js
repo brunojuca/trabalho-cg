@@ -70,4 +70,10 @@ assetsManager.prototype.play = function (key) {
     }
 }
 
+assetsManager.prototype.stop = function (key) {
+    for(var i =0; i< this.MAX_CHANNELS; i++){
+        this.channels[i].audio.pause();
+        this.channels[i].audio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAVFYAAFRWAAABAAgAZGF0YQAAAAA=';
+    }
+}
 export {assetsManager};

@@ -44,12 +44,12 @@ export default class Roadblock
             case "CHECKPOINT":
                 cor = '#808080'; // cinza
                 var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
-                var bloco = new THREE.Mesh( cubeGeometry,  cubeMaterial  );
+                var bloco = new THREE.Mesh( cubeGeometry,  roadMaterial  );
                 break;
             case "LARGADA":
                 cor = '#FADA5E'; // amarelo
                 var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
-                var bloco = new THREE.Mesh( cubeGeometry,  cubeMaterial  );
+                var bloco = new THREE.Mesh( cubeGeometry,  goalMaterial  );
                 break;
             default:
                 cor = '#000000'; // preto

@@ -675,6 +675,9 @@ function keyboardUpdate() {
 
     if (keyboard.pressed("1") && pistaAtual != 1){
         renderer.toneMappingExposure = Math.pow(0.8, 4.0);
+        bloomPass.threshold = Number(0.2);
+        bloomPass.strength = Number(3.0);
+        bloomPass.radius = Number(0.5);
         pistaAtual = 1;
         limpaPista(pista2);
         selecaoPista(pista1);
@@ -703,9 +706,9 @@ function keyboardUpdate() {
         assetsMng.play("moonviewHighway");
     }
     else if (keyboard.pressed("2") && pistaAtual != 2){
-        bloomPass.Threshold = 0.0;
-        bloomPass.Strength = 0.3;
-        bloomPass.Radius = 1.0;
+        bloomPass.threshold = Number(0.0);
+        bloomPass.strength = Number(0.4);
+        bloomPass.radius = Number(1.0);
         pistaAtual = 2;
         limpaPista(pista1);
         selecaoPista(pista2);
@@ -861,10 +864,9 @@ let params = {
     pixelizar: false,
     //bloom
     //PISTA1 3.0, 0.2, 0.5
-    //PISTA2 0.4, 0.0, 1.0
-    bloomStrength: 1.5,
-    bloomThreshold: 0.21,
-    bloomRadius: 0.55,
+    bloomStrength: 3.0,
+    bloomThreshold: 0.2,
+    bloomRadius: 0.5,
     bloomTrue: false
 };
 

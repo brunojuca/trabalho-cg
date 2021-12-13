@@ -703,8 +703,9 @@ function keyboardUpdate() {
         assetsMng.play("moonviewHighway");
     }
     else if (keyboard.pressed("2") && pistaAtual != 2){
-        renderer.toneMappingExposure = Math.pow(1.1, 4.0);
-        params.pixelizar = true
+        bloomPass.Threshold = 0.0;
+        bloomPass.Strength = 0.3;
+        bloomPass.Radius = 1.0;
         pistaAtual = 2;
         limpaPista(pista1);
         selecaoPista(pista2);
@@ -859,10 +860,12 @@ let params = {
     pixelSize: 2,
     pixelizar: false,
     //bloom
+    //PISTA1 3.0, 0.2, 0.5
+    //PISTA2 0.4, 0.0, 1.0
     bloomStrength: 1.5,
     bloomThreshold: 0.21,
     bloomRadius: 0.55,
-    bloomTrue: true
+    bloomTrue: false
 };
 
 var gui = new GUI();
@@ -923,6 +926,8 @@ function renderBloom(){
     renderer.clear();
     bloomComposer.render();
     renderer.clearDepth();
+    camera.layers.set(0);
+    renderer.render(scene.camera);
 }
 
 
@@ -957,12 +962,12 @@ function controlledRender(t)
   renderer.setScissorTest(false); // Disable scissor to paint the entire window
   renderer.autoClear = false;
   renderer.clear();   // Clean the window
-  if(params.pixelizar){
+  if(params.bloomTrue){
+    renderBloom();
+  }
+  else if(params.pixelizar){
     updateGUI();
     pixelComposer.render();
-  }
-  else if(params.bloomTrue){
-    renderBloom();
   }
   else {
     renderer.render(scene, camera);

@@ -1,7 +1,7 @@
 import * as THREE from "../build/three.module.js";
 import { degreesToRadians } from "../libs/util/util.js";
 
-export class Car extends THREE.Group {
+export class LambertTestCar extends THREE.Group {
   wheel1;
   wheel2;
   wheel3;
@@ -82,21 +82,17 @@ export class Car extends THREE.Group {
 
     //UndergroundSpotLight
     this.underSpotLight1 = new THREE.SpotLight(neonColor);
-    this.setSpotLight(this.underSpotLight1, "NeonLights1", new THREE.Vector3(0,2,5));
+    this.setSpotLight(this.underSpotLight1, "NeonLights", new THREE.Vector3(0,0,5));
     this.underPointLight1 = new THREE.PointLight(neonColor);
     this.setSpotLight(this.underPointLight1, "NeonLight1", new THREE.Vector3(0,0,0));
 
     this.underSpotLight2 = new THREE.SpotLight(neonColor2);
-    this.setSpotLight(this.underSpotLight2, "NeonLights2", new THREE.Vector3(0,2,5));
-    this.underPointLight2 = new THREE.PointLight(neonColor2);
-    this.setSpotLight(this.underPointLight2, "NeonLight2", new THREE.Vector3(0,0,0));
+    this.setSpotLight(this.underSpotLight2, "NeonLights", new THREE.Vector3(0,2,5));
     this.underSpotLight2.visible = false;
-    this.underPointLight2.visible = false;
 
     this.add( this.underSpotLight1 );
     this.add( this.underPointLight1 );
     this.add( this.underSpotLight2 );
-    this.add( this.underPointLight2 );
     this.add(this.frontAxis);
     this.add(this.backAxis);
     this.add(this.body);
@@ -115,15 +111,11 @@ export class Car extends THREE.Group {
   alternaSpotLight(pistaAtual){
     if (pistaAtual == 1){
       this.underSpotLight1.visible = true;
-      this.underPointLight1.visible = true;
       this.underSpotLight2.visible = false;
-      this.underPointLight2.visible = false;
     }
     else if (pistaAtual == 2){
       this.underSpotLight1.visible = false;
-      this.underPointLight1.visible = false;
       this.underSpotLight2.visible = true;
-      this.underPointLight2.visible = true;
     }
   }
 
@@ -151,17 +143,17 @@ export class Car extends THREE.Group {
   createWheel() {
     var group = new THREE.Group();
     var tireGeometry = new THREE.CylinderGeometry(1, 1, 1.0, 50, 10);
-    var tireMaterial = new THREE.MeshPhongMaterial({ color: "rgb(50,50,50)" });
+    var tireMaterial = new THREE.MeshLambertMaterial({ color: "rgb(50,50,50)" });
     var tire = new THREE.Mesh(tireGeometry, tireMaterial);
 
     var wheelGeometry = new THREE.CylinderGeometry(0.7, 0.7, 1.01, 50, 10);
-    var wheelMaterial = new THREE.MeshPhongMaterial({
+    var wheelMaterial = new THREE.MeshLambertMaterial({
       color: "rgb(255,255,255)",
     });
     var wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
 
     var rimGeometry = new THREE.BoxGeometry(0.15, 1.02, 1.4);
-    var rimMaterial = new THREE.MeshPhongMaterial({
+    var rimMaterial = new THREE.MeshLambertMaterial({
       color: "rgb(200,200,0)",
     });
 
@@ -181,7 +173,7 @@ export class Car extends THREE.Group {
 
   createAxis() {
     var axisGeometry = new THREE.CylinderGeometry(0.1, 0.1, 4, 50, 10);
-    var axisMaterial = new THREE.MeshPhongMaterial({
+    var axisMaterial = new THREE.MeshLambertMaterial({
       color: "rgb(255,255,255)",
     });
     var axis = new THREE.Mesh(axisGeometry, axisMaterial);
@@ -191,7 +183,7 @@ export class Car extends THREE.Group {
 
   createBody() {
     var bodyGeometry = new THREE.BoxGeometry(3, 1.8, 7, 1, 1, 1);
-    var bodyMaterial = new THREE.MeshPhongMaterial({ color: "rgb(255,0,0)" });
+    var bodyMaterial = new THREE.MeshLambertMaterial({ color: "rgb(255,0,0)" });
     var body = new THREE.Mesh(bodyGeometry, bodyMaterial);
 
     return body;
@@ -205,7 +197,7 @@ export class Car extends THREE.Group {
       50,
       10
     );
-    var windowMaterial = new THREE.MeshPhongMaterial({
+    var windowMaterial = new THREE.MeshLambertMaterial({
       color: "rgb(50,50,50)",
       opacity: 0,
     });
@@ -216,7 +208,7 @@ export class Car extends THREE.Group {
 
   createBallWindow() {
     var ballGeometry = new THREE.SphereGeometry(0.8, 50, 50);
-    var ballMaterial = new THREE.MeshPhongMaterial({
+    var ballMaterial = new THREE.MeshLambertMaterial({
       color: "rgb(50,50,50)",
     });
     var ball = new THREE.Mesh(ballGeometry, ballMaterial);
@@ -226,7 +218,7 @@ export class Car extends THREE.Group {
 
   createHeadLight() {
     var lightGeometry = new THREE.SphereGeometry(0.4, 50, 50);
-    var lightMaterial = new THREE.MeshPhongMaterial({
+    var lightMaterial = new THREE.MeshBasicMaterial({
       color: "rgb(255,255,255)",
     });
     var light = new THREE.Mesh(lightGeometry, lightMaterial);

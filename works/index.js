@@ -6,6 +6,7 @@ import {pista1 as pista1} from './pistas/pista1.js';
 import {pista2 as pista2} from './pistas/pista2.js';
 import Pista from './Pista.js';
 import { Car } from './Car.js';
+import { LambertTestCar } from './LambertTestCar.js';
 import { Turbina } from './turbina.js';
 import {assetsManager} from './assetsManager.js';
 import { EffectComposer } from '../build/jsm/postprocessing/EffectComposer.js';
@@ -20,9 +21,9 @@ import {initRenderer,
         InfoBox,
         onWindowResize,
         degreesToRadians,
-        createGroundPlaneWired,
         initDefaultBasicLight} from "../libs/util/util.js";
 import Roadblock from './Roadblock.js';
+
 
 const loader = new THREE.TextureLoader();
 const groundTexture = loader.load( 'texture/grass.jpg' );
@@ -41,8 +42,10 @@ assetsMng.loadAudio("winRace", "./soundAssets/winRace.mp3");
 
 var stats = new Stats();          // To show FPS information
 var scene = new THREE.Scene();    // Create main scene
-var renderer = initRenderer();    // View function in util/utils
-renderer.toneMapping = THREE.ReinhardToneMapping;
+var renderer = new THREE.WebGLRenderer({antialias: true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor( 0x000000 );
+document.body.appendChild(renderer.domElement);
 scene.background = skyTexture;
 
 //camera
@@ -51,9 +54,10 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
   camera.position.set(0, 0, 0);
   camera.up.set( 0, 10, 0 );
   camera.fov = 20;
+  camera.layers.enable(1);
 
 //light
-initDefaultBasicLight(scene, true);
+//initDefaultBasicLight(scene, true);
 
 // Listen window size changes
 window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, false );
@@ -138,7 +142,7 @@ function createCheckpoint(checkpointRadius)
 function createPole(size)
 {
     var poleGeometry = new THREE.BoxGeometry(size, 2*size, size);
-    var poleMaterial = new THREE.MeshStandardMaterial( { map: flagTexture } );
+    var poleMaterial = new THREE.MeshBasicMaterial( { map: flagTexture } );
     var pole = new THREE.Mesh( poleGeometry, poleMaterial );
     return pole;
 }
@@ -146,7 +150,7 @@ function createPole(size)
 function createPoleTop(size)
 {
     var flagtopGeometry = new THREE.BoxGeometry(blocoSize+2*size, size, size);
-    var flagtopMaterial = new THREE.MeshStandardMaterial( { map: flagTexture } );
+    var flagtopMaterial = new THREE.MeshBasicMaterial( { map: flagTexture } );
     var flagtop = new THREE.Mesh( flagtopGeometry, flagtopMaterial );
     return flagtop;
 }
@@ -241,7 +245,7 @@ var ghostguide = createSphere(radius);
 ghostguide.position.set(0.0, 0.0, 2*radius + desvio);
 
 //player
-var player = new Car;
+var player = new LambertTestCar;
 player.scale.set(0.8,0.8,0.8);
 player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.2*size, posicionamentoChegada[0].getComponent(2) - size);
 player.add(ghostguide);
@@ -855,19 +859,15 @@ let params = {
     pixelSize: 2,
     pixelizar: false,
     //bloom
-    exposure: 0.8,
     bloomStrength: 1.5,
-    bloomThreshold: 0,
-    bloomRadius: 0,
-    bloomTrue: false
+    bloomThreshold: 0.21,
+    bloomRadius: 0.55,
+    bloomTrue: true
 };
 
 var gui = new GUI();
 gui.add(params, 'pixelSize').min(2).max(32).step(2);
 gui.add(params, 'pixelizar');
-gui.add(params, 'exposure', 0.1, 2.0).onChange(function (value){
-    renderer.toneMappingExposure = Math.pow( value, 4.0);
-});
 gui.add(params, 'bloomThreshold', 0.0, 1.0).onChange(function (value){
     bloomPass.threshold = Number(value);
 });
@@ -883,12 +883,12 @@ gui.add(params, 'bloomTrue');
 //-------------------------------------------------------------------------------
 // PostProcessing - PixelPass
 //-------------------------------------------------------------------------------
+const renderScene = new RenderPass( scene, camera );
 
 let pixelComposer;
 pixelComposer = new EffectComposer(renderer);
 
-const renderPass = new RenderPass( scene, camera );
-pixelComposer.addPass( renderPass );
+pixelComposer.addPass( renderScene );
 
 //PixelPass
 let pixelPass = new ShaderPass(PixelShader);
@@ -904,17 +904,26 @@ function updateGUI(){
 // PostProcessing - BloomPass
 //-------------------------------------------------------------------------------
 
-let bloomComposer;
-bloomComposer = new EffectComposer(renderer);
-bloomComposer.addPass( renderPass );
-
 //BloomPass
-let bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+
+let bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 )
 bloomPass.threshold = params.bloomThreshold;
 bloomPass.strength = params.bloomStrength;
 bloomPass.radius = params.bloomRadius;
-bloomComposer.addPass( pixelPass );
-renderer.toneMappingExposure = Math.pow(0.8, 4.0);
+bloomPass.renderToScreen = true;
+
+let bloomComposer = new EffectComposer(renderer);
+bloomComposer.setSize( window.innerWidth, window.innerHeight);
+
+bloomComposer.addPass( renderScene );
+bloomComposer.addPass( bloomPass );
+
+function renderBloom(){
+    renderer.autoClear = false;
+    renderer.clear();
+    bloomComposer.render();
+    renderer.clearDepth();
+}
 
 
 //-------------------------------------------------------------------------------
@@ -936,8 +945,6 @@ var controls = new InfoBox();
 var dt, anterior = 0;
 assetsMng.play("startRace");
 
-
-
 render();
 
 function controlledRender(t)
@@ -948,18 +955,19 @@ function controlledRender(t)
   // Set main viewport
   renderer.setViewport(0, 0, width, height); // Reset viewport
   renderer.setScissorTest(false); // Disable scissor to paint the entire window
-  renderer.setClearColor("rgb(80, 70, 170)");
+  renderer.autoClear = false;
   renderer.clear();   // Clean the window
   if(params.pixelizar){
     updateGUI();
     pixelComposer.render();
   }
   else if(params.bloomTrue){
-    bloomComposer.render();
+    renderBloom();
   }
   else {
     renderer.render(scene, camera);
   }
+
   // Set virtual camera viewport
   var offset = 20;
   renderer.setViewport(offset, height-vcHeight-offset, vcWidth, vcHeight);  // Set virtual camera viewport

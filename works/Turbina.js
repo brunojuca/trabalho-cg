@@ -231,28 +231,6 @@ export class Turbina extends THREE.Group {
 
 
   //-------------------------------------------------------------------------------
-  // Motor em Lathe (se quiser fazer diferentes)
-  //-------------------------------------------------------------------------------
-
-  createTopMotor() {
-    var points = [];
-    for (var i = 0; i < 12; i++) {
-      points.push(new THREE.Vector2(Math.sin(i*2 / 4.17)+3, i));
-    }
-    const geometry = new THREE.LatheGeometry( points );
-    const material = new THREE.MeshBasicMaterial( { color: "rgb(50,50,255)" } );
-    const lathe = new THREE.Mesh( geometry, material );
-    return lathe;
-  }
-  positionTopMotor(height) {
-    this.topBaseLathe.position.set(0.0, height, -3.0);
-    this.topBaseLathe.rotateX(degreesToRadians(90));
-  }
-
-
-
-
-  //-------------------------------------------------------------------------------
   // Base
   //-------------------------------------------------------------------------------
 

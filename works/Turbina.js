@@ -31,7 +31,8 @@ export class Turbina extends THREE.Group {
     cobaltTexture.repeat.set( 5, 5 );
     cobaltTexture.anisotropy = 16;
     this.cobaltMaterial = new THREE.MeshBasicMaterial ( { map: cobaltTexture } );
-
+    this.cobaltMaterial2 = new THREE.MeshBasicMaterial ( { map: cobaltTexture } );
+    this.cobaltMaterial2.side = THREE.DoubleSide;
     this.height = 60;
     this.turbo = 0;
     var eolicColor = "rgb(0,255,255)";
@@ -43,6 +44,13 @@ export class Turbina extends THREE.Group {
     // TopBase
     this.topBase = this.createTopBase(this.height);
     this.positionTopBase(this.height);
+    //this.topBase.visible = false;
+
+
+    // TopBaseLathe
+    this.topBaseLathe = this.createTopMotor(this.height);
+    this.positionTopMotor(this.height);
+    this.topBaseLathe.visible = false;
 
     // Blade
     this.blade1 = this.createBlade(this.height);
@@ -66,14 +74,10 @@ export class Turbina extends THREE.Group {
     this.lowerBase2 = this.createLowerBase2(this.height);
     this.positionLowerBase2(this.height);
 
-    //UndergroundSpotLIght
-    //excesso de luz
-    //this.undergroundSpotLight = new THREE.PointLight(eolicColor);
-    //this.setSpotLight(this.undergroundSpotLight, "eolicLight", new THREE.Vector3(0,10,0));
-
     this.add(this.body);
     this.add(this.topBase);
     this.add(this.spinningAxis);
+    this.add(this.topBaseLathe);
     this.add(this.lowerBase);
     this.add(this.lowerBase2);
 
@@ -231,6 +235,33 @@ export class Turbina extends THREE.Group {
 
 
   //-------------------------------------------------------------------------------
+  // Motor em Lathe (se quiser fazer diferentes)
+  //-------------------------------------------------------------------------------
+
+  createTopMotor() {
+    var points = [];
+    points.push(new THREE.Vector2(0, -3));
+    points.push(new THREE.Vector2(1.0, -2));
+    points.push(new THREE.Vector2(2, -1));
+    for (var i = 0; i < 12; i++) {
+      points.push(new THREE.Vector2(Math.sin(i*2 / 4.17)+3, i));
+    }
+    const geometry = new THREE.LatheGeometry( points );
+    const material =  new THREE.MeshPhongMaterial ( {color: 0x0000ff} );
+    material.side = THREE.DoubleSide;
+    const lathe = new THREE.Mesh( geometry, this.cobaltMaterial2 );
+    return lathe;
+  }
+  positionTopMotor(height) {
+    this.topBaseLathe.position.set(0.0, height, -3.0);
+    this.topBaseLathe.rotateX(degreesToRadians(90));
+  }
+
+
+
+
+
+  //-------------------------------------------------------------------------------
   // Base
   //-------------------------------------------------------------------------------
 
@@ -278,7 +309,7 @@ export class Turbina extends THREE.Group {
       bevelSegments: 20
     };
     var extrudeGeometry = new THREE.ExtrudeGeometry(this.lowerShape(), extrudeSettings);
-    var lowerMaterial = new THREE.MeshBasicMaterial({color: "rgb(50,50,50)", opacity: 0});
+    var lowerMaterial = new THREE.MeshPhongMaterial({color: "rgb(50,50,50)", opacity: 0});
     var lower = new THREE.Mesh(extrudeGeometry, lowerMaterial);
     return lower;
   }
@@ -317,7 +348,7 @@ export class Turbina extends THREE.Group {
       bevelSegments: 20
     };
     var extrudeGeometry = new THREE.ExtrudeGeometry(this.lowerShape2(), extrudeSettings);
-    var lower2Material = new THREE.MeshBasicMaterial({color: "rgb(50,50,50)", opacity: 0});
+    var lower2Material = new THREE.MeshPhongMaterial({color: "rgb(50,50,50)", opacity: 0});
     var lower2 = new THREE.Mesh(extrudeGeometry, lower2Material);
     return lower2;
   }
@@ -330,7 +361,7 @@ export class Turbina extends THREE.Group {
 
 
   defaultUpdate(speed) {
-    this.spinningAxis.rotateY(degreesToRadians(speed));
+    this.spinningAxis.rotateY(degreesToRadians(-speed));
   }
 
 }

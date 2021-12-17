@@ -8,6 +8,7 @@ import Pista from './Pista.js';
 import { Car } from './Car.js';
 import { LambertTestCar } from './LambertTestCar.js';
 import { Turbina } from './turbina.js';
+import { Pokey } from './Pokey.js';
 import { assetsManager } from './assetsManager.js';
 import { EffectComposer } from '../build/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from '../build/jsm/postprocessing/RenderPass.js';
@@ -32,7 +33,6 @@ import Roadblock from './Roadblock.js';
 //-------------------------------------------------------------------------------
 const loader = new THREE.TextureLoader();
 const moonTexture = loader.load( 'texture/moon.jpg' );
-const pokeyTexture = loader.load( 'texture/pokey.jpg' );
 const groundTexture = loader.load( 'texture/grass.jpg' );
 const groundTexture2 = loader.load( 'texture/sand.jpg' );
 const skyTexture = loader.load( 'texture/sky.jpg' );
@@ -147,13 +147,16 @@ function limpaPista(){
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-// Setagem dos Checkpoints e do Modelo da Chegada na Pista
+// Setagem dos Checkpoints
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------
+// Criação e Setagem dos Checkpoints
+//-------------------------------------------------------------------------------
 const checkpointRadius = blocoSize;
+var flagNumber = 4;
 
-//cria checkpoint
 function createCheckpoint(checkpointRadius)
 {
     var checkpointGeometry = new THREE.SphereGeometry(checkpointRadius, 32, 32);
@@ -163,40 +166,6 @@ function createCheckpoint(checkpointRadius)
     return checkpoint;
 }
 
-//cria pole
-function createPole(size)
-{
-    var poleGeometry = new THREE.BoxGeometry(size, 2*size, size);
-    var poleMaterial = new THREE.MeshBasicMaterial( { map: flagTexture } );
-    var pole = new THREE.Mesh( poleGeometry, poleMaterial );
-    return pole;
-}
-//cria topo pole
-function createPoleTop(size)
-{
-    var flagtopGeometry = new THREE.BoxGeometry(blocoSize+2*size, size, size);
-    var flagtopMaterial = new THREE.MeshBasicMaterial( { map: flagTexture } );
-    var flagtop = new THREE.Mesh( flagtopGeometry, flagtopMaterial );
-    return flagtop;
-}
-
-const size = 1;
-var flags = [];
-var flagNumber = 4;
-for (var i = 0; i <= flagNumber-1; i++){
-    var flag = createPole(size/2);
-    flags.push(flag);
-    scene.add(flags[i]);
-}
-var flags2 = [];
-for(var j = 0; j <= flagNumber-1; j++){
-    var newFlag2 = flags[j].clone();
-    flags2.push(newFlag2);
-    scene.add(flags2[j]);
-}
-var flagTop = createPoleTop(size);
-scene.add(flagTop);
-
 var todosCheckpoints = [];
 function posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada){
     for(var k = 0; k <= flagNumber-1; k++){
@@ -204,18 +173,22 @@ function posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada){
         todosCheckpoints.push(checkpoint);
         if (k == flagNumber-1){
             todosCheckpoints[k].position.set(posicionamentoChegada[0].getComponent(0), 0.0, posicionamentoChegada[0].getComponent(2));
-            flagTop.position.set(posicionamentoChegada[0].getComponent(0), 5*size - size/2, posicionamentoChegada[0].getComponent(2) + size);
-            for (var i = 0; i <= flagNumber-1; i++){
-                flags[i].position.set(posicionamentoChegada[0].getComponent(0)-blocoSize/2 - size/2, size+size*i - size/2, posicionamentoChegada[0].getComponent(2) + size);
-                flags2[i].position.set(posicionamentoChegada[0].getComponent(0)+blocoSize/2 + size/2, size+size*i - size/2, posicionamentoChegada[0].getComponent(2) + size);
-            }
             scene.add(todosCheckpoints[k]);
             return;
         }
-        todosCheckpoints[k].position.set(posicionamentoCheckpoints[flagNumber-2-k].getComponent(0), 0.0, posicionamentoCheckpoints[flagNumber-2-k].getComponent(2));
-        if(pistaAtual == 2){
-            todosCheckpoints.reverse();
+        if (k <= 5){
+            console.log(k, "vermelho");
+            todosCheckpoints[k].material.color.setHex(0xff0000);
         }
+        else if (k > 5 && k <= 10){
+            console.log(k, "verde");
+            todosCheckpoints[k].material.color.setHex(0x00ff00);
+        }
+        else if (k > 10 && k < 15){
+            console.log(k, "azul");
+            todosCheckpoints[k].material.color.setHex(0x0000ff);
+        }
+        todosCheckpoints[k].position.set(posicionamentoCheckpoints[k].getComponent(0), 0.0, posicionamentoCheckpoints[k].getComponent(2));
         scene.add(todosCheckpoints[k]);
     }
 }
@@ -230,7 +203,10 @@ function encontraPosicaoCheckpoints(){
             posicaoCheckpoints.push(posicaoNova);
         }
     }
-    return posicaoCheckpoints;
+    if(pistaAtual == 2){
+        posicaoCheckpoints.reverse();
+    }
+    return posicaoCheckpoints.reverse();
 }
 
 //garantir q a posicao do ultimo checkpoint vai ser sempre a largada
@@ -252,6 +228,7 @@ posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada);
 
 function resetaPosicaoCheckpointMudancaPista(){
     posicionamentoCheckpoints = encontraPosicaoCheckpoints();
+    console.log(posicionamentoCheckpoints);
     posicionamentoChegada = encontraPosicaoChegada();
     posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada);
 }
@@ -264,8 +241,8 @@ function resetaPosicaoCheckpointMudancaPista(){
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 
-//guia
 const radius = 1
+const size = 1;
 
 //ghost guia
 const desvio = 10;
@@ -291,7 +268,37 @@ function createSphere(radius)
     return guideSphere;
 }
 
+//-------------------------------------------------------------------------------
+// Modelo de Chegada (Flags)
+//-------------------------------------------------------------------------------
 
+
+function createPole(size)
+{
+    var poleGeometry = new THREE.BoxGeometry(size, 2*size, size);
+    var poleMaterial = new THREE.MeshBasicMaterial( { map: flagTexture } );
+    var pole = new THREE.Mesh( poleGeometry, poleMaterial );
+    return pole;
+}
+
+var flags = [];
+var newflagNumber = 4;
+
+function criaFlags(){
+    for (var i = 0; i <= flagNumber-1; i++){
+        var flag = createPole(20*size/2);
+        flags.push(flag);
+        flags[i].position.set(0, 20*size+20*size*i, 0);
+        player.add(flags[i]);
+    }
+}
+criaFlags();
+
+function removeFlags(){
+    for (var i = 0; i <= flagNumber-1; i++){
+        flags[i].remove();
+    }
+}
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -397,37 +404,40 @@ scene.add(fallenMoon);
 //-------------------------------------------------------------------------------
 // Pokey - em desenvolvimento
 //-------------------------------------------------------------------------------
-var pokeyMaterial = new THREE.MeshStandardMaterial( { map: pokeyTexture } );
-var pokeyGeometry = new THREE.SphereGeometry(15, 32, 32);
-var dancingpokeyBall1 = new THREE.Mesh( pokeyGeometry, pokeyMaterial );
-scene.add(dancingpokeyBall1);
-dancingpokeyBall1.position.set(50, 10, 50);
-var dancingpokeyBall2 = new THREE.Mesh( pokeyGeometry, pokeyMaterial );
-scene.add(dancingpokeyBall2);
-dancingpokeyBall2.position.set(50, 25, 50);
-var dancingpokeyBall3 = new THREE.Mesh( pokeyGeometry, pokeyMaterial );
-scene.add(dancingpokeyBall3);
-dancingpokeyBall3.position.set(50, 40, 50);
 
 var pokey = [];
 function carregaPokey(){
     pokey = [];
     for (let i = 0; i < 20; i++) {
         var novoPokey = new Pokey();
-        pokey[i].position.set(-600+100*i, 0.0, 40*Math.sin(pi*5*j));
+        pokey.push(novoPokey);
+        pokey[i].position.set(-600+100*i, 0.0, 40*Math.sin(Math.PI*5*i));
         scene.add(pokey[i]);
     }
 }
+carregaPokey();
 function limpaPokey(){
     for (let i = 0; i < pokey.length; i++) {
         scene.remove(pokey[i]);
     }
 }
-var pokeySpeed = 5.0;
+
+var pokeyCooldown = 0;
 function pokeyDance()
 {
-    for (let i = 0; i < pokey.length; i++) {
-        pokey[i].defaultUpdate(pokeySpeed);
+    if(dt >=0){
+        pokeyCooldown -= dt;
+    }
+    if(pokeyCooldown <= 0){
+        for (let i = 0; i < pokey.length; i++) {
+            if(pokey[i].update1){
+                pokey[i].defaultUpdate1();
+            }
+            else if(pokey[i].update2){
+                pokey[i].defaultUpdate2();
+            }
+        }
+        pokeyCooldown = 3;
     }
 }
 
@@ -630,79 +640,51 @@ function verificaProximidadeEolic(){
 //-------------------------------------------------------------------------------
 // Colisor Checkpoints
 //-------------------------------------------------------------------------------
-var colidiu1 = false;
-var colidiu2 = false;
-var colidiu3 = false;
-var colidiu4 = false;
+
+var colidiuCheckpoints = [];
 var reset = false;
 var voltas = 0;
 
-function verificaCheckpoint1(checkpoint, player){
-    if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < checkpointRadius &&
-        Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
-        colidiu1 = true;
-        flags[0].material.color.setHex(0x00ff00);
+
+function criaCheckpointColisores(){
+    for (var i = 0; i <= flagNumber-1; i++){
+        var colidiu = false;
+        colidiuCheckpoints.push(colidiu);
     }
 }
-function verificaCheckpoint2(checkpoint, player){
-    if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < checkpointRadius &&
-        Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
-        colidiu2 = true;
-        flags[1].material.color.setHex(0x00ff00);
-    }
-}
-function verificaCheckpoint3(checkpoint, player){
-    if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < checkpointRadius &&
-        Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
-        colidiu3 = true;
-        flags[2].material.color.setHex(0x00ff00);
-    }
-}
-function verificaCheckpoint4(checkpoint, player){
-    if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < checkpointRadius &&
-        Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
-        colidiu4 = true;
-        flags[3].material.color.setHex(0x00ff00)
+criaCheckpointColisores();
+
+
+function resetaVoltaAtual(){
+    for (var i = 0; i <= flagNumber-1; i++){
+        colidiuCheckpoints[i] = reset;
+        flags[i].material.color.setHex(0xff0000)
     }
 }
 
-function resetaVoltaAtual(){
-    colidiu1 = reset;
-    flags[0].material.color.setHex(0xff0000)
-    colidiu2 = reset;
-    flags[1].material.color.setHex(0xff0000)
-    colidiu3 = reset;
-    flags[2].material.color.setHex(0xff0000)
-    colidiu4 = reset;
-    flags[3].material.color.setHex(0xff0000)
+
+function verificaCheckpoint(checkpoint, player, i){
+    if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < checkpointRadius &&
+        Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
+        colidiuCheckpoints[i] = true;
+        flags[i].material.color.setHex(0x00ff00);
+    }
 }
+
 
 function verificaVoltas(player)
 {
     armazenaTempoVoltaAlternativa(voltas);
-    if (colidiu1){
-        if (colidiu2){
-            if (colidiu3){
-                if (colidiu4){
-                    voltas += 1;
-                    resetaVoltaAtual();
-                }
-                else {
-                    verificaCheckpoint4(todosCheckpoints[3], player);
-                }
-            }
-            else {
-                verificaCheckpoint3(todosCheckpoints[2], player);
-            }
-        }
-        else {
-            verificaCheckpoint2(todosCheckpoints[1], player);
+    for (var i = 0; i <= flagNumber-1; i++){
+        if(!colidiuCheckpoints[i]){
+            verificaCheckpoint(todosCheckpoints[i], player, i);
+            return;
         }
     }
-    else {
-        verificaCheckpoint1(todosCheckpoints[0], player);
-    }
+    voltas += 1;
+    resetaVoltaAtual();
 }
+
 
 var tempoTodasVoltas = [0,0,0,0];
 function armazenaTempoVoltaAlternativa(){
@@ -720,9 +702,6 @@ function armazenaTempoVoltaAlternativa(){
     }
 }
 
-
-
-
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 // Macros
@@ -735,14 +714,17 @@ function verificaColisores(){
     verificaVoltas(player);
 }
 
-function configuraPistas(){
+function configuraPistas(newflagNumber){
     limpaPista();
+    removeFlags();
+    flagNumber = newflagNumber;
     if(pistaAtual == 1){
         selecaoPista(pista1);
     }
     else if(pistaAtual == 2){
         selecaoPista(pista2);
     }
+    criaFlags();
     resetaVoltaAtual();
     resetaPosicaoCheckpointMudancaPista();
     atualizaMinimapa();
@@ -870,8 +852,9 @@ function keyboardUpdate() {
 
     if (keyboard.pressed("1") && pistaAtual != 1){
         pistaAtual = 1;
+        newflagNumber = 4;
         setaBloom();
-        configuraPistas();
+        configuraPistas(newflagNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer(false);
@@ -880,8 +863,9 @@ function keyboardUpdate() {
     }
     else if (keyboard.pressed("2") && pistaAtual != 2){
         pistaAtual = 2;
+        newflagNumber = 14;
         setaBloom();
-        configuraPistas();
+        configuraPistas(newflagNumber);
         carregaProps();
         resetaVariaveis();
         reposicionaPlayer(true);
@@ -1146,6 +1130,7 @@ function render(t)
 {
     stats.update();
     requestAnimationFrame(render);
+    dt = (t - anterior) / 100;
     anterior = t;
 
     //movimentação do player
@@ -1175,8 +1160,8 @@ function render(t)
 
     if(pistaAtual == 2){
         spinBlades();
-        //pokeyDance();
     }
+    pokeyDance();
 
     controlledRender(t);
 }

@@ -124,10 +124,11 @@ export class LambertTestCar extends THREE.Group {
     spotLight.position.copy(position);
     spotLight.shadow.mapSize.width = 128;
     spotLight.shadow.mapSize.height = 128;
-    spotLight.angle = degreesToRadians(180);
+    spotLight.distance = 150;
+    spotLight.angle = degreesToRadians(90);
     spotLight.castShadow = true;
-    spotLight.decay = 1;
-    spotLight.penumbra = 10.5;
+    spotLight.decay = 2;
+    spotLight.penumbra = 1;
     spotLight.name = lightName;
   }
 

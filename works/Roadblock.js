@@ -12,8 +12,11 @@ export default class Roadblock
         this.Z = z * altura;
 
         switch (blockType) {
-            case 1:
-                this.blockType = "COMUM";
+            case '1A':
+                this.blockType = "COMUM1";
+                break;
+            case '1B':
+                this.blockType = "COMUM2";
                 break;
             case 2:
                 this.blockType = "LARGADA";
@@ -33,18 +36,36 @@ export default class Roadblock
         var cubeGeometry = new THREE.BoxGeometry(this.LARGURA, this.ALTURA, this.COMPRIMENTO);
         var cor;
         const loader = new THREE.TextureLoader();
-        const roadTexture = loader.load( 'texture/road1.jpeg' );
+
+        const roadTexture = loader.load( 'texture/road1.jpg' );
+        const roadTexture2 = loader.load( 'texture/road2.jpeg' );
         const goalTexture = loader.load( 'texture/checkers.png' );
-        roadTexture.wrapS = roadTexture.wrapT = THREE.RepeatWrapping;
+
+        //roadTexture.wrapS = roadTexture.wrapT = THREE.RepeatWrapping;
         goalTexture.wrapS = goalTexture.wrapT = THREE.RepeatWrapping;
-        var roadMaterial = new THREE.MeshStandardMaterial( { map: roadTexture } );
+
+        var lastRoadMaterial = new THREE.MeshStandardMaterial( { map: roadTexture } );
+        var road1Material = new THREE.MeshStandardMaterial( { map: roadTexture } );
+        var road2Material = new THREE.MeshStandardMaterial( { map: roadTexture2 } );
+
         var goalMaterial = new THREE.MeshStandardMaterial( { map: goalTexture } );
         switch (this.blockType) {
-            case "COMUM":
+            case "COMUM1":
+                cor = '#808080'; // cinza
+                lastRoadMaterial = road1Material;
+                //var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
+                var bloco = new THREE.Mesh( cubeGeometry,  lastRoadMaterial  );
+                break;
+            case "COMUM2":
+                cor = '#808080'; // cinza
+                //var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
+                lastRoadMaterial = road2Material;
+                var bloco = new THREE.Mesh( cubeGeometry,  lastRoadMaterial  );
+                break;
             case "CHECKPOINT":
                 cor = '#808080'; // cinza
-                var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
-                var bloco = new THREE.Mesh( cubeGeometry,  roadMaterial  );
+                //var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
+                var bloco = new THREE.Mesh( cubeGeometry,  lastRoadMaterial  );
                 break;
             case "LARGADA":
                 cor = '#FADA5E'; // amarelo

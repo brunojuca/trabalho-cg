@@ -21,7 +21,7 @@ var metallicMaterial = new THREE.MeshStandardMaterial( { map: metallicTexture } 
 var plataformaGeo = new THREE.CylinderGeometry(10, 10, 3, 40);
 
 var assetsMng = new assetsManager();
-assetsMng.loadAudio("ROTS", "./soundAssets/ridersOnTheStorm.mp3");
+assetsMng.loadAudio("ROTS", "./soundAssets/00-ridersOnTheStorm.mp3");
 var carroGirando = false;
 
 var stats = new Stats(); // To show FPS information

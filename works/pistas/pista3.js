@@ -1,6 +1,6 @@
 //23x23
-//flagNumber ?
-//? - '3C'
+//flagNumber 8
+//7 - '3C'
 //1 - '2'
 // ^ > leitura do checkpoint
 const pista3 = [

@@ -4,6 +4,7 @@ import {GUI} from       '../build/jsm/libs/dat.gui.module.js';
 import KeyboardState from '../libs/util/KeyboardState.js';
 import {pista1 as pista1} from './pistas/pista1.js';
 import {pista2 as pista2} from './pistas/pista2.js';
+import {pista3 as pista3} from './pistas/pista3.js';
 import Pista from './Pista.js';
 import { Car } from './Car.js';
 import { LambertTestCar } from './LambertTestCar.js';
@@ -39,22 +40,27 @@ const blackholeTexture = loader.load( 'texture/track1/blackhole.jpg' );
 const skyTexture = loader.load( 'texture/track1/sky.jpg' );
 
 //track2
-const groundTexture2 = loader.load( 'texture/track2/sand.jpg' );
+const groundTexture1 = loader.load( 'texture/track2/sand.jpg' );
 const skyTexture2 = loader.load( 'texture/track2/sunsky.png' );
 
 //track0 - secret
 const skyTextureSecret = loader.load( 'texture/secret/coconutMall.jpg' );
 const flagTexture = loader.load( 'texture/secret/coconutFlagPole.png' );
 
-const groundTexture = loader.load( 'texture/grass.jpg' );
+const groundTexture2= loader.load( 'texture/track3/magma.jpg' );
+const skyTexture3 = loader.load( 'texture/track3/bowserCastle.jpg');
+
 //-------------------------------------------------------------------------------
 // Audio Manager
 //-------------------------------------------------------------------------------
 var assetsMng = new assetsManager();
-assetsMng.loadAudio("coconutMall", "./soundAssets/coconutMall.mp3");
-assetsMng.loadAudio("bigBlue", "./soundAssets/bigBlue.mp3");
-assetsMng.loadAudio("01-Milkyway", "./soundAssets/01-milkyWay.mp3");
 assetsMng.loadAudio("startRace", "./soundAssets/startRace.mp3");
+
+assetsMng.loadAudio("01-Milkyway", "./soundAssets/01-milkyWay.mp3");
+assetsMng.loadAudio("02-BigBlue", "./soundAssets/02-bigBlue.mp3");
+assetsMng.loadAudio("03-BowserCastle", "./soundAssets/03-bowserCastle.mp3");
+
+assetsMng.loadAudio("00-CoconutMall", "./soundAssets/00-coconutMall.mp3");
 assetsMng.loadAudio("winRace", "./soundAssets/winRace.mp3");
 
 
@@ -99,18 +105,21 @@ window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, 
 //-------------------------------------------------------------------------------
 var blackholeMaterial = new THREE.MeshStandardMaterial( { map: blackholeTexture } );
 
-groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-groundTexture.repeat.set( 1000, 1000 );
-groundTexture.anisotropy = 16;
-var groundMaterial = new THREE.MeshStandardMaterial( { map: groundTexture } );
+groundTexture1.wrapS = groundTexture1.wrapT = THREE.RepeatWrapping;
+groundTexture1.repeat.set( 1000, 1000 );
+groundTexture1.anisotropy = 16;
+var ground1Material = new THREE.MeshStandardMaterial( { map: groundTexture1 } );
 
 groundTexture2.wrapS = groundTexture2.wrapT = THREE.RepeatWrapping;
-groundTexture2.repeat.set( 1000, 1000 );
+groundTexture2.repeat.set( 50, 50 );
 groundTexture2.anisotropy = 16;
-var ground2Material = new THREE.MeshStandardMaterial( { map: groundTexture2 } );
+var ground2Material = new THREE.MeshStandardMaterial( { map: groundTexture2} );
+
+
 //var plane = createGroundPlaneWired(1500, 1500, 80, 80);
 var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 250, 250 ), blackholeMaterial );
-var plane2 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground2Material );
+var plane2 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground1Material );
+var plane3 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 4000, 4000 ), ground2Material );
 
 plane1.position.y = 0.0;
 plane1.rotation.x = - Math.PI / 2;
@@ -121,9 +130,13 @@ plane2.position.y = 0.0;
 plane2.rotation.x = - Math.PI / 2;
 plane2.position.y = -0.3;
 plane2.visible = false;
+plane3.position.y = 0.0;
+plane3.rotation.x = - Math.PI / 2;
+plane3.position.y = -0.3;
+plane3.visible = false;
 scene.add(plane1);
 scene.add(plane2);
-
+scene.add(plane3);
 
 
 //-------------------------------------------------------------------------------
@@ -355,13 +368,21 @@ virtualcameraHolder.rotateY(degreesToRadians(180))
 scene.add(virtualCamera);
 
 function atualizaMinimapa(){
-    if(pistaAtual == 1){
-        lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
-        virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 600, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
-    }
-    else if(pistaAtual == 2){
-        lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
-        virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 2000, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+    switch(pistaAtual){
+        case 1:
+            lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+            virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 600, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+            break;
+        case 2:
+            lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+            virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 2000, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+            break;
+        case 3:
+            lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+            virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 2200, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+            break;
+        default:
+            break;
     }
     virtualCamera.position.copy(virtualCamPosition);
     virtualCamera.lookAt(lookAtVec);
@@ -516,22 +537,39 @@ function spinBlades()
 // Props
 //-------------------------------------------------------------------------------
 function carregaProps(){
-    if(pistaAtual == 1){
-        carregaPokey();
-        carregaMoon();
-    }
-    else if(pistaAtual == 2){
-        carregaEolics();
-        carregaScenaryEolics();
+    switch(pistaAtual){
+        case 1:
+            carregaPokey();
+            carregaMoon();
+            break;
+        case 2:
+            carregaEolics();
+            break;
+        default:
+            break;
     }
 }
+
+//tinha algum bug q precisou do switch, n lembro qual
 function limpaProps(){
-    if(pistaAtual == 1){
-        limpaEolics();
-    }
-    if(pistaAtual == 2){
-        limpaPokey();
-        limpaMoon();
+    switch(pistaAtual){
+        case 1:
+            limpaPokey();
+            limpaMoon();
+            limpaEolics();
+            break;
+        case 2:
+            limpaPokey();
+            limpaMoon();
+            limpaEolics();
+            break;
+        case 3:
+            limpaPokey();
+            limpaMoon();
+            limpaEolics();
+            break;
+        default:
+            break;
     }
 }
 
@@ -706,7 +744,6 @@ function verificaVoltas(player)
         if(!colidiuCheckpoints[i]){
             verificaCheckpoint(todosCheckpoints[i], player, i);
         }
-        console.log(checkpointsRestantes);
     }
     if (checkpointsRestantes <= 1){
         verificaCheckpoint(todosCheckpoints[i], player, i);
@@ -778,11 +815,18 @@ function configuraPistas(newflagNumber){
     removeFlags();
     flagNumber = newflagNumber;
     checkpointsRestantes = flagNumber;
-    if(pistaAtual == 1){
-        selecaoPista(pista1);
-    }
-    else if(pistaAtual == 2){
-        selecaoPista(pista2);
+    switch(pistaAtual){
+        case 1:
+            selecaoPista(pista1);
+            break;
+        case 2:
+            selecaoPista(pista2);
+            break;
+        case 3:
+            selecaoPista(pista3);
+            break
+        default:
+            break;
     }
     criaFlags();
     resetaVoltaAtual();
@@ -804,36 +848,62 @@ function resetaVariaveis(){
 function reposicionaPlayer(dir){
     player.alternaSpotLight(pistaAtual);
     player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.2*size, posicionamentoChegada[0].getComponent(2) - size);
-    if(dir){
-        player.lookAt(0,0,-100000);
-    }
-    else{
-        player.lookAt(0,0,100000);
+    switch(dir){
+        case 'left':
+            player.lookAt(0,0,100000);
+            break;
+        case 'right':
+            player.lookAt(0,0,-100000);
+            break;
+        case 'up':
+            player.lookAt(-100000,0,0);
+            break;
+        case 'down':
+            player.lookAt(100000,0,0);
+            break;
+        default:
+            player.lookAt(0,0,100000);
     }
 }
 
 function alternaPlano(){
-    if (pistaAtual == 1){
-        scene.background = skyTexture;
-        plane1.visible = true;
-        //adiciona os outros planos pra false
-        plane2.visible = false;
-    }
-    if (pistaAtual == 2){
-        scene.background = skyTexture2;
-        plane1.visible = false;
-        //adiciona os outros planos pra false
-        plane2.visible = true;
+    switch(pistaAtual){
+        case 1:
+            scene.background = skyTexture;
+            plane1.visible = true;
+            plane2.visible = false;
+            plane3.visible = false;
+            break;
+        case 2:
+            scene.background = skyTexture2;
+            plane1.visible = false;
+            plane2.visible = true;
+            plane3.visible = false;
+            break;
+        case 3:
+            scene.background = skyTexture3;
+            plane1.visible = false;
+            plane2.visible = false;
+            plane3.visible = true;
+            break;
+        default:
     }
 }
 
 function selectSoundtrack(track){
     assetsMng.stop();
-    if(track == 1){
-        assetsMng.play("01-Milkyway");
-    }
-    else if(track == 2){
-        assetsMng.play("bigBlue");
+    switch(track){
+        case 1:
+            assetsMng.play("01-Milkyway");
+            break;
+        case 2:
+            assetsMng.play("02-BigBlue");
+            break;
+        case 3:
+            assetsMng.play("03-BowserCastle");
+            break;
+        default:
+            assetsMng.stop();
     }
 }
 
@@ -918,7 +988,7 @@ function keyboardUpdate() {
         configuraPistas(newflagNumber);
         limpaProps();
         resetaVariaveis();
-        reposicionaPlayer(false);
+        reposicionaPlayer('left');
         alternaPlano();
         carregaProps();
         selectSoundtrack(1);
@@ -930,10 +1000,22 @@ function keyboardUpdate() {
         configuraPistas(newflagNumber);
         limpaProps();
         resetaVariaveis();
-        reposicionaPlayer(true);
+        reposicionaPlayer('right');
         alternaPlano();
         carregaProps();
         selectSoundtrack(2);
+    }
+    else if (keyboard.pressed("3") && pistaAtual != 3){
+        pistaAtual = 3;
+        newflagNumber = 8;
+        setaBloom();
+        configuraPistas(newflagNumber);
+        limpaProps();
+        resetaVariaveis();
+        reposicionaPlayer('down');
+        alternaPlano();
+        carregaProps();
+        selectSoundtrack(3);
     }
 
     if (keyboard.pressed("space")){
@@ -960,7 +1042,7 @@ function keyboardUpdate() {
     }
     if (keyboard.down("0")){
         scene.background = skyTextureSecret;
-        assetsMng.play("coconutMall");
+        assetsMng.play("00-CoconutMall");
         controls.add("* 0 to play Coconut Mall");
         plane1.visible = false;
         plane2.visible = false;
@@ -1046,7 +1128,7 @@ function geraStatusFinal(){
     document.body.appendChild(textotempoVolta4);
 
     var textotempoMenorVolta = document.createElement('div');
-    textotempoMenorVolta.setAttribute("id", "txt6");
+    textotempoMenorVolta.setAttribute("id", "txt7");
     textotempoMenorVolta.style.position = 'absolute';
     textotempoMenorVolta.style.backgroundColor = "white";
     textotempoMenorVolta.innerHTML = tempoMenorVolta;
@@ -1158,16 +1240,24 @@ bloomComposer.addPass( bloomPass );
 }*/
 
 function setaBloom(){
-    if(pistaAtual == 1){
-        bloomPass.threshold = Number(0.1);
-        bloomPass.strength = Number(0.9);
-        bloomPass.radius = Number(0.43);
-    }
-    else if(pistaAtual == 2){
-        bloomPass.threshold = Number(0.0);
-        //0.9 pro deserto menor, só com pokey
-        bloomPass.strength = Number(0.8);
-        bloomPass.radius = Number(1.0);
+    switch(pistaAtual){
+        case 1:
+            bloomPass.threshold = Number(0.1);
+            bloomPass.strength = Number(0.9);
+            bloomPass.radius = Number(0.43);
+            break;
+        case 2:
+            bloomPass.threshold = Number(0.0);
+            bloomPass.strength = Number(0.6);
+            bloomPass.radius = Number(1.0);
+            break;
+        case 3:
+            bloomPass.threshold = Number(0.0);
+            bloomPass.strength = Number(0.75);
+            bloomPass.radius = Number(1.0);
+            break;
+        default:
+            break;
     }
 }
 
@@ -1231,7 +1321,7 @@ function render(t)
     cameraHolder.lookAt(ghostguide.getWorldPosition(new THREE.Vector3()));
     cameraHolder.position.set(player.position.getComponent(0)+60, player.position.getComponent(1)+80, player.position.getComponent(2)-50);
     if (panoramico){
-        cameraHolder.position.set(player.position.getComponent(0)+140, player.position.getComponent(1)+80, player.position.getComponent(2)-150);
+        cameraHolder.position.set(player.position.getComponent(0)+140, player.position.getComponent(1)+45, player.position.getComponent(2)-150);
     }
     if (panoramicotraseiro){
         cameraHolder.position.set(player.position.getComponent(0)+0, player.position.getComponent(1)+120, player.position.getComponent(2)-150);

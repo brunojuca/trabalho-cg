@@ -11,7 +11,9 @@ export default class Roadblock
 
         const roadTexture = loader.load( 'texture/track1/road1.jpg' );
         const roadTexture2 = loader.load( 'texture/track2/road2.jpeg' );
+        const roadTexture3 = loader.load( 'texture/track3/road3.jpg' );
         const goalTexture = loader.load( 'texture/checkers.png' );
+
         //roadTexture.wrapS = roadTexture.wrapT = THREE.RepeatWrapping;
         goalTexture.wrapS = goalTexture.wrapT = THREE.RepeatWrapping;
         this.goalMaterial = new THREE.MeshStandardMaterial( { map: goalTexture } );
@@ -19,6 +21,7 @@ export default class Roadblock
         this.finalRoadMaterial = new THREE.MeshStandardMaterial();
         this.road1Material = new THREE.MeshStandardMaterial( { map: roadTexture } );
         this.road2Material = new THREE.MeshStandardMaterial( { map: roadTexture2 } );
+        this.road3Material = new THREE.MeshStandardMaterial( { map: roadTexture3 } );
 
         this.X = x * largura;
         this.Y = y * comprimento;
@@ -33,6 +36,9 @@ export default class Roadblock
             case 2:
                 this.finalRoadMaterial = this.road2Material;
                 break
+            case 3:
+                this.finalRoadMaterial = this.road3Material;
+                break
         }
 
         switch (blockType) {
@@ -45,7 +51,10 @@ export default class Roadblock
                 this.blockType = "COMUM2";
                 this.finalRoadMaterial = this.road2Material;
                 break;
-
+            case '1C':
+                this.blockType = "COMUM3";
+                this.finalRoadMaterial = this.road3Material;
+                break;
 
             case '2':
                 this.blockType = "LARGADA";
@@ -58,7 +67,9 @@ export default class Roadblock
             case '3B':
                 this.blockType = "CHECKPOINT";
                 break;
-
+            case '3C':
+                this.blockType = "CHECKPOINT";
+                break;
 
             default:
                 this.blockType = "OUT_OF_TRACK";
@@ -79,6 +90,11 @@ export default class Roadblock
                 var bloco = new THREE.Mesh( cubeGeometry,  this.finalRoadMaterial  );
                 break;
             case "COMUM2":
+                cor = '#808080'; // cinza
+                //var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
+                var bloco = new THREE.Mesh( cubeGeometry,  this.finalRoadMaterial  );
+                break;
+            case "COMUM3":
                 cor = '#808080'; // cinza
                 //var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
                 var bloco = new THREE.Mesh( cubeGeometry,  this.finalRoadMaterial  );

@@ -17,7 +17,7 @@ export class Pokey extends THREE.Group {
 
     const loader = new THREE.TextureLoader();
 
-    const pokeyTexture = loader.load( 'texture/pokey.jpg' );
+    const pokeyTexture = loader.load( 'texture/track1/pokey.jpg' );
     this.pokeyMaterial = new THREE.MeshLambertMaterial( { map: pokeyTexture } );
     this.pokeySpeed = 3.0;
     this.update1 = true;
@@ -114,17 +114,6 @@ export class Pokey extends THREE.Group {
       bevelSegments: 20
     };
 
-    var mouthExtrudeSettings =
-    {
-      depth: 0,
-      steps: 2,
-      bevelEnabled: true,
-      bevelThickness: 2,
-      bevelSize: 2,
-      bevelOffset: 0,
-      bevelSegments: 20
-    };
-
     var headGeometry = new THREE.SphereGeometry(height, 32, 32);
     var head = new THREE.Mesh(headGeometry, this.pokeyMaterial);
 
@@ -142,13 +131,16 @@ export class Pokey extends THREE.Group {
     var hat = new THREE.Mesh(hatGeometry, hatMaterial);
     hat.position.set(0.0, 6.0, 0.0);
 
- //   var mouthGeometry = new THREE.ExtrudeGeometry(this.eyeShape(), mouthExtrudeSettings);
-  //  var mouthMaterial = new THREE.MeshPhongMaterial({color: "rgb(50,50,50)", opacity: 0});
-   // var mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
+    var mouthGeometry = new THREE.SphereGeometry(2.0);
+    var mouthMaterial = new THREE.MeshBasicMaterial({color: "rgb(50,50,50)", opacity: 0});
+    var mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
+    mouth.scale.set(0.6, 0.5, 1.0);
+    mouth.position.set(0.0, 0.0, -height);
 
     head.add(eye);
     head.add(eye2);
     head.add(hat);
+    head.add(mouth);
 
     return head;
   }

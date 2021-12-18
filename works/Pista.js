@@ -30,7 +30,28 @@ export default class Pista {
         for (let j=0; j<this.COLUNAS; j++) {
             for (let i=0; i<this.LINHAS; i++) {
                 if (this.roadblocks[i][j] != 0) {
-                    var bloco = new Roadblock(i, j, 0, this.roadblocks[i][j]);
+                    var blockType = this.roadblocks[i][j];
+                    var lastRoadIndice = 0;
+                    switch(blockType){
+                        case '3A':
+                            lastRoadIndice = 1;
+                            break;
+                        case '3B':
+                            lastRoadIndice = 2;
+                            break;
+                        case '3C':
+                            lastRoadIndice = 3;
+                            break;
+                        case '3D':
+                            lastRoadIndice = 4;
+                            break;
+                        case '3E':
+                            lastRoadIndice = 5;
+                            break;
+                        default:
+                            break;
+                    }
+                    var bloco = new Roadblock(i, j, 0, this.roadblocks[i][j], lastRoadIndice);
                     blockArray.push(bloco);
                 }
             }

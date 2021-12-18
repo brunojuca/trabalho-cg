@@ -15,8 +15,8 @@ import KeyboardState from "../libs/util/KeyboardState.js";
 import {assetsManager} from './assetsManager.js';
 
 const loader = new THREE.TextureLoader();
-const goldTexture = loader.load( 'texture/gold.jpg' );
-const metallicTexture = loader.load( 'texture/platform.png' );
+const goldTexture = loader.load( 'texture/secret/gold.jpg' );
+const metallicTexture = loader.load( 'texture/secret/platform.png' );
 var metallicMaterial = new THREE.MeshStandardMaterial( { map: metallicTexture } );
 var plataformaGeo = new THREE.CylinderGeometry(10, 10, 3, 40);
 

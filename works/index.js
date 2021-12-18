@@ -32,21 +32,28 @@ import Roadblock from './Roadblock.js';
 // Texture Loader
 //-------------------------------------------------------------------------------
 const loader = new THREE.TextureLoader();
-const moonTexture = loader.load( 'texture/moon.jpg' );
-const groundTexture = loader.load( 'texture/grass.jpg' );
-const groundTexture2 = loader.load( 'texture/sand.jpg' );
-const skyTexture = loader.load( 'texture/sky.jpg' );
-const skyTexture2 = loader.load( 'texture/sunsky.png' );
-const skyTextureSecret = loader.load( 'texture/coconutMall.jpg' );
-const flagTexture = loader.load( 'texture/coconutFlagPole.png' );
 
+//track1
+const moonTexture = loader.load( 'texture/track1/moon.jpg' );
+const blackholeTexture = loader.load( 'texture/track1/blackhole.jpg' );
+const skyTexture = loader.load( 'texture/track1/sky.jpg' );
+
+//track2
+const groundTexture2 = loader.load( 'texture/track2/sand.jpg' );
+const skyTexture2 = loader.load( 'texture/track2/sunsky.png' );
+
+//track0 - secret
+const skyTextureSecret = loader.load( 'texture/secret/coconutMall.jpg' );
+const flagTexture = loader.load( 'texture/secret/coconutFlagPole.png' );
+
+const groundTexture = loader.load( 'texture/grass.jpg' );
 //-------------------------------------------------------------------------------
 // Audio Manager
 //-------------------------------------------------------------------------------
 var assetsMng = new assetsManager();
 assetsMng.loadAudio("coconutMall", "./soundAssets/coconutMall.mp3");
 assetsMng.loadAudio("bigBlue", "./soundAssets/bigBlue.mp3");
-assetsMng.loadAudio("moonviewHighway", "./soundAssets/moonviewHighway.mp3");
+assetsMng.loadAudio("01-Milkyway", "./soundAssets/01-milkyWay.mp3");
 assetsMng.loadAudio("startRace", "./soundAssets/startRace.mp3");
 assetsMng.loadAudio("winRace", "./soundAssets/winRace.mp3");
 
@@ -72,6 +79,7 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
   camera.position.set(0, 0, 0);
   camera.up.set( 0, 10, 0 );
   camera.fov = 20;
+  camera.far = 1000;
   camera.layers.enable(1);
 
 //light
@@ -89,6 +97,7 @@ window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, 
 // Ambiente - Eixos e Plano
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
+var blackholeMaterial = new THREE.MeshStandardMaterial( { map: blackholeTexture } );
 
 groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
 groundTexture.repeat.set( 1000, 1000 );
@@ -100,11 +109,14 @@ groundTexture2.repeat.set( 1000, 1000 );
 groundTexture2.anisotropy = 16;
 var ground2Material = new THREE.MeshStandardMaterial( { map: groundTexture2 } );
 //var plane = createGroundPlaneWired(1500, 1500, 80, 80);
-var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), groundMaterial );
+var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 200, 200 ), blackholeMaterial );
 var plane2 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground2Material );
+
 plane1.position.y = 0.0;
 plane1.rotation.x = - Math.PI / 2;
-plane1.position.y = -0.3;
+plane1.position.x = 150;
+plane1.position.y = -6.3;
+plane1.position.z = 150;
 plane2.position.y = 0.0;
 plane2.rotation.x = - Math.PI / 2;
 plane2.position.y = -0.3;
@@ -154,7 +166,7 @@ function limpaPista(){
 //-------------------------------------------------------------------------------
 // Criação e Setagem dos Checkpoints
 //-------------------------------------------------------------------------------
-const checkpointRadius = blocoSize;
+const checkpointRadius = 1.5*blocoSize;
 var flagNumber = 4;
 
 function createCheckpoint(checkpointRadius)
@@ -296,7 +308,7 @@ criaFlags();
 
 function removeFlags(){
     for (var i = 0; i <= flagNumber-1; i++){
-        flags[i].remove();
+        scene.remove(flags[i]);
     }
 }
 
@@ -391,27 +403,46 @@ function setSpotLight(spotLight, lightName, position)
 */
 
 //-------------------------------------------------------------------------------
-// Moon - em desenvolvimento
+// Moon
 //-------------------------------------------------------------------------------
 moonTexture.wrapS = moonTexture.wrapT = THREE.RepeatWrapping;
 moonTexture.anisotropy = 16;
-var moonMaterial = new THREE.MeshStandardMaterial( { map: moonTexture } );
-var sphereGeometry = new THREE.SphereGeometry(10*radius, 32, 32);
-var fallenMoon = new THREE.Mesh( sphereGeometry, moonMaterial );
-fallenMoon.position.set(centroPistaAtual.getComponent(0), centroPistaAtual.getComponent(1), centroPistaAtual.getComponent(2));
-scene.add(fallenMoon);
+var moon = [];
+
+function carregaMoon(){
+    var moonMaterial = new THREE.MeshStandardMaterial( { map: moonTexture } );
+    var sphereGeometry = new THREE.SphereGeometry(10*radius, 32, 32);
+    var moonObj = new THREE.Mesh( sphereGeometry, moonMaterial );
+    moonObj.position.set(centroPistaAtual.getComponent(0), 10*radius, centroPistaAtual.getComponent(2));
+    moon.push(moonObj);
+    scene.add(moon[0]);
+}
+carregaMoon();
+
+function limpaMoon(){
+    scene.remove(moon[0]);
+}
+
+function moonOrbit(){
+    moon[0].rotateY(degreesToRadians(1));
+}
 
 //-------------------------------------------------------------------------------
-// Pokey - em desenvolvimento
+// Pokey
 //-------------------------------------------------------------------------------
 
 var pokey = [];
 function carregaPokey(){
     pokey = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 41; i++) {
         var novoPokey = new Pokey();
         pokey.push(novoPokey);
-        pokey[i].position.set(-600+100*i, 0.0, 40*Math.sin(Math.PI*5*i));
+        pokey[i].position.set(150 + 60*Math.cos(i*Math.PI/4), 0.0, 150 + 60*Math.sin(i*Math.PI/4));
+        if(i > 8){
+            pokey[i].position.set(150 + 250*Math.cos(i*Math.PI/16), 0.0, 150 + 250*Math.sin(i*Math.PI/16));
+            pokey[i].head.rotateY(degreesToRadians(180));
+        }
+        pokey[i].lookAt(moon[0].position);
         scene.add(pokey[i]);
     }
 }
@@ -446,54 +477,29 @@ function pokeyDance()
 // Eolics
 //-------------------------------------------------------------------------------
 var eolics = [];
-var scenicEolics = [];
-var scenicTemp = [];
 
 function carregaEolics(){
     eolics = [];
-    for (let i = 0; i < 21; i++) {
+    for (let i = 0; i < 100; i++) {
         var eolicTurbine = new Turbina();
         eolicTurbine.rotateY(degreesToRadians(180));
         eolics.push(eolicTurbine);
-        eolics[i].position.set(-600+100*i, 0.0, 500.0);
+        eolics[i].position.set(-50+15*i, 0.0, -100 + 150*(i%15));
         scene.add(eolics[i]);
     }
 }
-function carregaScenaryEolics(){
-    for(let j = 0; j < 5; j++){
-        scenicTemp = [];
-        for (let i = 0; i < 21; i++) {
-            var eolicTurbine = new Turbina();
-            eolicTurbine.rotateY(degreesToRadians(180));
-            scenicTemp.push(eolicTurbine);
-        }
-        scenicEolics.push(scenicTemp)
-        for (let i = 0; i < 21; i++) {
-            scenicEolics[j][i].position.set(-600+100*i, 0.0, 500.0 + 200*j);
-            scene.add(scenicEolics[j][i]);
-        }
-    }
-}
+
 function limpaEolics(){
     for (let i = 0; i < eolics.length; i++) {
         scene.remove(eolics[i]);
     }
-    for(let j = 0; j < 5; j++){
-        for (let i = 0; i < 21; i++) {
-            scene.remove(scenicEolics[j][i]);
-        }
-    }
 }
 var eolicsSpeed = 5.0;
+
 function spinBlades()
 {
     for (let i = 0; i < eolics.length; i++) {
         eolics[i].defaultUpdate(eolicsSpeed + eolics[i].turbo);
-    }
-    for(let j = 0; j < 5; j++){
-        for (let i = 0; i < 21; i++) {
-           scenicEolics[j][i].defaultUpdate(eolicsSpeed + eolics[i].turbo*1/(j*10));
-        }
     }
 }
 
@@ -501,13 +507,23 @@ function spinBlades()
 // Props
 //-------------------------------------------------------------------------------
 function carregaProps(){
-    //carregaPokey();
-    carregaEolics();
-    carregaScenaryEolics();
+    if(pistaAtual == 1){
+        carregaPokey();
+        carregaMoon();
+    }
+    else if(pistaAtual == 2){
+        carregaEolics();
+        carregaScenaryEolics();
+    }
 }
 function limpaProps(){
-    limpaPokey();
-    limpaEolics();
+    if(pistaAtual == 1){
+        limpaEolics();
+    }
+    if(pistaAtual == 2){
+        limpaPokey();
+        limpaMoon();
+    }
 }
 
 
@@ -667,22 +683,29 @@ function verificaCheckpoint(checkpoint, player, i){
     if (Math.abs(checkpoint.position.getComponent(0) - player.position.getComponent(0)) < checkpointRadius &&
         Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
         colidiuCheckpoints[i] = true;
+        checkpointsRestantes--;
         flags[i].material.color.setHex(0x00ff00);
     }
 }
 
-
+let checkpointsRestantes = flagNumber;
 function verificaVoltas(player)
 {
     armazenaTempoVoltaAlternativa(voltas);
-    for (var i = 0; i <= flagNumber-1; i++){
+    for (var i = 0; i <= flagNumber-2; i++){
         if(!colidiuCheckpoints[i]){
             verificaCheckpoint(todosCheckpoints[i], player, i);
-            return;
+        }
+        console.log(checkpointsRestantes);
+    }
+    if (checkpointsRestantes <= 1){
+        verificaCheckpoint(todosCheckpoints[i], player, i);
+        if(checkpointsRestantes <= 0){
+            voltas += 1;
+            checkpointsRestantes = flagNumber;
+            resetaVoltaAtual();
         }
     }
-    voltas += 1;
-    resetaVoltaAtual();
 }
 
 
@@ -718,6 +741,7 @@ function configuraPistas(newflagNumber){
     limpaPista();
     removeFlags();
     flagNumber = newflagNumber;
+    checkpointsRestantes = flagNumber;
     if(pistaAtual == 1){
         selecaoPista(pista1);
     }
@@ -770,7 +794,7 @@ function alternaPlano(){
 function selectSoundtrack(track){
     assetsMng.stop();
     if(track == 1){
-        assetsMng.play("moonviewHighway");
+        assetsMng.play("01-Milkyway");
     }
     else if(track == 2){
         assetsMng.play("bigBlue");
@@ -803,6 +827,7 @@ var speedForward = 0;
 var speedBackward = 0;
 var tempoJogoAnterior = 0;
 var panoramico = false;
+var panoramicotraseiro = false;
 
 function keyboardUpdate() {
     keyboard.update();
@@ -859,17 +884,19 @@ function keyboardUpdate() {
         resetaVariaveis();
         reposicionaPlayer(false);
         alternaPlano();
+        carregaProps();
         selectSoundtrack(1);
     }
     else if (keyboard.pressed("2") && pistaAtual != 2){
         pistaAtual = 2;
-        newflagNumber = 14;
+        newflagNumber = 12;
         setaBloom();
         configuraPistas(newflagNumber);
-        carregaProps();
+        limpaProps();
         resetaVariaveis();
         reposicionaPlayer(true);
         alternaPlano();
+        carregaProps();
         selectSoundtrack(2);
     }
 
@@ -880,12 +907,20 @@ function keyboardUpdate() {
 
     //extras
     if (keyboard.pressed(",")){
+        panoramicotraseiro = false;
         panoramico = true;
         playerIcon.visible = false;
     }
     else if (keyboard.pressed(".")){
         panoramico = false;
+        panoramicotraseiro = false;
         playerIcon.visible = true;
+    }
+    //; em alguns teclados
+    else if (keyboard.pressed("/")){
+        panoramico = false;
+        panoramicotraseiro = true;
+        playerIcon.visible = false;
     }
     if (keyboard.down("0")){
         scene.background = skyTextureSecret;
@@ -1004,10 +1039,10 @@ let params = {
     //pixel
     pixelSize: 2,
     pixelizar: false,
-    bloomStrength: 3.0,
-    bloomThreshold: 0.2,
-    bloomRadius: 0.5,
-    bloomTrue: false
+    bloomThreshold: 0.1,
+    bloomStrength: 0.9,
+    bloomRadius: 0.43,
+    bloomTrue: true
 };
 
 var gui = new GUI();
@@ -1071,18 +1106,20 @@ function renderBloom(){
     bloomComposer.render();
     renderer.clearDepth();
     camera.layers.set(0);
+    console.clear();
     renderer.render(scene.camera);
 }
 
 function setaBloom(){
     if(pistaAtual == 1){
-        bloomPass.threshold = Number(0.2);
-        bloomPass.strength = Number(3.0);
-        bloomPass.radius = Number(0.5);
+        bloomPass.threshold = Number(0.1);
+        bloomPass.strength = Number(0.9);
+        bloomPass.radius = Number(0.43);
     }
     else if(pistaAtual == 2){
         bloomPass.threshold = Number(0.0);
-        bloomPass.strength = Number(0.4);
+        //0.9 pro deserto menor, só com pokey
+        bloomPass.strength = Number(0.8);
         bloomPass.radius = Number(1.0);
     }
 }
@@ -1143,9 +1180,12 @@ function render(t)
     //setagem de camera
     posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
     cameraHolder.lookAt(ghostguide.getWorldPosition(new THREE.Vector3()));
-    cameraHolder.position.set(player.position.getComponent(0)+40, player.position.getComponent(1)+40, player.position.getComponent(2)-50);
+    cameraHolder.position.set(player.position.getComponent(0)+60, player.position.getComponent(1)+80, player.position.getComponent(2)-50);
     if (panoramico){
         cameraHolder.position.set(player.position.getComponent(0)+140, player.position.getComponent(1)+80, player.position.getComponent(2)-150);
+    }
+    if (panoramicotraseiro){
+        cameraHolder.position.set(player.position.getComponent(0)+0, player.position.getComponent(1)+120, player.position.getComponent(2)-150);
     }
     cameraHolder.rotateY(degreesToRadians(180));
 
@@ -1158,10 +1198,13 @@ function render(t)
         limpaStatusFinal();
     }
 
+    if(pistaAtual == 1){
+        pokeyDance();
+        moonOrbit();
+    }
     if(pistaAtual == 2){
         spinBlades();
     }
-    pokeyDance();
 
     controlledRender(t);
 }

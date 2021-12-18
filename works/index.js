@@ -109,7 +109,7 @@ groundTexture2.repeat.set( 1000, 1000 );
 groundTexture2.anisotropy = 16;
 var ground2Material = new THREE.MeshStandardMaterial( { map: groundTexture2 } );
 //var plane = createGroundPlaneWired(1500, 1500, 80, 80);
-var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 200, 200 ), blackholeMaterial );
+var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 250, 250 ), blackholeMaterial );
 var plane2 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground2Material );
 
 plane1.position.y = 0.0;
@@ -344,6 +344,14 @@ var virtualCamera = new THREE.PerspectiveCamera(45, vcWidth/vcHeight, 1.0, 20.0)
   virtualCamera.fov = 30;
   virtualCamera.updateProjectionMatrix();
 
+/*
+var virtualcameraHolder = new THREE.Object3D();
+virtualcameraHolder.add(virtualCamera);
+virtualcameraHolder.position.set(virtualCamPosition);
+virtualcameraHolder.lookAt(lookAtVec)
+virtualcameraHolder.rotateY(degreesToRadians(180))
+*/
+
 scene.add(virtualCamera);
 
 function atualizaMinimapa(){
@@ -424,7 +432,8 @@ function limpaMoon(){
 }
 
 function moonOrbit(){
-    moon[0].rotateY(degreesToRadians(1));
+    moon[0].rotateY(degreesToRadians(-1));
+    plane1.rotateZ(degreesToRadians(2));
 }
 
 //-------------------------------------------------------------------------------
@@ -543,7 +552,7 @@ function aceleraCarro(aceleracaoAnterior)
 {
     if(carroAcelerando){
         if(aceleracao < speedMax){
-            aceleracao += redutor*aceleracaoAnterior/100;
+            aceleracao += redutor*aceleracaoAnterior/80;
         }
     }
     else if(!carroAcelerando){
@@ -558,7 +567,7 @@ function freiaCarro(freiaAnterior)
 {
     if(carroFreiando){
         if(freia > -speedMax){
-            freia += redutor*freiaAnterior/100;
+            freia += redutor*freiaAnterior/80;
         }
     }
     else if(!carroFreiando){
@@ -692,6 +701,7 @@ let checkpointsRestantes = flagNumber;
 function verificaVoltas(player)
 {
     armazenaTempoVoltaAlternativa(voltas);
+    armazenaTempoMenorVolta(voltas);
     for (var i = 0; i <= flagNumber-2; i++){
         if(!colidiuCheckpoints[i]){
             verificaCheckpoint(todosCheckpoints[i], player, i);
@@ -710,6 +720,8 @@ function verificaVoltas(player)
 
 
 var tempoTodasVoltas = [0,0,0,0];
+var tempoMenorVolta = 999.99;
+
 function armazenaTempoVoltaAlternativa(){
     if (voltas < 4){
         tempoTodasVoltas[3] = anterior/1000 - tempoTodasVoltas[0] - tempoTodasVoltas[1] - tempoTodasVoltas[2] - tempoJogoAnterior;
@@ -719,6 +731,30 @@ function armazenaTempoVoltaAlternativa(){
                 tempoTodasVoltas[1] = anterior/1000 - tempoTodasVoltas[0] - tempoJogoAnterior;
                 if (voltas < 1){
                     tempoTodasVoltas[0] = anterior/1000 - tempoJogoAnterior;
+                }
+            }
+        }
+    }
+}
+
+function armazenaTempoMenorVolta(){
+    if (voltas >= 1){
+        if (tempoTodasVoltas[0] < tempoMenorVolta){
+            tempoMenorVolta = tempoTodasVoltas[0];
+        }
+        if (voltas >= 2){
+            if (tempoTodasVoltas[1] < tempoMenorVolta){
+                tempoMenorVolta = tempoTodasVoltas[1];
+            }
+            if (voltas >= 3){
+                if (tempoTodasVoltas[2] < tempoMenorVolta){
+                    tempoMenorVolta = tempoTodasVoltas[2];
+                }
+                if (voltas >= 4){
+                    tempoTodasVoltas[3];
+                    if (tempoTodasVoltas[3] < tempoMenorVolta){
+                        tempoMenorVolta = tempoTodasVoltas[3];
+                    }
                 }
             }
         }
@@ -1009,6 +1045,15 @@ function geraStatusFinal(){
     textotempoVolta4.style.left = window.innerWidth - 400 + 'px';
     document.body.appendChild(textotempoVolta4);
 
+    var textotempoMenorVolta = document.createElement('div');
+    textotempoMenorVolta.setAttribute("id", "txt6");
+    textotempoMenorVolta.style.position = 'absolute';
+    textotempoMenorVolta.style.backgroundColor = "white";
+    textotempoMenorVolta.innerHTML = tempoMenorVolta;
+    textotempoMenorVolta.style.top = 119 + 'px';
+    textotempoMenorVolta.style.left = window.innerWidth - 400 + 'px';
+    document.body.appendChild(textotempoMenorVolta);
+
 }
 
 function limpaStatusFinal(){
@@ -1026,6 +1071,8 @@ function limpaStatusFinal(){
     txt5.remove();
     var txt6 = document.getElementById("txt6");
     txt6.remove();
+    var txt7 = document.getElementById("txt7");
+    txt7.remove();
 }
 
 
@@ -1142,19 +1189,18 @@ function controlledRender(t)
     renderer.setScissorTest(false); // Disable scissor to paint the entire window
     renderer.autoClear = false;
     renderer.clear();   // Clean the window
+    updateGUI();
     if(params.pixelizar){
-        updateGUI();
         pixelComposer.render();
-        renderer.clearDepth();
     }
     else if (params.bloomTrue){
-        updateGUI();
         bloomComposer.render();
-        renderer.clearDepth();
     }
     else {
         renderer.render(scene, camera);
     }
+    renderer.clearDepth();
+
     // Set virtual camera viewport
     var offset = 20;
     renderer.setViewport(offset, height-vcHeight-offset, vcWidth, vcHeight);  // Set virtual camera viewport

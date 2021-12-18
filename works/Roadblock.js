@@ -47,7 +47,7 @@ export default class Roadblock
                 break;
 
 
-            case 2:
+            case '2':
                 this.blockType = "LARGADA";
                 break;
 

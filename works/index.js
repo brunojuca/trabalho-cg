@@ -67,7 +67,7 @@ assetsMng.loadAudio("winRace", "./soundAssets/winRace.mp3");
 
 var stats = new Stats();          // To show FPS information
 var scene = new THREE.Scene();    // Create main scene
-var renderer = new THREE.WebGLRenderer({antialias: true});
+var renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor( 0x000000 );
 document.body.appendChild(renderer.domElement);
@@ -1100,7 +1100,7 @@ bloomComposer.setSize( window.innerWidth, window.innerHeight);
 bloomComposer.addPass( renderScene );
 bloomComposer.addPass( bloomPass );
 
-function renderBloom(){
+/*function renderBloom(){
     renderer.autoClear = false;
     renderer.clear();
     bloomComposer.render();
@@ -1108,7 +1108,7 @@ function renderBloom(){
     camera.layers.set(0);
     console.clear();
     renderer.render(scene.camera);
-}
+}*/
 
 function setaBloom(){
     if(pistaAtual == 1){
@@ -1139,20 +1139,22 @@ function controlledRender(t)
 
     // Set main viewport
     renderer.setViewport(0, 0, width, height); // Reset viewport
-  renderer.setScissorTest(false); // Disable scissor to paint the entire window
-  renderer.autoClear = false;
-  renderer.clear();   // Clean the window
-  if(params.bloomTrue){
-      renderBloom();
+    renderer.setScissorTest(false); // Disable scissor to paint the entire window
+    renderer.autoClear = false;
+    renderer.clear();   // Clean the window
+    if(params.pixelizar){
+        updateGUI();
+        pixelComposer.render();
+        renderer.clearDepth();
     }
-    else if(params.pixelizar){
-    updateGUI();
-    pixelComposer.render();
+    else if (params.bloomTrue){
+        updateGUI();
+        bloomComposer.render();
+        renderer.clearDepth();
     }
     else {
         renderer.render(scene, camera);
     }
-
     // Set virtual camera viewport
     var offset = 20;
     renderer.setViewport(offset, height-vcHeight-offset, vcWidth, vcHeight);  // Set virtual camera viewport
@@ -1161,6 +1163,7 @@ function controlledRender(t)
     renderer.setClearColor("rgb(60, 50, 150)");  // Use a darker clear color in the small viewport
     renderer.render(scene, virtualCamera);  // Render scene of the virtual camera
 }
+
 
 var delay = 0;
 function render(t)

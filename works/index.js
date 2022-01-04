@@ -8,7 +8,7 @@ import {pista3 as pista3} from './pistas/pista3.js';
 import Pista from './Pista.js';
 import { Car } from './Car.js';
 import { LambertTestCar } from './LambertTestCar.js';
-import { Turbina } from './turbina.js';
+import { Turbina } from './Turbina.js';
 import { Pokey } from './Pokey.js';
 import { assetsManager } from './assetsManager.js';
 import { EffectComposer } from '../build/jsm/postprocessing/EffectComposer.js';

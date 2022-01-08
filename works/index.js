@@ -5,6 +5,8 @@ import KeyboardState from '../libs/util/KeyboardState.js';
 import {pista1 as pista1} from './pistas/pista1.js';
 import {pista2 as pista2} from './pistas/pista2.js';
 import {pista3 as pista3} from './pistas/pista3.js';
+import {pista4 as pista4} from './pistas/pista4.js';
+import {pista5 as pista5} from './pistas/pista5.js';
 import Pista from './Pista.js';
 import { Car } from './Car.js';
 import { LambertTestCar } from './LambertTestCar.js';
@@ -20,7 +22,8 @@ import { UnrealBloomPass } from '../build/jsm/postprocessing/UnrealBloomPass.js'
 
 import {InfoBox,
         onWindowResize,
-        degreesToRadians,} from "../libs/util/util.js";
+        degreesToRadians,
+        createGroundPlaneWired,} from "../libs/util/util.js";
 import Roadblock from './Roadblock.js';
 
 //-------------------------------------------------------------------------------
@@ -43,12 +46,14 @@ const skyTexture = loader.load( 'texture/track1/sky.jpg' );
 const groundTexture1 = loader.load( 'texture/track2/sand.jpg' );
 const skyTexture2 = loader.load( 'texture/track2/sunsky.png' );
 
+//track3
+const groundTexture2= loader.load( 'texture/track3/magma.jpg' );
+const skyTexture3 = loader.load( 'texture/track3/bowserCastle.jpg');
+
 //track0 - secret
 const skyTextureSecret = loader.load( 'texture/secret/coconutMall.jpg' );
 const flagTexture = loader.load( 'texture/secret/coconutFlagPole.png' );
 
-const groundTexture2= loader.load( 'texture/track3/magma.jpg' );
-const skyTexture3 = loader.load( 'texture/track3/bowserCastle.jpg');
 
 //-------------------------------------------------------------------------------
 // Audio Manager
@@ -118,25 +123,36 @@ var ground2Material = new THREE.MeshStandardMaterial( { map: groundTexture2} );
 
 //var plane = createGroundPlaneWired(1500, 1500, 80, 80);
 var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 250, 250 ), blackholeMaterial );
-var plane2 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground1Material );
+var plane2 = createGroundPlaneWired(1500, 1500, 80, 80);
 var plane3 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 4000, 4000 ), ground2Material );
+var plane4 = createGroundPlaneWired(1500, 1500, 80, 80);
+var plane5 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground1Material );
 
 plane1.position.y = 0.0;
 plane1.rotation.x = - Math.PI / 2;
 plane1.position.x = 150;
 plane1.position.y = -6.3;
 plane1.position.z = 150;
-plane2.position.y = 0.0;
-plane2.rotation.x = - Math.PI / 2;
-plane2.position.y = -0.3;
+
 plane2.visible = false;
+
 plane3.position.y = 0.0;
 plane3.rotation.x = - Math.PI / 2;
 plane3.position.y = -0.3;
 plane3.visible = false;
+
+plane4.visible = false;
+
+plane5.position.y = 0.0;
+plane5.rotation.x = - Math.PI / 2;
+plane5.position.y = -0.3;
+plane5.visible = false;
+
 scene.add(plane1);
 scene.add(plane2);
 scene.add(plane3);
+scene.add(plane3);
+scene.add(plane5);
 
 
 //-------------------------------------------------------------------------------
@@ -228,9 +244,9 @@ function encontraPosicaoCheckpoints(){
             posicaoCheckpoints.push(posicaoNova);
         }
     }
-    if(pistaAtual == 2){
+    /*if(pistaAtual == 2){
         posicaoCheckpoints.reverse();
-    }
+    }*/
     return posicaoCheckpoints.reverse();
 }
 
@@ -356,6 +372,7 @@ var virtualCamera = new THREE.PerspectiveCamera(45, vcWidth/vcHeight, 1.0, 20.0)
   virtualCamera.far = 8000;
   virtualCamera.fov = 30;
   virtualCamera.updateProjectionMatrix();
+  virtualCamera.rotateZ(degreesToRadians(90));
 
 /*
 var virtualcameraHolder = new THREE.Object3D();
@@ -368,6 +385,7 @@ virtualcameraHolder.rotateY(degreesToRadians(180))
 scene.add(virtualCamera);
 
 function atualizaMinimapa(){
+    //Aprox 200 de y pra cada novo aumento na pista
     switch(pistaAtual){
         case 1:
             lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
@@ -375,11 +393,19 @@ function atualizaMinimapa(){
             break;
         case 2:
             lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
-            virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 2000, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+            virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 800, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
             break;
         case 3:
             lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
             virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 2200, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+            break;
+        case 4:
+            lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+            virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 2200, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+            break;
+        case 5:
+            lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+            virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 2000, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
             break;
         default:
             break;
@@ -542,7 +568,7 @@ function carregaProps(){
             carregaPokey();
             carregaMoon();
             break;
-        case 2:
+        case 5:
             carregaEolics();
             break;
         default:
@@ -564,6 +590,16 @@ function limpaProps(){
             limpaEolics();
             break;
         case 3:
+            limpaPokey();
+            limpaMoon();
+            limpaEolics();
+            break;
+        case 4:
+            limpaPokey();
+            limpaMoon();
+            limpaEolics();
+            break;
+        case 5:
             limpaPokey();
             limpaMoon();
             limpaEolics();
@@ -825,6 +861,12 @@ function configuraPistas(newflagNumber){
         case 3:
             selecaoPista(pista3);
             break
+        case 4:
+            selecaoPista(pista4);
+            break;
+        case 5:
+            selecaoPista(pista5);
+            break;
         default:
             break;
     }
@@ -846,7 +888,7 @@ function resetaVariaveis(){
 }
 
 function reposicionaPlayer(dir){
-    player.alternaSpotLight(pistaAtual);
+    //player.alternaSpotLight(pistaAtual);
     player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.2*size, posicionamentoChegada[0].getComponent(2) - size);
     switch(dir){
         case 'left':
@@ -873,18 +915,38 @@ function alternaPlano(){
             plane1.visible = true;
             plane2.visible = false;
             plane3.visible = false;
+            plane4.visible = false;
+            plane5.visible = false;
             break;
         case 2:
-            scene.background = skyTexture2;
             plane1.visible = false;
             plane2.visible = true;
             plane3.visible = false;
+            plane4.visible = false;
+            plane5.visible = false;
             break;
         case 3:
             scene.background = skyTexture3;
             plane1.visible = false;
             plane2.visible = false;
             plane3.visible = true;
+            plane4.visible = false;
+            plane5.visible = false;
+            break;
+        case 4:
+            plane1.visible = false;
+            plane2.visible = false;
+            plane3.visible = false;
+            plane4.visible = true;
+            plane5.visible = false;
+            break;
+        case 5:
+            scene.background = skyTexture2;
+            plane1.visible = false;
+            plane2.visible = false;
+            plane3.visible = false;
+            plane4.visible = false;
+            plane5.visible = true;
             break;
         default:
     }
@@ -896,11 +958,11 @@ function selectSoundtrack(track){
         case 1:
             assetsMng.play("01-Milkyway");
             break;
-        case 2:
-            assetsMng.play("02-BigBlue");
-            break;
         case 3:
             assetsMng.play("03-BowserCastle");
+            break;
+        case 5:
+            assetsMng.play("02-BigBlue");
             break;
         default:
             assetsMng.stop();
@@ -995,15 +1057,15 @@ function keyboardUpdate() {
     }
     else if (keyboard.pressed("2") && pistaAtual != 2){
         pistaAtual = 2;
-        newflagNumber = 12;
+        newflagNumber = 4;
         setaBloom();
         configuraPistas(newflagNumber);
         limpaProps();
         resetaVariaveis();
-        reposicionaPlayer('right');
+        reposicionaPlayer('left');
         alternaPlano();
         carregaProps();
-        selectSoundtrack(2);
+        selectSoundtrack(1);
     }
     else if (keyboard.pressed("3") && pistaAtual != 3){
         pistaAtual = 3;
@@ -1017,6 +1079,31 @@ function keyboardUpdate() {
         carregaProps();
         selectSoundtrack(3);
     }
+    else if (keyboard.pressed("4") && pistaAtual != 4){
+        pistaAtual = 4;
+        newflagNumber = 8;
+        setaBloom();
+        configuraPistas(newflagNumber);
+        limpaProps();
+        resetaVariaveis();
+        reposicionaPlayer('left');
+        alternaPlano();
+        carregaProps();
+        selectSoundtrack(3);
+    }
+    else if (keyboard.pressed("5") && pistaAtual != 5){
+        pistaAtual = 5;
+        newflagNumber = 12;
+        setaBloom();
+        configuraPistas(newflagNumber);
+        limpaProps();
+        resetaVariaveis();
+        reposicionaPlayer('right');
+        alternaPlano();
+        carregaProps();
+        selectSoundtrack(2);
+    }
+
 
     if (keyboard.pressed("space")){
         window.location.href = "carView.html";
@@ -1046,6 +1133,9 @@ function keyboardUpdate() {
         controls.add("* 0 to play Coconut Mall");
         plane1.visible = false;
         plane2.visible = false;
+        plane3.visible = false;
+        plane4.visible = false;
+        plane5.visible = false;
     }
 }
 
@@ -1171,7 +1261,7 @@ let params = {
     bloomThreshold: 0.1,
     bloomStrength: 0.9,
     bloomRadius: 0.43,
-    bloomTrue: true
+    bloomTrue: false
 };
 
 var gui = new GUI();
@@ -1246,14 +1336,14 @@ function setaBloom(){
             bloomPass.strength = Number(0.9);
             bloomPass.radius = Number(0.43);
             break;
-        case 2:
-            bloomPass.threshold = Number(0.0);
-            bloomPass.strength = Number(0.6);
-            bloomPass.radius = Number(1.0);
-            break;
         case 3:
             bloomPass.threshold = Number(0.0);
             bloomPass.strength = Number(0.75);
+            bloomPass.radius = Number(1.0);
+            break;
+        case 5:
+            bloomPass.threshold = Number(0.0);
+            bloomPass.strength = Number(0.6);
             bloomPass.radius = Number(1.0);
             break;
         default:
@@ -1341,7 +1431,7 @@ function render(t)
         pokeyDance();
         moonOrbit();
     }
-    if(pistaAtual == 2){
+    if(pistaAtual == 5){
         spinBlades();
     }
 

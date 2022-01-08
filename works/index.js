@@ -43,8 +43,8 @@ const blackholeTexture = loader.load( 'texture/track1/blackhole.jpg' );
 const skyTexture = loader.load( 'texture/track1/sky.jpg' );
 
 //track2
-const groundTexture1 = loader.load( 'texture/track2/sand.jpg' );
-const skyTexture2 = loader.load( 'texture/track2/sunsky.png' );
+const groundTexture1 = loader.load( 'texture/track5/sand.jpg' );
+const skyTexture2 = loader.load( 'texture/track5/sunsky.png' );
 
 //track3
 const groundTexture2= loader.load( 'texture/track3/magma.jpg' );
@@ -653,7 +653,108 @@ function freiaCarro(freiaAnterior)
     freiaAnterior = freia
 }
 
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+// Rampas
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
 
+function RampaShape(size)
+{
+    var RampaShape = new THREE.Shape();
+        RampaShape.moveTo( size/2, 0);
+        RampaShape.lineTo( 0, size/6 );
+        RampaShape.lineTo( -size/2, 0);
+        RampaShape.lineTo( size/2, 0);
+    return RampaShape;
+}
+
+function createRampa(size, rampaType) {
+    var extrudeSettings =
+    {
+        depth: size,
+        steps: 3,
+        bevelEnabled: false
+    };
+    /*
+    switch(rampaType){
+        case 1:
+            var extrudeGeometry = new THREE.ExtrudeGeometry(RampaShapeV(size), extrudeSettings);
+        case 2:
+            var extrudeGeometry = new THREE.ExtrudeGeometry(RampaShapeH(size), extrudeSettings);
+        case 3:
+    }*/
+    var extrudeGeometry = new THREE.ExtrudeGeometry(RampaShape(size), extrudeSettings);
+    var rampaMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,255,255)'} );
+    var rampa = new THREE.Mesh(extrudeGeometry, rampaMaterial);
+    return rampa;
+}
+
+var offsetRampa = blocoSize/2;
+var RNumber = 12;
+var newRNumber = 12;
+var todasRampas = [];
+var rampaTypes = [];
+
+function posicionaRampas(posicionamentoRampas){
+    for(var k = 0; k <= RNumber-1; k++){
+        todasRampas[k].material.color.setHex(0xff0000);
+        if(rampaTypes[k] == 'V')
+            todasRampas[k].position.set(posicionamentoRampas[k].getComponent(0), 0.0, posicionamentoRampas[k].getComponent(2)-offsetRampa);
+        else if(rampaTypes[k] == 'H')
+            todasRampas[k].position.set(posicionamentoRampas[k].getComponent(0)-offsetRampa, 0.0, posicionamentoRampas[k].getComponent(2));
+        scene.add(todasRampas[k]);
+    }
+}
+
+function encontraPosicaoRampas(){
+    var posicaoRampas = [];
+    for (var k = 0; k < platforms.length; k ++){
+        if(platforms[k].getBlockType() == "RAMPAV"){
+            var rampa = createRampa(blocoSize);
+            todasRampas.push(rampa);
+
+            var type = 'V';
+            rampaTypes.push(type);
+
+            var posicaoNova = new THREE.Vector3;
+            posicaoNova.copy(platforms[k].bloco.position);
+            posicaoRampas.push(posicaoNova);
+        }
+        if(platforms[k].getBlockType() == "RAMPAH"){
+            var rampa = createRampa(blocoSize);
+            rampa.rotateY(degreesToRadians(90));
+            todasRampas.push(rampa);
+
+            var type = 'H';
+            rampaTypes.push(type);
+
+            var posicaoNova = new THREE.Vector3;
+            posicaoNova.copy(platforms[k].bloco.position);
+            posicaoRampas.push(posicaoNova);
+        }
+    }
+    return posicaoRampas;
+}
+var posicionamentoRampas = encontraPosicaoRampas();
+posicionaRampas(posicionamentoRampas);
+
+
+
+var diffX = 0;
+var diffZ = 0;
+
+function colisorGeral(obj1, obj2){
+    for (var k = 0; k < obj2.length; k ++){
+        diffX = Math.abs(obj1.position.getComponent(0) - size - obj2[k].bloco.position.getComponent(0));
+        diffZ = Math.abs(obj1.position.getComponent(2) + size - obj2[k].bloco.position.getComponent(2));
+        if( diffX <= blocoSize/2 && diffZ <= blocoSize/2){
+            return;
+        }
+    }
+}
+
+colisorGeral(player,platforms);
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -664,14 +765,14 @@ function freiaCarro(freiaAnterior)
 //-------------------------------------------------------------------------------
 // Colisor Pista Desaceleração
 //-------------------------------------------------------------------------------
-var diffX = 0;
-var diffZ = 0;
+var diffRedutorX = 0;
+var diffRedutorZ = 0;
 function verificaDesaceleraFora(){
     testaRedutor();
     for (var k = 0; k < platforms.length; k ++){
-        diffX = Math.abs(player.position.getComponent(0) - size - platforms[k].bloco.position.getComponent(0));
-        diffZ = Math.abs(player.position.getComponent(2) + size - platforms[k].bloco.position.getComponent(2));
-        if( diffX <= blocoSize/2 && diffZ <= blocoSize/2){
+        diffRedutorX = Math.abs(player.position.getComponent(0) - size - platforms[k].bloco.position.getComponent(0));
+        diffRedutorZ = Math.abs(player.position.getComponent(2) + size - platforms[k].bloco.position.getComponent(2));
+        if( diffRedutorX <= blocoSize/2 && diffRedutorZ <= blocoSize/2){
             if (redutor < 1){
                 redutor += 0.005;
             }
@@ -702,7 +803,7 @@ function testaRedutor(){
 }
 
 //-------------------------------------------------------------------------------
-// Colisor Eolics
+// Colisor Proximidade Eolics
 //-------------------------------------------------------------------------------
 function verificaEolicTurbo(eolicsEmK){
     if(aceleracao > speedMax){
@@ -846,10 +947,11 @@ function verificaColisores(){
     verificaVoltas(player);
 }
 
-function configuraPistas(newflagNumber){
+function configuraPistas(newflagNumber, newRNumber){
     limpaPista();
     removeFlags();
     flagNumber = newflagNumber;
+    RNumber = newRNumber
     checkpointsRestantes = flagNumber;
     switch(pistaAtual){
         case 1:
@@ -1046,8 +1148,9 @@ function keyboardUpdate() {
     if (keyboard.pressed("1") && pistaAtual != 1){
         pistaAtual = 1;
         newflagNumber = 4;
+        newRNumber = 12;
         setaBloom();
-        configuraPistas(newflagNumber);
+        configuraPistas(newflagNumber, newRNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer('left');
@@ -1058,8 +1161,9 @@ function keyboardUpdate() {
     else if (keyboard.pressed("2") && pistaAtual != 2){
         pistaAtual = 2;
         newflagNumber = 4;
+        newRNumber = 12;
         setaBloom();
-        configuraPistas(newflagNumber);
+        configuraPistas(newflagNumber, newRNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer('left');
@@ -1070,8 +1174,9 @@ function keyboardUpdate() {
     else if (keyboard.pressed("3") && pistaAtual != 3){
         pistaAtual = 3;
         newflagNumber = 8;
+        newRNumber = 20;
         setaBloom();
-        configuraPistas(newflagNumber);
+        configuraPistas(newflagNumber, newRNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer('down');
@@ -1082,8 +1187,9 @@ function keyboardUpdate() {
     else if (keyboard.pressed("4") && pistaAtual != 4){
         pistaAtual = 4;
         newflagNumber = 8;
+        newRNumber = 20;
         setaBloom();
-        configuraPistas(newflagNumber);
+        configuraPistas(newflagNumber, newRNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer('left');
@@ -1094,6 +1200,7 @@ function keyboardUpdate() {
     else if (keyboard.pressed("5") && pistaAtual != 5){
         pistaAtual = 5;
         newflagNumber = 12;
+        newRNumber = 0;
         setaBloom();
         configuraPistas(newflagNumber);
         limpaProps();

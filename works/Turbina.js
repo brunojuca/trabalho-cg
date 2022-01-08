@@ -20,13 +20,13 @@ export class Turbina extends THREE.Group {
 
     const loader = new THREE.TextureLoader();
 
-    const silverTexture = loader.load( 'texture/track2/silver.jpg' );
+    const silverTexture = loader.load( 'texture/track5/silver.jpg' );
     this.silverMaterial = new THREE.MeshBasicMaterial ( { map: silverTexture } );
 
-    const redMetalTexture = loader.load( 'texture/track2/redMetal.png' );
+    const redMetalTexture = loader.load( 'texture/track5/redMetal.png' );
     this.redMetalMaterial = new THREE.MeshBasicMaterial ( { map: redMetalTexture } );
 
-    const cobaltTexture = loader.load( 'texture/track2/cobalt.jpg' );
+    const cobaltTexture = loader.load( 'texture/track5/cobalt.jpg' );
     cobaltTexture.wrapS = cobaltTexture.wrapT = THREE.RepeatWrapping;
     cobaltTexture.repeat.set( 5, 5 );
     cobaltTexture.anisotropy = 16;

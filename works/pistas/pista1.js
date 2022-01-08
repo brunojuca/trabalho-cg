@@ -3,16 +3,16 @@
 //3 - '3A'
 //1 - '2'
 // ^ > leitura do checkpoint
-//RVNumber 6
-//RHNumber 6
+//RVNumber 8
+//RHNumber 8
 const pista1 = [
     ['1A', '1A', 'RH', '3A', 'RH', '1A', '1A'],
     ['1A', '1A', 'RH', '1A', 'RH', '1A', '1A'],
-    ['1A', '1A',  '0',  '0',  '0', 'RV', 'RV'],
+    ['RV', 'RV',  '0',  '0',  '0', 'RV', 'RV'],
     ['3A', '1A',  '0',  '0',  '0', '1A', '3A'],
     ['RV', 'RV',  '0',  '0',  '0', 'RV', 'RV'],
-    ['1A', '1A', 'RH',  '2', '1A', '1A', '1A'],
-    ['1A', '1A', 'RH',  '2', '1A', '1A', '1A']
+    ['1A', '1A', 'RH',  '2', 'RH', '1A', '1A'],
+    ['1A', '1A', 'RH',  '2', 'RH', '1A', '1A']
 ];
 // '0' : fora da pista
 // '1A' : pista comum

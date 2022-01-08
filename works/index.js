@@ -285,16 +285,22 @@ function resetaPosicaoCheckpointMudancaPista(){
 const radius = 1
 const size = 1;
 
-//ghost guia
+//ghost guia pra camera
 const desvio = 10;
 var ghostguide = createSphere(radius);
 ghostguide.position.set(0.0, 0.0, 2*radius + desvio);
+
+//ghost guia pra direção mundial
+const desvio2 = 10000;
+var dirguide = createSphere(radius);
+dirguide.position.set(0.0, 0.0, 2*radius + desvio2);
 
 //player
 var player = new LambertTestCar;
 player.scale.set(0.8,0.8,0.8);
 player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.2*size, posicionamentoChegada[0].getComponent(2) - size);
 player.add(ghostguide);
+player.add(dirguide);
 
 var posAtual = new THREE.Vector3(0, 0, 0);
 posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
@@ -691,10 +697,10 @@ function createRampa(size, rampaType) {
 }
 
 var offsetRampa = blocoSize/2;
-var RVNumber = 6;
-var RHNumber = 6;
-var newRVNumber = 6;
-var newRHNumber = 6;
+var RVNumber = 8;
+var RHNumber = 8;
+var newRVNumber = 8;
+var newRHNumber = 8;
 var todasRampasV = [];
 var todasRampasH = [];
 
@@ -776,9 +782,163 @@ function resetaPosicaoRampasMudancaPista(){
 // Colisor Rampas
 //-------------------------------------------------------------------------------
 
-if(platforms[k].getBlockType() == "RAMPAH"){
+var absDiffX = 0;
+var absDiffZ = 0;
+var diffX = 0;
+var diffZ = 0;
+var diffDirX = 0;
+var diffDirZ = 0;
+
+//lock virar durante o pulo
+var keyLock = false;
+
+var playerOnGround = true;
+var speedModulo = 0;
+var rampaAngle = (blocoSize/6) / (blocoSize/2);
+
+var offsetColisor = 0.5;
+function colisorRampa(){
+    for (var k = 0; k < platforms.length; k ++){
+        absDiffX = Math.abs(player.position.getComponent(0) - size - platforms[k].bloco.position.getComponent(0));
+        absDiffZ = Math.abs(player.position.getComponent(2) + size - platforms[k].bloco.position.getComponent(2));
+        diffX = player.position.getComponent(0) - size - platforms[k].bloco.position.getComponent(0);
+        diffZ = player.position.getComponent(2) + size - platforms[k].bloco.position.getComponent(2);
+        var dirGuidePosition = dirguide.getWorldPosition(new THREE.Vector3());
+        diffDirX = dirGuidePosition.getComponent(0) - size - platforms[k].bloco.position.getComponent(0);
+        diffDirZ = dirGuidePosition.getComponent(2) + size - platforms[k].bloco.position.getComponent(2);
+
+        if(platforms[k].getBlockType() == "RAMPAV"  && absDiffX <= blocoSize/2){
+            atualizaAlturaMaxV();
+            keyLock = true;
+            //posiçoes com referencia à terceiraView
+            //esquerda para direita
+            if(diffDirX <= 0){
+                //a esquerda da rampa
+                if(diffX > 0){
+                    player.turnUp(rampaAngle, speedModulo);
+                    inverseGravityV(player);
+                }
+                //a direita da rampa
+                else if(diffX < 0){
+                    player.turnDown(rampaAngle, speedModulo);
+                    inverseGravityV(player);
+                }
+            }
+            //direita para esquerda
+            if(diffDirX >= 0){
+                //a esquerda da rampa
+                if(diffX > 0){
+                    player.turnDown(rampaAngle, speedModulo);
+                    inverseGravityV(player);
+                }
+                //a direita da rampa
+                else if(diffX < 0){
+                    player.turnUp(rampaAngle, speedModulo);
+                    inverseGravityV(player);
+                }
+            }
+        }
+        else if(platforms[k].getBlockType() == "RAMPAH"  && absDiffZ <= blocoSize/2){
+            atualizaAlturaMaxH();
+            keyLock = true;
+
+            //posiçoes com referencia à terceiraView
+
+            //bloqueios laterais
+            //a esquerda da rampa
+            // +offset | limiteLateralEsquerdaRampa | -offset
+            if(diffX > (blocoSize/2 + size) - offsetColisor && diffX < (blocoSize/2 + size) + offsetColisor){
+                player.translateZ(-2*offsetColisor);
+            }
+            //a direita da rampa
+            // +offset | limiteLateralDireitaRampa | -offset
+            if(diffX > -(blocoSize/2 + size) + offsetColisor && diffX < -(blocoSize/2 + size) - offsetColisor){
+                player.translateZ(-2*offsetColisor);
+            }
+
+            //pulos da rampa
+            //tras para frente
+            if(diffDirZ >= 0){
+                //atrás da rampa
+                console.log(diffDirZ);
+                if(diffZ < 0){
+                    player.turnUp(rampaAngle, speedModulo);
+                    inverseGravityH(player);
+                }
+                //a frente da rampa
+                else if(diffZ > 0){
+                    player.turnDown(rampaAngle, speedModulo);
+                    inverseGravityH(player);
+                }
+            }
+            //frente para trás
+            if(diffDirZ <= 0){
+                //a frente da rampa
+                if(diffZ > 0){
+                    player.turnUp(rampaAngle, speedModulo);
+                    inverseGravityH(player);
+                }
+                //atrás da rampa
+                else if(diffZ < 0){
+                    player.turnDown(rampaAngle, speedModulo);
+                    inverseGravityH(player);
+                }
+            }
+        }
+    }
+    player.turnDefault(rampaAngle, speedModulo)
+    gravity(player);
 }
-if(platforms[k].getBlockType() == "RAMPAV"){
+
+function gravity(obj){
+    if(obj.position.getComponent(1) >= 1){
+        obj.translateY(-0.7*speedModulo);
+        playerOnGround = false;
+    }
+    else
+        keyLock = false;
+        playerOnGround = true;
+}
+
+var alturaMaxV = 30;
+function inverseGravityV(obj){
+    console.log(playerOnGround);
+    if(playerOnGround){
+        if(obj.position.getComponent(1) <= alturaMaxV){
+            obj.translateY(0.4*speedModulo);
+        }
+    }
+}
+function atualizaAlturaMaxV(){
+    //metade da vel max pra conseguir saltar
+    if(speedModulo >= 1.05){
+        alturaMaxV = 30;
+    }
+    else{
+        console.log("tipo V - Azul:", "Z: ", absDiffZ, "X: ", absDiffX);
+        alturaMaxV = (blocoSize/2 - absDiffX)* rampaAngle;
+    }
+}
+
+
+var alturaMaxH = 30;
+function inverseGravityH(obj){
+    console.log(playerOnGround);
+    if(playerOnGround){
+        if(obj.position.getComponent(1) <= alturaMaxH){
+            obj.translateY(0.4*speedModulo);
+        }
+    }
+}
+function atualizaAlturaMaxH(){
+    //metade da vel max pra conseguir saltar
+    if(speedModulo >= 1.05){
+        alturaMaxH = 30;
+    }
+    else{
+        console.log("tipo H - Vermelho:", "Z: ", absDiffZ, "X: ", absDiffX);
+        alturaMaxH = (blocoSize/2 - absDiffZ)* rampaAngle;
+    }
 }
 
 //-------------------------------------------------------------------------------
@@ -961,6 +1121,7 @@ function armazenaTempoMenorVolta(){
 //-------------------------------------------------------------------------------
 
 function verificaColisores(){
+    colisorRampa();
     verificaDesaceleraFora();
     verificaProximidadeEolic();
     verificaVoltas(player);
@@ -1133,6 +1294,7 @@ function keyboardUpdate() {
             aceleracao = 1;
         }
         player.accelerate(speedForward);
+        speedModulo = speedForward;
         player.defaultUpdate();
     }
     else if (keyboard.up("X")) {
@@ -1149,6 +1311,7 @@ function keyboardUpdate() {
             aceleracao = 1;
         }
         player.accelerate(speedBackward);
+        speedModulo = speedBackward;
         player.defaultUpdate();
     }
     else if (keyboard.up("down")) {
@@ -1157,21 +1320,25 @@ function keyboardUpdate() {
     }
 
     if (keyboard.pressed("left")) {
-        if(aceleracao > 1 || freia < -1){
-            player.turnLeft(5);
+        if(keyLock == false){
+            if(aceleracao > 1 || freia < -1){
+                player.turnLeft(5);
+            }
         }
     }
     else if (keyboard.pressed("right")) {
-        if(aceleracao > 1 || freia < -1){
-            player.turnRight(5);
+        if(keyLock == false){
+            if(aceleracao > 1 || freia < -1){
+                player.turnRight(5);
+            }
         }
     }
 
     if (keyboard.pressed("1") && pistaAtual != 1){
         pistaAtual = 1;
         newflagNumber = 4;
-        newRVNumber = 6;
-        newRHNumber = 6;
+        newRVNumber = 8;
+        newRHNumber = 8;
         setaBloom();
         configuraPistas(newflagNumber, newRVNumber, newRHNumber);
         limpaProps();
@@ -1548,7 +1715,7 @@ function render(t)
         cameraHolder.position.set(player.position.getComponent(0)+140, player.position.getComponent(1)+45, player.position.getComponent(2)-150);
     }
     if (panoramicotraseiro){
-        cameraHolder.position.set(player.position.getComponent(0)+0, player.position.getComponent(1)+120, player.position.getComponent(2)-150);
+        cameraHolder.position.set(player.position.getComponent(0)+0, player.position.getComponent(1)+40, player.position.getComponent(2)-150);
     }
     cameraHolder.rotateY(degreesToRadians(180));
 

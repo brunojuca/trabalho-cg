@@ -348,7 +348,7 @@ export class LambertTestCar extends THREE.Group {
       this.carAngle += 0.6*speed;
     }
   }
-  turnDefault(degrees, speed) {
+  turnDefault(speed) {
     if(this.carAngle > 0.01){
       this.body.rotateX(degreesToRadians(1.2*speed));
       this.carAngle -= 1.2*speed;

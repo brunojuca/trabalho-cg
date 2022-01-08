@@ -807,21 +807,39 @@ function colisorRampa(){
         diffDirX = dirGuidePosition.getComponent(0) - size - platforms[k].bloco.position.getComponent(0);
         diffDirZ = dirGuidePosition.getComponent(2) + size - platforms[k].bloco.position.getComponent(2);
 
-        if(platforms[k].getBlockType() == "RAMPAV"  && absDiffX <= blocoSize/2){
+        if(platforms[k].getBlockType() == "RAMPAV"  && absDiffX <= blocoSize/2 && absDiffZ <= blocoSize/2){
             atualizaAlturaMaxV();
-            keyLock = true;
+            //keyLock = true;
+
             //posiçoes com referencia à terceiraView
+
+            //bloqueios laterais
+            //a frente da rampa
+            // +offset | limiteLateralFrontalRampa | -offset
+            if(diffZ > (blocoSize/2 + size) - offsetColisor && diffZ < (blocoSize/2 + size) + offsetColisor){
+                player.translateZ(-2*offsetColisor);
+                return;
+            }
+            //atrás da rampa
+            // +offset | limiteLateralTraseiroRampa | -offset
+            if(diffZ > -(blocoSize/2 + size) + offsetColisor && diffZ < -(blocoSize/2 + size) - offsetColisor){
+                player.translateZ(-2*offsetColisor);
+                return;
+            }
+
             //esquerda para direita
             if(diffDirX <= 0){
                 //a esquerda da rampa
                 if(diffX > 0){
                     player.turnUp(rampaAngle, speedModulo);
                     inverseGravityV(player);
+                    return;
                 }
                 //a direita da rampa
                 else if(diffX < 0){
                     player.turnDown(rampaAngle, speedModulo);
                     inverseGravityV(player);
+                    return;
                 }
             }
             //direita para esquerda
@@ -830,17 +848,19 @@ function colisorRampa(){
                 if(diffX > 0){
                     player.turnDown(rampaAngle, speedModulo);
                     inverseGravityV(player);
+                    return;
                 }
                 //a direita da rampa
                 else if(diffX < 0){
                     player.turnUp(rampaAngle, speedModulo);
                     inverseGravityV(player);
+                    return;
                 }
             }
         }
-        else if(platforms[k].getBlockType() == "RAMPAH"  && absDiffZ <= blocoSize/2){
+        else if(platforms[k].getBlockType() == "RAMPAH"  && absDiffZ <= blocoSize/2 && absDiffX <= blocoSize/2){
             atualizaAlturaMaxH();
-            keyLock = true;
+            //keyLock = true;
 
             //posiçoes com referencia à terceiraView
 
@@ -849,26 +869,29 @@ function colisorRampa(){
             // +offset | limiteLateralEsquerdaRampa | -offset
             if(diffX > (blocoSize/2 + size) - offsetColisor && diffX < (blocoSize/2 + size) + offsetColisor){
                 player.translateZ(-2*offsetColisor);
+                return;
             }
             //a direita da rampa
             // +offset | limiteLateralDireitaRampa | -offset
             if(diffX > -(blocoSize/2 + size) + offsetColisor && diffX < -(blocoSize/2 + size) - offsetColisor){
                 player.translateZ(-2*offsetColisor);
+                return;
             }
 
             //pulos da rampa
             //tras para frente
             if(diffDirZ >= 0){
                 //atrás da rampa
-                console.log(diffDirZ);
                 if(diffZ < 0){
                     player.turnUp(rampaAngle, speedModulo);
                     inverseGravityH(player);
+                    return;
                 }
                 //a frente da rampa
                 else if(diffZ > 0){
                     player.turnDown(rampaAngle, speedModulo);
                     inverseGravityH(player);
+                    return;
                 }
             }
             //frente para trás
@@ -877,11 +900,13 @@ function colisorRampa(){
                 if(diffZ > 0){
                     player.turnUp(rampaAngle, speedModulo);
                     inverseGravityH(player);
+                    return;
                 }
                 //atrás da rampa
                 else if(diffZ < 0){
                     player.turnDown(rampaAngle, speedModulo);
                     inverseGravityH(player);
+                    return;
                 }
             }
         }
@@ -916,6 +941,7 @@ function atualizaAlturaMaxV(){
     }
     else{
         console.log("tipo V - Azul:", "Z: ", absDiffZ, "X: ", absDiffX);
+        console.log("tipo V - Azul:", "Z: ", diffZ, "X: ", diffX);
         alturaMaxV = (blocoSize/2 - absDiffX)* rampaAngle;
     }
 }
@@ -923,7 +949,7 @@ function atualizaAlturaMaxV(){
 
 var alturaMaxH = 30;
 function inverseGravityH(obj){
-    console.log(playerOnGround);
+    //console.log(playerOnGround);
     if(playerOnGround){
         if(obj.position.getComponent(1) <= alturaMaxH){
             obj.translateY(0.4*speedModulo);
@@ -937,6 +963,7 @@ function atualizaAlturaMaxH(){
     }
     else{
         console.log("tipo H - Vermelho:", "Z: ", absDiffZ, "X: ", absDiffX);
+        console.log("tipo H - Vermelho:", "Z: ", diffZ, "X: ", diffX);
         alturaMaxH = (blocoSize/2 - absDiffZ)* rampaAngle;
     }
 }
@@ -1311,7 +1338,7 @@ function keyboardUpdate() {
             aceleracao = 1;
         }
         player.accelerate(speedBackward);
-        speedModulo = speedBackward;
+        speedModulo = -speedBackward;
         player.defaultUpdate();
     }
     else if (keyboard.up("down")) {

@@ -1,9 +1,10 @@
 //7x7
 //flagNumber 4
-//3 - '3'
+//3 - '3A'
 //1 - '2'
 // ^ > leitura do checkpoint
-//RNumber 12
+//RVNumber 6
+//RHNumber 6
 const pista1 = [
     ['1A', '1A', 'RH', '3A', 'RH', '1A', '1A'],
     ['1A', '1A', 'RH', '1A', 'RH', '1A', '1A'],
@@ -13,8 +14,10 @@ const pista1 = [
     ['1A', '1A', 'RH',  '2', '1A', '1A', '1A'],
     ['1A', '1A', 'RH',  '2', '1A', '1A', '1A']
 ];
-// 0 : fora da pista
-// 1 : pista comum
+// '0' : fora da pista
+// '1A' : pista comum
 // 2 : ponto de largada/chegada
-// 3 : checkpoint
+// '3A' : checkpoint
+// 'RV' : rampa vert
+// 'RH' : rampa horz
 export {pista1};

@@ -691,76 +691,95 @@ function createRampa(size, rampaType) {
 }
 
 var offsetRampa = blocoSize/2;
-var RNumber = 12;
-var newRNumber = 12;
-var todasRampas = [];
-var rampaTypes = [];
+var RVNumber = 6;
+var RHNumber = 6;
+var newRVNumber = 6;
+var newRHNumber = 6;
+var todasRampasV = [];
+var todasRampasH = [];
 
-function posicionaRampas(posicionamentoRampas){
-    for(var k = 0; k <= RNumber-1; k++){
-        todasRampas[k].material.color.setHex(0xff0000);
-        if(rampaTypes[k] == 'V')
-            todasRampas[k].position.set(posicionamentoRampas[k].getComponent(0), 0.0, posicionamentoRampas[k].getComponent(2)-offsetRampa);
-        else if(rampaTypes[k] == 'H')
-            todasRampas[k].position.set(posicionamentoRampas[k].getComponent(0)-offsetRampa, 0.0, posicionamentoRampas[k].getComponent(2));
-        scene.add(todasRampas[k]);
+function posicionaRampasV(posicionamentoRampas){
+    for(var k = 0; k <= RVNumber-1; k++){
+        todasRampasV[k].position.set(posicionamentoRampas[k].getComponent(0), 0.0, posicionamentoRampas[k].getComponent(2)-offsetRampa);
+        scene.add(todasRampasV[k]);
     }
 }
-
-function encontraPosicaoRampas(){
-    var posicaoRampas = [];
+function encontraPosicaoRampasV(){
+    var posicaoRampasV = [];
     for (var k = 0; k < platforms.length; k ++){
         if(platforms[k].getBlockType() == "RAMPAV"){
             var rampa = createRampa(blocoSize);
-            todasRampas.push(rampa);
-
-            var type = 'V';
-            rampaTypes.push(type);
+            rampa.material.color.setHex(0x0000ff);
+            todasRampasV.push(rampa);
 
             var posicaoNova = new THREE.Vector3;
             posicaoNova.copy(platforms[k].bloco.position);
-            posicaoRampas.push(posicaoNova);
+            posicaoRampasV.push(posicaoNova);
         }
+    }
+    return posicaoRampasV;
+}
+var posicionamentoRampasV = encontraPosicaoRampasV();
+posicionaRampasV(posicionamentoRampasV);
+
+function posicionaRampasH(posicionamentoRampas){
+    for(var k = 0; k <= RHNumber-1; k++){
+        todasRampasH[k].position.set(posicionamentoRampas[k].getComponent(0)-offsetRampa, 0.0, posicionamentoRampas[k].getComponent(2));
+        scene.add(todasRampasH[k]);
+    }
+}
+function encontraPosicaoRampasH(){
+    var posicaoRampasH = [];
+    for (var k = 0; k < platforms.length; k ++){
         if(platforms[k].getBlockType() == "RAMPAH"){
             var rampa = createRampa(blocoSize);
+            rampa.material.color.setHex(0xff0000);
             rampa.rotateY(degreesToRadians(90));
-            todasRampas.push(rampa);
-
-            var type = 'H';
-            rampaTypes.push(type);
+            todasRampasH.push(rampa);
 
             var posicaoNova = new THREE.Vector3;
             posicaoNova.copy(platforms[k].bloco.position);
-            posicaoRampas.push(posicaoNova);
+            posicaoRampasH.push(posicaoNova);
         }
     }
-    return posicaoRampas;
+    return posicaoRampasH;
 }
-var posicionamentoRampas = encontraPosicaoRampas();
-posicionaRampas(posicionamentoRampas);
+var posicionamentoRampasH = encontraPosicaoRampasH();
+posicionaRampasH(posicionamentoRampasH);
 
-
-
-var diffX = 0;
-var diffZ = 0;
-
-function colisorGeral(obj1, obj2){
-    for (var k = 0; k < obj2.length; k ++){
-        diffX = Math.abs(obj1.position.getComponent(0) - size - obj2[k].bloco.position.getComponent(0));
-        diffZ = Math.abs(obj1.position.getComponent(2) + size - obj2[k].bloco.position.getComponent(2));
-        if( diffX <= blocoSize/2 && diffZ <= blocoSize/2){
-            return;
-        }
+function limpaRampas(){
+    for (let i = 0; i < todasRampasV.length; i++) {
+        scene.remove(todasRampasV[i]);
+    }
+    for (let i = 0; i < todasRampasH.length; i++) {
+        scene.remove(todasRampasH[i]);
     }
 }
 
-colisorGeral(player,platforms);
+function resetaPosicaoRampasMudancaPista(){
+    posicionamentoRampasV = encontraPosicaoRampasV();
+    console.log(posicionamentoRampasV);
+    posicionaRampasV(posicionamentoRampasV);
+
+    posicionamentoRampasH = encontraPosicaoRampasH();
+    console.log(posicionamentoRampasH);
+    posicionaRampasH(posicionamentoRampasH);
+}
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-// Colisores
+// Colisores - Refatorar pro Trab 3 pra um controlador unico
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------
+// Colisor Rampas
+//-------------------------------------------------------------------------------
+
+if(platforms[k].getBlockType() == "RAMPAH"){
+}
+if(platforms[k].getBlockType() == "RAMPAV"){
+}
 
 //-------------------------------------------------------------------------------
 // Colisor Pista Desaceleração
@@ -947,11 +966,13 @@ function verificaColisores(){
     verificaVoltas(player);
 }
 
-function configuraPistas(newflagNumber, newRNumber){
+function configuraPistas(newflagNumber, newRVNumber, newRHNumber){
     limpaPista();
+    limpaRampas();
     removeFlags();
     flagNumber = newflagNumber;
-    RNumber = newRNumber
+    RVNumber = newRVNumber;
+    RHNumber = newRHNumber;
     checkpointsRestantes = flagNumber;
     switch(pistaAtual){
         case 1:
@@ -975,6 +996,7 @@ function configuraPistas(newflagNumber, newRNumber){
     criaFlags();
     resetaVoltaAtual();
     resetaPosicaoCheckpointMudancaPista();
+    resetaPosicaoRampasMudancaPista();
     atualizaMinimapa();
 }
 
@@ -1148,9 +1170,10 @@ function keyboardUpdate() {
     if (keyboard.pressed("1") && pistaAtual != 1){
         pistaAtual = 1;
         newflagNumber = 4;
-        newRNumber = 12;
+        newRVNumber = 6;
+        newRHNumber = 6;
         setaBloom();
-        configuraPistas(newflagNumber, newRNumber);
+        configuraPistas(newflagNumber, newRVNumber, newRHNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer('left');
@@ -1161,9 +1184,10 @@ function keyboardUpdate() {
     else if (keyboard.pressed("2") && pistaAtual != 2){
         pistaAtual = 2;
         newflagNumber = 4;
-        newRNumber = 12;
+        newRVNumber = 8;
+        newRHNumber = 8;
         setaBloom();
-        configuraPistas(newflagNumber, newRNumber);
+        configuraPistas(newflagNumber, newRVNumber, newRHNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer('left');
@@ -1174,9 +1198,10 @@ function keyboardUpdate() {
     else if (keyboard.pressed("3") && pistaAtual != 3){
         pistaAtual = 3;
         newflagNumber = 8;
-        newRNumber = 20;
+        newRVNumber = 22;
+        newRHNumber = 22;
         setaBloom();
-        configuraPistas(newflagNumber, newRNumber);
+        configuraPistas(newflagNumber,  newRVNumber, newRHNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer('down');
@@ -1187,9 +1212,10 @@ function keyboardUpdate() {
     else if (keyboard.pressed("4") && pistaAtual != 4){
         pistaAtual = 4;
         newflagNumber = 8;
-        newRNumber = 20;
+        newRVNumber = 22;
+        newRHNumber = 22;
         setaBloom();
-        configuraPistas(newflagNumber, newRNumber);
+        configuraPistas(newflagNumber,  newRVNumber, newRHNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer('left');
@@ -1200,9 +1226,10 @@ function keyboardUpdate() {
     else if (keyboard.pressed("5") && pistaAtual != 5){
         pistaAtual = 5;
         newflagNumber = 12;
-        newRNumber = 0;
+        newRVNumber = 0;
+        newRHNumber = 0;
         setaBloom();
-        configuraPistas(newflagNumber);
+        configuraPistas(newflagNumber, newRVNumber, newRHNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer('right');

@@ -86,6 +86,9 @@ assetsMng.loadAudio("winRace", "./soundAssets/winRace.mp3");
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------
+// Scene
+//-------------------------------------------------------------------------------
 var stats = new Stats();          // To show FPS information
 var scene = new THREE.Scene();    // Create main scene
 var renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true });
@@ -94,7 +97,9 @@ renderer.setClearColor( 0x000000 );
 document.body.appendChild(renderer.domElement);
 scene.background = skyTexture;
 
-//camera
+//-------------------------------------------------------------------------------
+// Camera
+//-------------------------------------------------------------------------------
 var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.lookAt(0, 0, 0);
   camera.position.set(0, 0, 0);
@@ -103,14 +108,36 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
   camera.far = 1000;
   camera.layers.enable(1);
 
-//light
-var ambientColor = "rgb(100,100,100)";
+//-------------------------------------------------------------------------------
+// Light
+//-------------------------------------------------------------------------------
+var ambientColor = "0x404040";
 var ambientLight = new THREE.AmbientLight(ambientColor);
 scene.add( ambientLight );
 
 // Listen window size changes
 window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, false );
 
+var lightPosition = new THREE.Vector3(400, 20, 20);
+
+var dirLight = new THREE.DirectionalLight(0xffffff, 7);
+dirLight.position.copy(lightPosition);
+dirLight.shadow.mapSize.width = 2048;
+dirLight.shadow.mapSize.height = 2048;
+dirLight.castShadow = true;
+
+dirLight.shadow.camera.left = -200;
+dirLight.shadow.camera.right = 200;
+dirLight.shadow.camera.top = 200;
+dirLight.shadow.camera.bottom = -200;
+
+// set the dirlight to follow camera
+scene.add( camera );
+camera.add(dirLight);
+dirLight.position.copy( camera.position );
+
+// Listen window size changes
+window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, false );
 
 
 //-------------------------------------------------------------------------------
@@ -1860,9 +1887,9 @@ let params = {
     pixelSize: 2,
     pixelizar: false,
     //bloom
-    bloomThreshold: 0.1,
-    bloomStrength: 0.9,
-    bloomRadius: 0.43,
+    bloomThreshold: 0.32,
+    bloomStrength: 0.32,
+    bloomRadius: 1.0,
     bloomTrue: false,
     //player select
     characterSelect: 1,
@@ -1886,7 +1913,7 @@ function descePersonSelecionado(){
 }
 
 //Controle pra ver qual setagem e melhor para cada shader
-/*
+
 var gui = new GUI();
 gui.add(params, 'pixelSize').min(2).max(32).step(2);
 gui.add(params, 'pixelizar');
@@ -1903,7 +1930,7 @@ gui.add(params, 'bloomTrue');
 gui.add(params, 'characterSelect').min(1).max(2).step(1).onChange(function (value){
     personSelecionado = Number(value);
 });
-*/
+
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -1957,29 +1984,29 @@ bloomComposer.addPass( bloomPass );
 function setaBloom(){
     switch(pistaAtual){
         case 1:
-            bloomPass.threshold = Number(0.1);
-            bloomPass.strength = Number(0.9);
-            bloomPass.radius = Number(0.43);
+            bloomPass.threshold = Number(0.32);
+            bloomPass.strength = Number(0.32);
+            bloomPass.radius = Number(1.0);
             break;
         case 2:
-            bloomPass.threshold = Number(0.0);
-            bloomPass.strength = Number(0.65);
-            bloomPass.radius = Number(0.45);
+            bloomPass.threshold = Number(0.01);
+            bloomPass.strength = Number(0.29);
+            bloomPass.radius = Number(1.0);
             break
         case 3:
-            bloomPass.threshold = Number(0.0);
-            bloomPass.strength = Number(0.75);
-            bloomPass.radius = Number(1.0);
+            bloomPass.threshold = Number(0.25);
+            bloomPass.strength = Number(0.29);
+            bloomPass.radius = Number(0.01);
             break;
         case 4:
-            bloomPass.threshold = Number(0.1);
-            bloomPass.strength = Number(0.32);
-            bloomPass.radius = Number(0.06);
+            bloomPass.threshold = Number(0.05);
+            bloomPass.strength = Number(0.25);
+            bloomPass.radius = Number(0.92);
             break;
         case 5:
-            bloomPass.threshold = Number(0.0);
-            bloomPass.strength = Number(0.6);
-            bloomPass.radius = Number(1.0);
+            bloomPass.threshold = Number(0.82);
+            bloomPass.strength = Number(0.51);
+            bloomPass.radius = Number(0.34);
             break;
         default:
             break;

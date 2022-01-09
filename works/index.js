@@ -300,8 +300,8 @@ dirguide.position.set(0.0, 0.0, 2*radius + desvio2);
 //player
 var player = new CyberTruck;
 var player2 = new LambertTestCar;
-player.scale.set(1.2,1.2,1.2);
-player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.2*size, posicionamentoChegada[0].getComponent(2) - size);
+player.scale.set(1.4,1.4,1.4);
+player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.8*size, posicionamentoChegada[0].getComponent(2) - size);
 player.add(ghostguide);
 player.add(dirguide);
 player.add(player2);
@@ -1000,8 +1000,8 @@ function verificaColisorRampa(){
 //-------------------------------------------------------------------------------
 
 function gravity(obj){
-    if(obj.position.getComponent(1) >= 2){
-        obj.translateY(-1);
+    if(obj.position.getComponent(1) >= 2.6){
+        obj.translateY(-0.9);
         playerOnGround = false;
     }
     else

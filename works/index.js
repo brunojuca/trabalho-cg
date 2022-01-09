@@ -938,14 +938,14 @@ function verificaColisorRampa(){
             //a esquerda da rampa
             // +offset | limiteLateralEsquerdaRampa | -offsetS
             // absDiffZ garante que nao vai bater na parede na entradinha pq o OnRampa vai ta desligado ainda
-            if(!playerOnRampa && diffX < (blocoSize/2 + size) + offsetColisor && diffX > (blocoSize/2 - size) - offsetColisor && absDiffZ <= blocoSize/2 - 7*offsetColisor){
-                player.translateZ( -speedModulo - 5*size - 2*offsetColisor);
+            if(!playerOnRampa && diffX < (blocoSize/2 + 5*size) + offsetColisor && diffX > (blocoSize/2 - 5*size) - offsetColisor && absDiffZ <= blocoSize/2 - 7*offsetColisor){
+                player.translateZ( -speedModulo - 2*offsetColisor);
                 return;
             }
             //a direita da rampa
             // +offset | limiteLateralDireitaRampa | -offset
             // absDiffZ garante que nao vai bater na parede na entradinha pq o OnRampa vai ta desligado ainda
-            if(!playerOnRampa && diffX < -(blocoSize/2 - size) + offsetColisor && diffX > -(blocoSize/2 + size) - offsetColisor && absDiffZ <= blocoSize/2 - 7*offsetColisor){
+            if(!playerOnRampa && diffX < -(blocoSize/2 - 5*size) + offsetColisor && diffX > -(blocoSize/2 + 5*size) - offsetColisor && absDiffZ <= blocoSize/2 - 7*offsetColisor){
                 player.translateZ( - speedModulo - 2*offsetColisor);
                 return;
             }
@@ -1015,6 +1015,10 @@ function inverseGravityV(obj){
         if(obj.position.getComponent(1) <= alturaMaxV){
             playerOnRampa = true;
             obj.translateY(0.5*speedModulo);
+            if(speedModulo >= 1.05){
+                obj.translateY(0.5*speedModulo);
+                obj.translateZ(speedModulo);
+            }
         }
     }
 }
@@ -1050,7 +1054,10 @@ function inverseGravityH(obj){
         if(obj.position.getComponent(1) <= alturaMaxH){
             playerOnRampa = true;
             obj.translateY(0.5*speedModulo);
-
+            if(speedModulo >= 1.05){
+                obj.translateY(0.5*speedModulo);
+                obj.translateZ(speedModulo);
+            }
         }
     }
 }

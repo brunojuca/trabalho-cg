@@ -122,14 +122,14 @@ export class CyberTruck extends THREE.Group {
     if(this.carAngle <= degrees*100 - 9){
       this.body.rotateX(degreesToRadians(-2.2*speed));
       this.carAngle += 2.2*speed;
-      if(this.carAngle >= (-degrees*100 + 5)/4 ){
+      if(this.carAngle >= (-degrees*100 + 5)/4 && speed < 1.05){
 
         this.wheel3.position.set(1.8, -2.3, -3.4);
         this.wheel4.position.set(-1.8, -2.3, -3.4);
       }
       this.body.position.set(0,-1.6,0);
     }
-    else{
+    else if(speed < 1.05){
       this.wheel1Holder.position.set(1.8, 0.6, 3.4);
       this.wheel2Holder.position.set(-1.8, 0.6, 3.4);
     }
@@ -155,12 +155,13 @@ export class CyberTruck extends THREE.Group {
     if(this.carAngle >= -degrees*100 + 9){
       this.body.rotateX(degreesToRadians(2.2*speed));
       this.carAngle -= 2.2*speed;
-      if(this.carAngle <= (-degrees*100 + 5)/8 ){
+      if(this.carAngle <= (-degrees*100 + 5)/8){
         this.wheel1Holder.position.set(1.8, -2.5, 3.7);
         this.wheel2Holder.position.set(-1.8, -2.5, 3.7);
-        this.wheel3.position.set(1.8, 0.7, -2.9);
-        this.wheel4.position.set(-1.8, 0.7, -2.9);
-
+        if (speed < 1.05){
+          this.wheel3.position.set(1.8, 0.7, -2.9);
+          this.wheel4.position.set(-1.8, 0.7, -2.9);
+        }
       }
       this.body.position.set(0,-1.6,0);
     }

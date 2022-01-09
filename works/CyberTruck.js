@@ -124,7 +124,7 @@ export class CyberTruck extends THREE.Group {
         this.wheel2.rotateX(-degreesToRadians(this.rotation));
         this.wheel3.rotateX(degreesToRadians(this.rotation));
         this.wheel4.rotateX(-degreesToRadians(this.rotation));
-        this.rotation /= 1.05;
+        this.rotation /= 1.15;
       }
     }
   }

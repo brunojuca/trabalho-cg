@@ -9,6 +9,9 @@ import {
   initDefaultSpotlight,
   initDefaultBasicLight,
   degreesToRadians,
+  createGroundPlane,
+  createLightSphere,
+  SecondaryBox,
 } from "../libs/util/util.js";
 import { CyberTruck } from "./CyberTruck.js";
 import KeyboardState from "../libs/util/KeyboardState.js";
@@ -28,16 +31,23 @@ var stats = new Stats(); // To show FPS information
 var scene = new THREE.Scene(); // Create main scene
 var renderer = initRenderer(); // View function in util/utils
 var camera = initCamera(new THREE.Vector3(0, -30, 15)); // Init camera in this position
-
 // Enable mouse rotation, pan, zoom etc.
 var trackballControls = new TrackballControls(camera, renderer.domElement);
 
 //light
-initDefaultSpotlight(scene, new THREE.Vector3(35, 20, 30)); // Use default light
+var spotlight = initDefaultSpotlight(camera, new THREE.Vector3(0, 5, 5)); // Use default light
+spotlight.intensity = 7;
+
+// set the spotlight to follow camera
+scene.add( camera );
+camera.add( spotlight.target );
+spotlight.target.position.set( 0, 0, -1 );
+spotlight.position.copy( camera.position );
+
 
 var player = new CyberTruck();
 // position the player
-player.position.set(0.0, 0.0, 1.0);
+player.position.set(0.0, 0, 1.3);
 player.rotateX(degreesToRadians(90));
 // add the player to the scene
 scene.add(player);
@@ -48,16 +58,20 @@ function keyboardUpdate() {
 
   if (keyboard.pressed("X")) {
     player.accelerate(0);
+    lightHolder.translateX(10);
   }
 
   if (keyboard.pressed("down")) {
     player.accelerate(-0.00001);
+    lightHolder.translateX(-10);
   }
 
   if (keyboard.pressed("left")) {
     player.turnLeft(0);
+    lightHolder.translateZ(-10);
   } else if (keyboard.pressed("right")) {
     player.turnRight(0);
+    lightHolder.translateZ(10);
   }
 
   if (keyboard.pressed("space")){

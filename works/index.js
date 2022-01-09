@@ -104,9 +104,13 @@ assetsMng.loadAudio("winRace", "./soundAssets/winRace.mp3");
 var stats = new Stats();          // To show FPS information
 var scene = new THREE.Scene();    // Create main scene
 var renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true });
+renderer.shadowMap.enabled = true;
+renderer.shadowMapSoft = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor( 0x000000 );
 document.body.appendChild(renderer.domElement);
+
 scene.background = skyTexture;
 
 //-------------------------------------------------------------------------------
@@ -117,40 +121,51 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
   camera.position.set(0, 0, 0);
   camera.up.set( 0, 10, 0 );
   camera.fov = 20;
-  camera.near = 8000;
-  camera.far = 15000;
+  camera.far = 1000;
   camera.layers.enable(1);
 
 //-------------------------------------------------------------------------------
 // Light
 //-------------------------------------------------------------------------------
-var ambientColor = "0x404040";
-var ambientLight = new THREE.AmbientLight(ambientColor);
+
+var ambientColor = "rgb(100,100,100)";
+var ambientLight = new THREE.AmbientLight(ambientColor, 0.5);
+ambientLight.castShadow = false;
 scene.add( ambientLight );
 
-// Listen window size changes
-window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, false );
+var lightPosition = new THREE.Vector3(300, 200, 50);
 
-var lightPosition = new THREE.Vector3(400, 20, 20);
-
-var dirLight = new THREE.DirectionalLight(0xffffff, 7);
-dirLight.position.copy(lightPosition);
+var dirLight = new THREE.DirectionalLight(0xffffff, 3);
 dirLight.shadow.mapSize.width = 2048;
 dirLight.shadow.mapSize.height = 2048;
 dirLight.castShadow = true;
-
-dirLight.shadow.camera.left = -200;
-dirLight.shadow.camera.right = 200;
-dirLight.shadow.camera.top = 200;
-dirLight.shadow.camera.bottom = -200;
-
-// set the dirlight to follow camera
-scene.add( camera );
 camera.add(dirLight);
-dirLight.position.copy( camera.position );
+
+dirLight.shadow.camera.left = -50;
+dirLight.shadow.camera.right = 200;
+dirLight.shadow.camera.top = 100;
+dirLight.shadow.camera.bottom = -100;
+
+dirLight.shadow.mapSize.width = 512; // default
+dirLight.shadow.mapSize.height = 512; // default
+dirLight.shadow.camera.near = 100; // default
+dirLight.shadow.camera.far = 500; // default
+
+scene.add(dirLight.target);
+
+scene.add(dirLight.target);
+dirLight.target = camera;
+// set the dirlight to follow camera
+dirLight.position.set(lightPosition);
+scene.add( camera );
+dirLight.position.copy(lightPosition);
+
+const helper = new THREE.CameraHelper( dirLight.shadow.camera );
+scene.add( helper );
 
 // Listen window size changes
 window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, false );
+
 
 
 //-------------------------------------------------------------------------------
@@ -224,6 +239,7 @@ function selecaoPista(pistaescolhida){
     platforms = [];
     platforms = pista.montaPista();
     for (let i = 0; i < platforms.length; i++) {
+        platforms[i].bloco.receiveShadow = true;
         scene.add(platforms[i].bloco);
     }
     blocoSize = platforms[0].LARGURA;
@@ -347,6 +363,13 @@ const desvio2 = 10000;
 var dirguide = createSphere(radius);
 dirguide.position.set(0.0, 0.0, 2*radius + desvio2);
 
+//ghost guia para a luz
+var lightguide = createSphere(5*radius);
+lightguide.castShadow = true; //default is false
+lightguide.receiveShadow = false; //default
+lightguide.position.set(0.0, 0.0, 2*radius + desvio);
+lightguide.visible = true;
+
 //player
 var player = new CyberTruck;
 var playerNewType = new LambertTestCar;
@@ -356,6 +379,7 @@ player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.8*size, p
 
 player.add(ghostguide);
 player.add(dirguide);
+player.add(lightguide);
 
 var posAtual = new THREE.Vector3(0, 0, 0);
 posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
@@ -858,6 +882,7 @@ function encontraPosicaoRampasV(){
     for (var k = 0; k < platforms.length; k ++){
         if(platforms[k].getBlockType() == "RAMPAV"){
             var rampa = createRampa(blocoSize, rampaType);
+            rampa.receiveShadow = true;
             todasRampasV.push(rampa);
 
             var posicaoNova = new THREE.Vector3;
@@ -888,6 +913,7 @@ function encontraPosicaoRampasH(){
             var rampa = createRampa(blocoSize, rampaType);
             rampa.material.color.setHex(0xff0000);
             rampa.rotateY(degreesToRadians(90));
+            rampa.receiveShadow = true;
             todasRampasH.push(rampa);
 
             var posicaoNova = new THREE.Vector3;

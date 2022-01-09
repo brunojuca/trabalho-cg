@@ -1711,7 +1711,23 @@ function geraStatusFinal(){
     textotempoVolta2.setAttribute("id", "lap2");
     textotempoVolta2.style.position = 'absolute';
     textotempoVolta2.style.backgroundColor = "white";
-    textotempoVolta2.innerHTML = "2nd Lap: " + (tempoTodasVoltas[1]/60 - tempoTodasVoltas[1]/60%1) + ":" + (tempoTodasVoltas[1]%60 - tempoTodasVoltas[1]%60%1);
+
+    var minutesLap2 = (tempoTodasVoltas[1]/60 - tempoTodasVoltas[1]/60%1);
+    var secondsLap2 = (tempoTodasVoltas[1]%60 - tempoTodasVoltas[1]%60%1);
+
+    if( minutesLap2 < 10){
+        textotempoVolta2.innerHTML = "2nd Lap: " + "0" + (minutesLap2 + ":" + secondsLap2 );
+        if(secondsLap2 < 10){
+            textotempoVolta2.innerHTML = "2nd Lap: " + "0" + (minutesLap2 + ":" + "0" + secondsLap2 );
+        }
+        else{
+            textotempoVolta2.innerHTML = "2nd Lap: " + "0" + (minutesLap2 + ":" + secondsLap2 );
+        }
+    }
+    else {
+        textotempoVolta2.innerHTML = "2nd Lap: " + (minutesLap2 + ":" + secondsLap2 );
+    }
+
     textotempoVolta2.style.top = window.innerHeight - 100 + 'px';
     textotempoVolta2.style.left = 0 + 'px';
     document.body.appendChild(textotempoVolta2);
@@ -1721,7 +1737,23 @@ function geraStatusFinal(){
     textotempoVolta3.setAttribute("id", "lap3");
     textotempoVolta3.style.position = 'absolute';
     textotempoVolta3.style.backgroundColor = "white";
-    textotempoVolta3.innerHTML = "3rd Lap: " + (tempoTodasVoltas[2]/60 - tempoTodasVoltas[2]/60%1) + ":" + (tempoTodasVoltas[2]%60 - tempoTodasVoltas[2]%60%1);
+
+    var minutesLap3 = (tempoTodasVoltas[2]/60 - tempoTodasVoltas[2]/60%1);
+    var secondsLap3 = (tempoTodasVoltas[2]%60 - tempoTodasVoltas[2]%60%1);
+
+    if( minutesLap3 < 10){
+        textotempoVolta3.innerHTML = "3rd Lap: " + "0" + (minutesLap3 + ":" + secondsLap3 );
+        if(secondsLap3 < 10){
+            textotempoVolta3.innerHTML = "3rd Lap: " + "0" + (minutesLap3 + ":" + "0" + secondsLap3 );
+        }
+        else{
+            textotempoVolta3.innerHTML = "3rd Lap: " + "0" + (minutesLap3 + ":" + secondsLap3 );
+        }
+    }
+    else {
+        textotempoVolta3.innerHTML = "3rd Lap: " + (minutesLap3 + ":" + secondsLap3 );
+    }
+
     textotempoVolta3.style.top = window.innerHeight - 80 + 'px';
     textotempoVolta3.style.left = 0 + 'px';
     document.body.appendChild(textotempoVolta3);
@@ -1731,7 +1763,23 @@ function geraStatusFinal(){
     textotempoVolta4.setAttribute("id", "lap4");
     textotempoVolta4.style.position = 'absolute';
     textotempoVolta4.style.backgroundColor = "white";
-    textotempoVolta4.innerHTML = "4th Lap: " + (tempoTodasVoltas[3]/60 - tempoTodasVoltas[3]/60%1) + ":" + (tempoTodasVoltas[3]%60 - tempoTodasVoltas[3]%60%1);
+
+    var minutesLap4 = (tempoTodasVoltas[3]/60 - tempoTodasVoltas[3]/60%1);
+    var secondsLap4 = (tempoTodasVoltas[3]%60 - tempoTodasVoltas[3]%60%1);
+
+    if( minutesLap4 < 10){
+        textotempoVolta4.innerHTML = "4th Lap: " + "0" + (minutesLap4 + ":" + secondsLap4 );
+        if(secondsLap4 < 10){
+            textotempoVolta4.innerHTML = "4th Lap: " + "0" + (minutesLap4 + ":" + "0" + secondsLap4 );
+        }
+        else{
+            textotempoVolta4.innerHTML = "4th Lap: " + "0" + (minutesLap4 + ":" + secondsLap4 );
+        }
+    }
+    else {
+        textotempoVolta4.innerHTML = "4th Lap: " + (minutesLap4 + ":" + secondsLap4 );
+    }
+
     textotempoVolta4.style.top = window.innerHeight - 60 + 'px';
     textotempoVolta4.style.left = 0 + 'px';
     document.body.appendChild(textotempoVolta4);
@@ -1741,9 +1789,23 @@ function geraStatusFinal(){
     textotempoMenorVolta.setAttribute("id", "melhorVolta");
     textotempoMenorVolta.style.position = 'absolute';
     textotempoMenorVolta.style.backgroundColor = "white";
-    console.log(tempoMenorVolta);
-    console.log(tempoMenorVolta%60,":",60 - tempoMenorVolta%60)
-    textotempoMenorVolta.innerHTML = "Best Lap: " +(tempoMenorVolta/60 - tempoMenorVolta/60%1) + ":" + (tempoMenorVolta%60 - tempoMenorVolta%60%1);
+
+    var minutesMenor = (tempoMenorVolta/60 - tempoMenorVolta/60%1);
+    var secondsMenor = (tempoMenorVolta%60 - tempoMenorVolta%60%1);
+
+    if( minutesMenor < 10){
+        textotempoMenorVolta.innerHTML = "Best Lap: " + "0" + (minutesMenor + ":" + secondsMenor );
+        if(secondsMenor < 10){
+            textotempoMenorVolta.innerHTML = "Best Lap: " + "0" + (minutesMenor + ":" + "0" + secondsMenor );
+        }
+        else{
+            textotempoMenorVolta.innerHTML = "Best Lap: " + "0" + (minutesMenor + ":" + secondsMenor );
+        }
+    }
+    else {
+        textotempoMenorVolta.innerHTML = "Best Lap: " + (minutesMenor + ":" + secondsMenor );
+    }
+
     textotempoMenorVolta.style.top = window.innerHeight - 40 + 'px';
     textotempoMenorVolta.style.left = 0 + 'px';
     document.body.appendChild(textotempoMenorVolta);

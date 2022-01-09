@@ -15,9 +15,12 @@ export class CyberTruck extends THREE.Group {
   rotation;
   wheelAngle;
 
+  carAngle;
+
   constructor() {
     super();
     this.wheelAngle = 0;
+    this.carAngle = 0;
     this.rotation = 1;
     let loader = new GLTFLoader();
     loader.load("./assets/objects/body.gltf", (gltf) => this.onBodyLoad(gltf));
@@ -112,6 +115,54 @@ export class CyberTruck extends THREE.Group {
       this.wheel3.rotateX(degreesToRadians(this.rotation));
       this.wheel4.rotateX(-degreesToRadians(this.rotation));
       this.rotation /= 1.05;
+    }
+  }
+
+  turnUp(degrees, speed) {
+    if(this.carAngle <= degrees*100 - 9){
+      this.body.rotateX(degreesToRadians(-2.2*speed));
+      this.carAngle += 2.2*speed;
+      if(this.carAngle >= (-degrees*100 + 5)/4 ){
+
+        this.wheel3.position.set(1.8, -2.3, -3.4);
+        this.wheel4.position.set(-1.8, -2.3, -3.4);
+      }
+      this.body.position.set(0,-1.6,0);
+    }
+    else{
+      this.wheel1Holder.position.set(1.8, 0.6, 3.4);
+      this.wheel2Holder.position.set(-1.8, 0.6, 3.4);
+    }
+  }
+
+  turnDefault(speed) {
+    if(this.carAngle > 0.01){
+      this.body.rotateX(degreesToRadians(10.4*speed));
+      this.carAngle -= 10.4*speed;
+    }
+    else if(this.carAngle < 0.01){
+      this.body.rotateX(degreesToRadians(-10.4*speed));
+      this.carAngle += 10.4*speed;
+    }
+    this.body.position.set(0,-1.4,0);
+    this.wheel1Holder.position.set(1.8, -0.4, 3.9);
+    this.wheel2Holder.position.set(-1.8, -0.4, 3.9);
+    this.wheel3.position.set(1.8, -0.4, -3.5);
+    this.wheel4.position.set(-1.8, -0.4, -3.5);
+  }
+
+  turnDown(degrees, speed) {
+    if(this.carAngle >= -degrees*100 + 9){
+      this.body.rotateX(degreesToRadians(2.2*speed));
+      this.carAngle -= 2.2*speed;
+      if(this.carAngle <= (-degrees*100 + 5)/8 ){
+        this.wheel1Holder.position.set(1.8, -2.5, 3.7);
+        this.wheel2Holder.position.set(-1.8, -2.5, 3.7);
+        this.wheel3.position.set(1.8, 0.7, -2.9);
+        this.wheel4.position.set(-1.8, 0.7, -2.9);
+
+      }
+      this.body.position.set(0,-1.6,0);
     }
   }
 }

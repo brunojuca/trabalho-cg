@@ -10,6 +10,7 @@ import {pista5 as pista5} from './pistas/pista5.js';
 import Pista from './Pista.js';
 import { Car } from './Car.js';
 import { LambertTestCar } from './LambertTestCar.js';
+import { CyberTruck } from './CyberTruck.js';
 import { Turbina } from './Turbina.js';
 import { Pokey } from './Pokey.js';
 import { assetsManager } from './assetsManager.js';
@@ -297,11 +298,13 @@ var dirguide = createSphere(radius);
 dirguide.position.set(0.0, 0.0, 2*radius + desvio2);
 
 //player
-var player = new LambertTestCar;
+var player = new CyberTruck;
+var player2 = new LambertTestCar;
 player.scale.set(0.8,0.8,0.8);
 player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.2*size, posicionamentoChegada[0].getComponent(2) - size);
 player.add(ghostguide);
 player.add(dirguide);
+player.add(player2);
 
 var posAtual = new THREE.Vector3(0, 0, 0);
 posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
@@ -1032,7 +1035,7 @@ function atualizaAlturaMaxV(){
     else{
         console.log("tipo V - Azul:", "Z: ", absDiffZ, "X: ", absDiffX);
         console.log("tipo V - Azul:", "Z: ", diffZ, "X: ", diffX);
-        alturaMaxV = (blocoSize/2 - absDiffX)* rampaAngle;
+        alturaMaxV = (blocoSize/2 - absDiffX)* rampaAngle + 5*offsetColisor;
     }
 }
 
@@ -1067,7 +1070,7 @@ function atualizaAlturaMaxH(){
     else{
         console.log("tipo H - Vermelho:", "Z: ", absDiffZ, "X: ", absDiffX);
         console.log("tipo H - Vermelho:", "Z: ", diffZ, "X: ", diffX);
-        alturaMaxH = (blocoSize/2 - absDiffZ)* rampaAngle;
+        alturaMaxH = (blocoSize/2 - absDiffZ)* rampaAngle + 5*offsetColisor;
     }
 }
 
@@ -1687,11 +1690,16 @@ let params = {
     //pixel
     pixelSize: 2,
     pixelizar: false,
+    //bloom
     bloomThreshold: 0.1,
     bloomStrength: 0.9,
     bloomRadius: 0.43,
-    bloomTrue: false
+    bloomTrue: false,
+    //player select
+    characterSelect: 1
 };
+
+//Controle pra ver qual setagem e melhor para cada shader
 
 var gui = new GUI();
 gui.add(params, 'pixelSize').min(2).max(32).step(2);
@@ -1706,8 +1714,9 @@ gui.add(params, 'bloomRadius', 0.0, 1.0).onChange(function (value){
     bloomPass.radius = Number(value);
 });
 gui.add(params, 'bloomTrue');
-
-
+gui.add(params, 'characterSelect').min(1).max(2).step(1).onChange(function (value){
+    personSelecionado = Number(value);
+});
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -1765,7 +1774,17 @@ function setaBloom(){
             bloomPass.strength = Number(0.9);
             bloomPass.radius = Number(0.43);
             break;
+        case 2:
+            bloomPass.threshold = Number(0.0);
+            bloomPass.strength = Number(0.65);
+            bloomPass.radius = Number(0.45);
+            break
         case 3:
+            bloomPass.threshold = Number(0.0);
+            bloomPass.strength = Number(0.75);
+            bloomPass.radius = Number(1.0);
+            break;
+        case 4:
             bloomPass.threshold = Number(0.0);
             bloomPass.strength = Number(0.75);
             bloomPass.radius = Number(1.0);
@@ -1819,7 +1838,20 @@ function controlledRender(t)
     renderer.render(scene, virtualCamera);  // Render scene of the virtual camera
 }
 
-
+var personSelecionado = 1;
+function selecionaPlayer(){
+    switch(params.characterSelect){
+        case 1:
+            player.visible = true;
+            player2.visible = false;
+        case 2:
+            player.visible = false;
+            player2.visible = true;
+        default:
+            player.visible = true;
+            player2.visible = false;
+    }
+}
 var delay = 0;
 function render(t)
 {
@@ -1843,7 +1875,7 @@ function render(t)
         cameraHolder.position.set(player.position.getComponent(0)+140, player.position.getComponent(1)+45, player.position.getComponent(2)-150);
     }
     if (panoramicotraseiro){
-        cameraHolder.position.set(player.position.getComponent(0)+0, player.position.getComponent(1)+40, player.position.getComponent(2)-150);
+        cameraHolder.position.set(player.position.getComponent(0)+0, player.position.getComponent(1)+20, player.position.getComponent(2)-150);
     }
     cameraHolder.rotateY(degreesToRadians(180));
 
@@ -1864,6 +1896,7 @@ function render(t)
         spinBlades();
     }
 
+    selecionaPlayer();
     controlledRender(t);
 }
 

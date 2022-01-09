@@ -1057,9 +1057,17 @@ function inverseGravityV(obj){
 }
 function inverseGravityDescidaSuaveV(obj){
     if(playerOnGround){
-        if(obj.position.getComponent(1) >= alturaMaxV){
-            playerOnRampa = true;
-            obj.translateY(-0.5*speedModulo);
+        if(!carroFreiando){
+            if(obj.position.getComponent(1) >= alturaMaxV){
+                playerOnRampa = true;
+                obj.translateY(-0.5*speedModulo);
+            }
+        }
+        else{
+            if(obj.position.getComponent(1) <= alturaMaxV){
+                playerOnRampa = true;
+                obj.translateY(0.5*speedModulo);
+            }
         }
     }
 }
@@ -1096,9 +1104,17 @@ function inverseGravityH(obj){
 }
 function inverseGravityDescidaSuaveH(obj){
     if(playerOnGround){
-        if(obj.position.getComponent(1) >= alturaMaxH){
-            playerOnRampa = true;
-            obj.translateY(-0.5*speedModulo);
+        if(!carroFreiando){
+            if(obj.position.getComponent(1) >= alturaMaxH){
+                playerOnRampa = true;
+                obj.translateY(-0.5*speedModulo);
+            }
+        }
+        else{
+            if(obj.position.getComponent(1) <= alturaMaxV){
+                playerOnRampa = true;
+                obj.translateY(0.5*speedModulo);
+            }
         }
     }
 }

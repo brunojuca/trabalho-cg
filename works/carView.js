@@ -10,7 +10,7 @@ import {
   initDefaultBasicLight,
   degreesToRadians,
 } from "../libs/util/util.js";
-import { Car } from "./Car.js";
+import { CyberTruck } from "./CyberTruck.js";
 import KeyboardState from "../libs/util/KeyboardState.js";
 import {assetsManager} from './assetsManager.js';
 
@@ -35,7 +35,7 @@ var trackballControls = new TrackballControls(camera, renderer.domElement);
 //light
 initDefaultSpotlight(scene, new THREE.Vector3(35, 20, 30)); // Use default light
 
-var player = new Car();
+var player = new CyberTruck();
 // position the player
 player.position.set(0.0, 0.0, 1.0);
 player.rotateX(degreesToRadians(90));

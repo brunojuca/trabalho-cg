@@ -880,7 +880,7 @@ function verificaColisorRampa(){
 
         if(platforms[k].getBlockType() == "RAMPAV"  && absDiffX <= blocoSize/2 && absDiffZ <= blocoSize/2){
             atualizaAlturaMaxV();
-            //keyLock = true;
+            /*keyLock = true;*/
 
             //posiçoes com referencia à terceiraView
             //bloqueios laterais
@@ -936,9 +936,8 @@ function verificaColisorRampa(){
         }
         else if(platforms[k].getBlockType() == "RAMPAH" && absDiffZ <= blocoSize/2 && absDiffX <= blocoSize/2){
             atualizaAlturaMaxH();
-            console.log(alturaMaxH);
-
-            //keyLock = true;
+            /*console.log(alturaMaxH);
+              keyLock = true;*/
 
             //posiçoes com referencia à terceiraView
             //bloqueios laterais
@@ -1025,7 +1024,7 @@ function inverseGravityV(obj){
             obj.translateY(0.5*speedModulo);
             if(speedModulo >= 1.05){
                 obj.translateY(0.5*speedModulo);
-                obj.translateZ(2.5*speedModulo);
+                obj.translateZ(1.0*speedModulo);
             }
         }
     }
@@ -1045,8 +1044,8 @@ function atualizaAlturaMaxV(){
         alturaMaxV = 30;
     }
     else{
-        console.log("tipo V - Azul:", "Z: ", absDiffZ, "X: ", absDiffX);
-        console.log("tipo V - Azul:", "Z: ", diffZ, "X: ", diffX);
+        /*console.log("tipo V - Azul:", "Z: ", absDiffZ, "X: ", absDiffX);
+        console.log("tipo V - Azul:", "Z: ", diffZ, "X: ", diffX);*/
         alturaMaxV = (blocoSize/2 - absDiffX)* rampaAngle + 5*offsetColisor;
     }
 }
@@ -1064,7 +1063,7 @@ function inverseGravityH(obj){
             obj.translateY(0.5*speedModulo);
             if(speedModulo >= 1.05){
                 obj.translateY(0.5*speedModulo);
-                obj.translateZ(2.5*speedModulo);
+                obj.translateZ(1.0*speedModulo);
             }
         }
     }
@@ -1083,14 +1082,14 @@ function atualizaAlturaMaxH(){
         alturaMaxH = 30;
     }
     else{
-        console.log("tipo H - Vermelho:", "Z: ", absDiffZ, "X: ", absDiffX);
-        console.log("tipo H - Vermelho:", "Z: ", diffZ, "X: ", diffX);
+        /*console.log("tipo H - Vermelho:", "Z: ", absDiffZ, "X: ", absDiffX);
+        console.log("tipo H - Vermelho:", "Z: ", diffZ, "X: ", diffX);*/
         alturaMaxH = (blocoSize/2 - absDiffZ)* rampaAngle + 5*offsetColisor;
     }
 }
 
 //-------------------------------------------------------------------------------
-// Colisor - Dentro Pista - Desaceleração
+// Colisor - Dentro - Pista (Desaceleração)
 //-------------------------------------------------------------------------------
 var diffRedutorX = 0;
 var diffRedutorZ = 0;
@@ -1165,7 +1164,7 @@ function verificaProximidadeEolic(){
 }
 
 //-------------------------------------------------------------------------------
-// Colisor Checkpoints
+// Colisor - Dentro - Checkpoints
 //-------------------------------------------------------------------------------
 
 var colidiuCheckpoints = [];
@@ -1714,7 +1713,7 @@ let params = {
 };
 
 //Controle pra ver qual setagem e melhor para cada shader
-
+/*
 var gui = new GUI();
 gui.add(params, 'pixelSize').min(2).max(32).step(2);
 gui.add(params, 'pixelizar');
@@ -1731,6 +1730,7 @@ gui.add(params, 'bloomTrue');
 gui.add(params, 'characterSelect').min(1).max(2).step(1).onChange(function (value){
     personSelecionado = Number(value);
 });
+*/
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -1813,6 +1813,24 @@ function setaBloom(){
     }
 }
 
+//-------------------------------------------------------------------------------
+// Selecionador de Person - Não Implementado ainda
+//-------------------------------------------------------------------------------
+
+var personSelecionado = 1;
+function selecionaPlayer(){
+    switch(params.characterSelect){
+        case 1:
+            player.visible = true;
+            player2.visible = false;
+        case 2:
+            player.visible = false;
+            player2.visible = true;
+        default:
+            player.visible = true;
+            player2.visible = false;
+    }
+}
 
 
 //-------------------------------------------------------------------------------
@@ -1852,20 +1870,6 @@ function controlledRender(t)
     renderer.render(scene, virtualCamera);  // Render scene of the virtual camera
 }
 
-var personSelecionado = 1;
-function selecionaPlayer(){
-    switch(params.characterSelect){
-        case 1:
-            player.visible = true;
-            player2.visible = false;
-        case 2:
-            player.visible = false;
-            player2.visible = true;
-        default:
-            player.visible = true;
-            player2.visible = false;
-    }
-}
 var delay = 0;
 function render(t)
 {

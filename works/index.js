@@ -35,6 +35,7 @@ import Roadblock from './Roadblock.js';
 // Texture Loader
 //-------------------------------------------------------------------------------
 const loader = new THREE.TextureLoader();
+const cubeLoader = new THREE.CubeTextureLoader();
 
 //track1
 const moonTexture = loader.load( 'texture/track1/moon.jpg' );
@@ -43,11 +44,22 @@ const skyTexture = loader.load( 'texture/track1/sky.jpg' );
 
 //track2
 const skyTexture2 = loader.load( 'texture/track2/retrowave.png');
+const retroTexture = loader.load( 'texture/track2/retrowave3.png');
+
+/*
+const skyBoxTexture2 = cubeLoader.load([
+    'texture/checkers.png',
+    'texture/checkers.png',
+    'texture/checkers.png',
+    'texture/checkers.png',
+    'texture/checkers.png',
+    'texture/checkers.png',
+]);
+*/
 
 //track3
 const groundtexture3 = loader.load( 'texture/track3/magma.jpg' );
 const skyTexture3 = loader.load( 'texture/track3/bowserCastle.jpg');
-
 
 //track5
 const skyTexture4 = loader.load( 'texture/track4/thunder.jpg' );
@@ -105,7 +117,8 @@ var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHei
   camera.position.set(0, 0, 0);
   camera.up.set( 0, 10, 0 );
   camera.fov = 20;
-  camera.far = 1000;
+  camera.near = 8000;
+  camera.far = 15000;
   camera.layers.enable(1);
 
 //-------------------------------------------------------------------------------
@@ -152,6 +165,9 @@ groundtexture5.repeat.set( 1000, 1000 );
 groundtexture5.anisotropy = 16;
 var ground1Material = new THREE.MeshStandardMaterial( { map: groundtexture5 } );
 
+var retrowaveMaterial = new THREE.MeshPhongMaterial( { map: retroTexture } );
+retrowaveMaterial.side = THREE.BackSide;
+
 groundtexture3.wrapS = groundtexture3.wrapT = THREE.RepeatWrapping;
 groundtexture3.repeat.set( 50, 50 );
 groundtexture3.anisotropy = 16;
@@ -160,14 +176,20 @@ var ground2Material = new THREE.MeshStandardMaterial( { map: groundtexture3} );
 
 //var plane = createGroundPlaneWired(1500, 1500, 80, 80);
 var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 5000, 5000 ), blackholeMaterial );
+var plane2 = new THREE.Mesh( new THREE.SphereGeometry( 100, 32,32 ), retrowaveMaterial );
 var plane3 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 4000, 4000 ), ground2Material );
-var plane5 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground1Material );
+var plane5 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 1000, 10000 ), ground1Material );
 
 plane1.position.y = 0.0;
 plane1.rotation.x = - Math.PI / 2;
 plane1.position.x = 350;
 plane1.position.y = -6.3;
 plane1.position.z = 350;
+
+plane2.position.x = 350.0;
+plane2.position.y = 0.0;
+plane2.position.z = 350.0;
+plane2.visible = false;
 
 plane3.position.y = 0.0;
 plane3.rotation.x = - Math.PI / 2;
@@ -180,6 +202,7 @@ plane5.position.y = -0.3;
 plane5.visible = false;
 
 scene.add(plane1);
+scene.add(plane2);
 scene.add(plane3);
 scene.add(plane5);
 
@@ -1404,30 +1427,35 @@ function alternaPlano(){
         case 1:
             scene.background = skyTexture;
             plane1.visible = true;
+            plane2.visible = false;
             plane3.visible = false;
             plane5.visible = false;
             break;
         case 2:
             scene.background = skyTexture2;
             plane1.visible = false;
+            plane2.visible = true;
             plane3.visible = false;
             plane5.visible = false;
             break;
         case 3:
             scene.background = skyTexture3;
             plane1.visible = false;
+            plane2.visible = false;
             plane3.visible = true;
             plane5.visible = false;
             break;
         case 4:
             scene.background = skyTexture4;
             plane1.visible = false;
-            plane3.visible = false;
+            plane2.visible = false;
+            lane3.visible = false;
             plane5.visible = false;
             break;
         case 5:
             scene.background = skyTexture5;
             plane1.visible = false;
+            plane2.visible = false;
             plane3.visible = false;
             plane5.visible = true;
             break;
@@ -1945,7 +1973,7 @@ function descePersonSelecionado(){
 }
 
 //Controle pra ver qual setagem e melhor para cada shader
-
+/*
 var gui = new GUI();
 gui.add(params, 'pixelSize').min(2).max(32).step(2);
 gui.add(params, 'pixelizar');
@@ -1962,7 +1990,7 @@ gui.add(params, 'bloomTrue');
 gui.add(params, 'characterSelect').min(1).max(2).step(1).onChange(function (value){
     personSelecionado = Number(value);
 });
-
+*/
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------

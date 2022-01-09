@@ -708,7 +708,7 @@ function selecionaRampaMaterial(rampaType){
         case 4:
             rampaTexture = loader.load( 'texture/track4/clovers.jpg' );
             rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
-            rampaTexture.repeat.set( 0.02, 0.1 );
+            rampaTexture.repeat.set( 0.02, 0.01 );
             rampaTexture.anisotropy = 16;
             return new THREE.MeshStandardMaterial( { map: rampaTexture} );
         case 5:

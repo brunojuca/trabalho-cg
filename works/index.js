@@ -299,12 +299,13 @@ dirguide.position.set(0.0, 0.0, 2*radius + desvio2);
 
 //player
 var player = new CyberTruck;
-var player2 = new LambertTestCar;
+var playerNewType = new LambertTestCar;
+
 player.scale.set(1.4,1.4,1.4);
 player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.8*size, posicionamentoChegada[0].getComponent(2) - size);
+
 player.add(ghostguide);
 player.add(dirguide);
-player.add(player2);
 
 var posAtual = new THREE.Vector3(0, 0, 0);
 posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
@@ -1320,7 +1321,7 @@ function resetaVariaveis(){
 
 function reposicionaPlayer(dir){
     //player.alternaSpotLight(pistaAtual);
-    player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.2*size, posicionamentoChegada[0].getComponent(2) - size);
+    player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.8*size, posicionamentoChegada[0].getComponent(2) - size);
     switch(dir){
         case 'left':
             player.lookAt(0,0,100000);
@@ -1383,9 +1384,9 @@ function selectSoundtrack(track){
     assetsMng.stop();
     //fazer liga e desliga musica mais a frente
     if(!tocar){
-        console.log("começou", delayMusica%30);
+        //console.log("começou", delayMusica%30);
         while (delayMusica%30 != 0 ){
-            console.log("loopInfinito", delayMusica%30);
+            //console.log("loopInfinito", delayMusica%30);
             delayMusica += 1;
             if (delayMusica%30 == 0){
                 switch(track){
@@ -1457,6 +1458,7 @@ var panoramicotraseiro = false;
 function keyboardUpdate() {
     keyboard.update();
 
+    //controles do player
     if (keyboard.pressed("X")){
         carroAcelerando = true;
         speedForward = (Speed/100 + aceleracao/100)*redutor;
@@ -1471,6 +1473,7 @@ function keyboardUpdate() {
     }
     else if (keyboard.up("X")) {
         carroAcelerando = false;
+        speedModulo = speedForward;
         player.defaultUpdate();
     }
 
@@ -1488,6 +1491,7 @@ function keyboardUpdate() {
     }
     else if (keyboard.up("down")) {
         carroFreiando = false
+        speedModulo = -speedBackward;
         player.defaultUpdate();
     }
 
@@ -1506,6 +1510,7 @@ function keyboardUpdate() {
         }
     }
 
+    //mapas
     if (keyboard.pressed("1") && pistaAtual != 1){
         pistaAtual = 1;
         newflagNumber = 9;
@@ -1583,7 +1588,7 @@ function keyboardUpdate() {
     }
 
 
-    //extras
+    //cameras
     if (keyboard.pressed(",")){
         panoramicotraseiro = false;
         panoramico = true;
@@ -1594,12 +1599,25 @@ function keyboardUpdate() {
         panoramicotraseiro = false;
         playerIcon.visible = true;
     }
-    //; em alguns teclados
-    else if (keyboard.pressed("/")){
+    else if (keyboard.pressed("/")){ //; em alguns teclados
         panoramico = false;
         panoramicotraseiro = true;
         playerIcon.visible = false;
     }
+
+    //liga e desliga Bloom
+    if (keyboard.down("B")){
+        chaveBloom();
+    }
+
+    if (keyboard.down("M")){
+        sobePersonSelecionado();
+    }
+    else if (keyboard.down("N")){
+        descePersonSelecionado();
+    }
+
+    //mapa secreto
     if (keyboard.down("0")){
         scene.background = skyTextureSecret;
         assetsMng.play("00-CoconutMall");
@@ -1697,6 +1715,22 @@ function geraStatusFinal(){
     textotempoMenorVolta.style.left = window.innerWidth - 400 + 'px';
     document.body.appendChild(textotempoMenorVolta);
 
+    var textotempoMenorVolta = document.createElement('div');
+    textotempoMenorVolta.setAttribute("id", "velocimetro");
+    textotempoMenorVolta.style.position = 'absolute';
+    textotempoMenorVolta.style.backgroundColor = "white";
+
+    if(carroAcelerando || carroFreiando){
+        textotempoMenorVolta.innerHTML = ((speedModulo*100) - 20) ;
+    }
+    else {
+        textotempoMenorVolta.innerHTML = 0;
+    }
+
+    textotempoMenorVolta.style.top = 139 + 'px';
+    textotempoMenorVolta.style.left = window.innerWidth - 400 + 'px';
+    document.body.appendChild(textotempoMenorVolta);
+
 }
 
 function limpaStatusFinal(){
@@ -1716,6 +1750,8 @@ function limpaStatusFinal(){
     txt6.remove();
     var txt7 = document.getElementById("txt7");
     txt7.remove();
+    var txt8 = document.getElementById("velocimetro");
+    txt8.remove();
 }
 
 
@@ -1735,8 +1771,25 @@ let params = {
     bloomRadius: 0.43,
     bloomTrue: false,
     //player select
-    characterSelect: 1
+    characterSelect: 1,
+    characters: 2
 };
+
+function chaveBloom(){
+    params.bloomTrue = !params.bloomTrue;
+}
+
+function sobePersonSelecionado(){
+    if(params.characterSelect < params.characters)
+        params.characterSelect++;
+    console.log("teste",params.characterSelect);
+}
+
+function descePersonSelecionado(){
+    if(params.characterSelect > 1)
+        params.characterSelect--;
+    console.log("teste",params.characterSelect);
+}
 
 //Controle pra ver qual setagem e melhor para cada shader
 /*
@@ -1843,18 +1896,21 @@ function setaBloom(){
 // Selecionador de Person - Não Implementado ainda
 //-------------------------------------------------------------------------------
 
-var personSelecionado = 1;
 function selecionaPlayer(){
+    console.log("selecionou")
     switch(params.characterSelect){
         case 1:
             player.visible = true;
             player2.visible = false;
+            break;
         case 2:
-            player.visible = false;
+            player.visible = true;
             player2.visible = true;
+            break;
         default:
             player.visible = true;
             player2.visible = false;
+            break;
     }
 }
 
@@ -1913,6 +1969,7 @@ function render(t)
 
     //setagem de camera
     posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
+
     cameraHolder.lookAt(ghostguide.getWorldPosition(new THREE.Vector3()));
     cameraHolder.position.set(player.position.getComponent(0)+60, player.position.getComponent(1)+80, player.position.getComponent(2)-50);
     if (panoramico){
@@ -1940,7 +1997,6 @@ function render(t)
         spinBlades();
     }
 
-    selecionaPlayer();
     controlledRender(t);
 }
 

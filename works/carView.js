@@ -58,20 +58,16 @@ function keyboardUpdate() {
 
   if (keyboard.pressed("X")) {
     player.accelerate(0);
-    lightHolder.translateX(10);
   }
 
   if (keyboard.pressed("down")) {
     player.accelerate(-0.00001);
-    lightHolder.translateX(-10);
   }
 
   if (keyboard.pressed("left")) {
     player.turnLeft(0);
-    lightHolder.translateZ(-10);
   } else if (keyboard.pressed("right")) {
     player.turnRight(0);
-    lightHolder.translateZ(10);
   }
 
   if (keyboard.pressed("space")){

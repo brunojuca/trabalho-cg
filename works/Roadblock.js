@@ -10,17 +10,22 @@ export default class Roadblock
         const loader = new THREE.TextureLoader();
 
         const roadTexture = loader.load( 'texture/track1/road1.jpg' );
+        const roadTexture2 = loader.load( 'texture/track2/road2.png' );
         const roadTexture3 = loader.load( 'texture/track3/road3.jpg' );
         const roadTexture5 = loader.load( 'texture/track5/road5.jpeg' );
         const goalTexture = loader.load( 'texture/checkers.png' );
+        const rampaTexture = loader.load( 'texture/neondots.png' );
 
         //roadTexture.wrapS = roadTexture.wrapT = THREE.RepeatWrapping;
+        rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
+        this.rampaMaterial = new THREE.MeshStandardMaterial( { map: rampaTexture } );
+
         goalTexture.wrapS = goalTexture.wrapT = THREE.RepeatWrapping;
         this.goalMaterial = new THREE.MeshStandardMaterial( { map: goalTexture } );
 
         this.finalRoadMaterial = new THREE.MeshStandardMaterial();
         this.road1Material = new THREE.MeshStandardMaterial( { map: roadTexture } );
-        this.road2Material = new THREE.MeshStandardMaterial( { map: roadTexture } );
+        this.road2Material = new THREE.MeshStandardMaterial( { map: roadTexture2 } );
         this.road3Material = new THREE.MeshStandardMaterial( { map: roadTexture3 } );
         this.road4Material = new THREE.MeshStandardMaterial( { map: roadTexture } );
         this.road5Material = new THREE.MeshStandardMaterial( { map: roadTexture5 } );
@@ -36,13 +41,13 @@ export default class Roadblock
                 this.finalRoadMaterial = this.road1Material;
                 break;
             case 2:
-                this.finalRoadMaterial = this.road3Material;
+                this.finalRoadMaterial = this.road2Material;
                 break
             case 3:
                 this.finalRoadMaterial = this.road3Material;
                 break
             case 4:
-                this.finalRoadMaterial = this.road3Material;
+                this.finalRoadMaterial = this.road4Material;
                 break
             case 5:
                 this.finalRoadMaterial = this.road5Material;
@@ -57,7 +62,7 @@ export default class Roadblock
                 break;
             case '1B':
                 this.blockType = "COMUM2";
-                this.finalRoadMaterial = this.road5Material;
+                this.finalRoadMaterial = this.road2Material;
                 break;
             case '1C':
                 this.blockType = "COMUM3";
@@ -138,13 +143,13 @@ export default class Roadblock
                 break;
             case "RAMPAV":
                 cor = '#808080'; // cinza
-                var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
-                var bloco = new THREE.Mesh( cubeGeometry,  cubeMaterial);
+                //var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
+                var bloco = new THREE.Mesh( cubeGeometry,  this.rampaMaterial);
                 break;
             case "RAMPAH":
                 cor = '#808080'; // cinza
-                var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
-                var bloco = new THREE.Mesh( cubeGeometry,  cubeMaterial);
+                //var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
+                var bloco = new THREE.Mesh( cubeGeometry, this.rampaMaterial);
                 break;
             case "CHECKPOINT":
                 cor = '#808080'; // cinza

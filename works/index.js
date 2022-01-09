@@ -43,16 +43,21 @@ const blackholeTexture = loader.load( 'texture/track1/blackhole.jpg' );
 const skyTexture = loader.load( 'texture/track1/sky.jpg' );
 
 //track2
-const groundTexture1 = loader.load( 'texture/track5/sand.jpg' );
-const skyTexture2 = loader.load( 'texture/track5/sunsky.png' );
+const skyTexture2 = loader.load( 'texture/track2/retrowave.png');
 
 //track3
-const groundTexture2= loader.load( 'texture/track3/magma.jpg' );
+const groundtexture3 = loader.load( 'texture/track3/magma.jpg' );
 const skyTexture3 = loader.load( 'texture/track3/bowserCastle.jpg');
+
+//track5
+const groundtexture5 = loader.load( 'texture/track5/sand.jpg' );
+const skyTexture5 = loader.load( 'texture/track5/sunsky.png' );
 
 //track0 - secret
 const skyTextureSecret = loader.load( 'texture/secret/coconutMall.jpg' );
 const flagTexture = loader.load( 'texture/secret/coconutFlagPole.png' );
+
+const rampaTexture = loader.load( 'texture/neondots.png' );
 
 
 //-------------------------------------------------------------------------------
@@ -110,20 +115,19 @@ window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, 
 //-------------------------------------------------------------------------------
 var blackholeMaterial = new THREE.MeshStandardMaterial( { map: blackholeTexture } );
 
-groundTexture1.wrapS = groundTexture1.wrapT = THREE.RepeatWrapping;
-groundTexture1.repeat.set( 1000, 1000 );
-groundTexture1.anisotropy = 16;
-var ground1Material = new THREE.MeshStandardMaterial( { map: groundTexture1 } );
+groundtexture5.wrapS = groundtexture5.wrapT = THREE.RepeatWrapping;
+groundtexture5.repeat.set( 1000, 1000 );
+groundtexture5.anisotropy = 16;
+var ground1Material = new THREE.MeshStandardMaterial( { map: groundtexture5 } );
 
-groundTexture2.wrapS = groundTexture2.wrapT = THREE.RepeatWrapping;
-groundTexture2.repeat.set( 50, 50 );
-groundTexture2.anisotropy = 16;
-var ground2Material = new THREE.MeshStandardMaterial( { map: groundTexture2} );
+groundtexture3.wrapS = groundtexture3.wrapT = THREE.RepeatWrapping;
+groundtexture3.repeat.set( 50, 50 );
+groundtexture3.anisotropy = 16;
+var ground2Material = new THREE.MeshStandardMaterial( { map: groundtexture3} );
 
 
 //var plane = createGroundPlaneWired(1500, 1500, 80, 80);
 var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 250, 250 ), blackholeMaterial );
-var plane2 = createGroundPlaneWired(1500, 1500, 80, 80);
 var plane3 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 4000, 4000 ), ground2Material );
 var plane4 = createGroundPlaneWired(1500, 1500, 80, 80);
 var plane5 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground1Material );
@@ -133,8 +137,6 @@ plane1.rotation.x = - Math.PI / 2;
 plane1.position.x = 150;
 plane1.position.y = -6.3;
 plane1.position.z = 150;
-
-plane2.visible = false;
 
 plane3.position.y = 0.0;
 plane3.rotation.x = - Math.PI / 2;
@@ -149,7 +151,6 @@ plane5.position.y = -0.3;
 plane5.visible = false;
 
 scene.add(plane1);
-scene.add(plane2);
 scene.add(plane3);
 scene.add(plane3);
 scene.add(plane5);
@@ -691,7 +692,10 @@ function createRampa(size, rampaType) {
         case 3:
     }*/
     var extrudeGeometry = new THREE.ExtrudeGeometry(RampaShape(size), extrudeSettings);
-    var rampaMaterial = new THREE.MeshPhongMaterial( {color:'rgb(255,255,255)'} );
+    rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
+    rampaTexture.repeat.set( 0.02, 0.1 );
+    rampaTexture.anisotropy = 16;
+    var rampaMaterial = new THREE.MeshStandardMaterial( { map: rampaTexture } );
     var rampa = new THREE.Mesh(extrudeGeometry, rampaMaterial);
     return rampa;
 }
@@ -715,7 +719,6 @@ function encontraPosicaoRampasV(){
     for (var k = 0; k < platforms.length; k ++){
         if(platforms[k].getBlockType() == "RAMPAV"){
             var rampa = createRampa(blocoSize);
-            rampa.material.color.setHex(0x0000ff);
             todasRampasV.push(rampa);
 
             var posicaoNova = new THREE.Vector3;
@@ -1260,14 +1263,13 @@ function alternaPlano(){
         case 1:
             scene.background = skyTexture;
             plane1.visible = true;
-            plane2.visible = false;
             plane3.visible = false;
             plane4.visible = false;
             plane5.visible = false;
             break;
         case 2:
+            scene.background = skyTexture2;
             plane1.visible = false;
-            plane2.visible = true;
             plane3.visible = false;
             plane4.visible = false;
             plane5.visible = false;
@@ -1275,22 +1277,20 @@ function alternaPlano(){
         case 3:
             scene.background = skyTexture3;
             plane1.visible = false;
-            plane2.visible = false;
             plane3.visible = true;
             plane4.visible = false;
             plane5.visible = false;
             break;
         case 4:
+            scene.background = skyTexture4;
             plane1.visible = false;
-            plane2.visible = false;
             plane3.visible = false;
             plane4.visible = true;
             plane5.visible = false;
             break;
         case 5:
-            scene.background = skyTexture2;
+            scene.background = skyTexture5;
             plane1.visible = false;
-            plane2.visible = false;
             plane3.visible = false;
             plane4.visible = false;
             plane5.visible = true;
@@ -1413,8 +1413,8 @@ function keyboardUpdate() {
     else if (keyboard.pressed("2") && pistaAtual != 2){
         pistaAtual = 2;
         newflagNumber = 4;
-        newRVNumber = 8;
-        newRHNumber = 8;
+        newRVNumber = 6;
+        newRHNumber = 6;
         setaBloom();
         configuraPistas(newflagNumber, newRVNumber, newRHNumber);
         limpaProps();

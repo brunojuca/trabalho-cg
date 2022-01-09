@@ -3,7 +3,7 @@
 //7 - '3B'
 //1 - '2'
 // ^ > leitura do checkpoint
-//RVNumber 10
+//RVNumber 12
 //RHNumber 10
 const pista2 = [
     ['1B', '1B', '1B', 'RH', '1B', '1B', '1B', 'RH', '1B', '1B', '1B', '1B', '1B',  '0',  '0'],

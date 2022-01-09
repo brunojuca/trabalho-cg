@@ -1497,7 +1497,7 @@ function keyboardUpdate() {
     else if (keyboard.pressed("2") && pistaAtual != 2){
         pistaAtual = 2;
         newflagNumber = 8;
-        newRVNumber = 10;
+        newRVNumber = 12;
         newRHNumber = 10;
         setaBloom();
         configuraPistas(newflagNumber, newRVNumber, newRHNumber);

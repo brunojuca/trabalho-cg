@@ -302,7 +302,7 @@ dirguide.position.set(0.0, 0.0, 2*radius + desvio2);
 //player
 var player = new CyberTruck;
 var player2 = new LambertTestCar;
-player.scale.set(0.8,0.8,0.8);
+player.scale.set(1.2,1.2,1.2);
 player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.2*size, posicionamentoChegada[0].getComponent(2) - size);
 player.add(ghostguide);
 player.add(dirguide);
@@ -1418,7 +1418,7 @@ var controls = new InfoBox();
   controls.show();
 
 var keyboard = new KeyboardState();
-var Speed = 20;
+var Speed = 40;
 var aceleracao = 1;
 var freia = -1;
 var redutor = 1;

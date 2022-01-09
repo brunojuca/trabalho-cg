@@ -57,7 +57,7 @@ const skyTexture5 = loader.load( 'texture/track5/sunsky.png' );
 const skyTextureSecret = loader.load( 'texture/secret/coconutMall.jpg' );
 const flagTexture = loader.load( 'texture/secret/coconutFlagPole.png' );
 
-const rampaTexture = loader.load( 'texture/neondots.png' );
+var rampaTexture = loader.load( 'texture/neondots.png' );
 
 
 //-------------------------------------------------------------------------------
@@ -326,6 +326,7 @@ function createPole(size)
     var poleGeometry = new THREE.BoxGeometry(size, 2*size, size);
     var poleMaterial = new THREE.MeshBasicMaterial( { map: flagTexture } );
     var pole = new THREE.Mesh( poleGeometry, poleMaterial );
+    pole.visible = false;
     return pole;
 }
 
@@ -666,6 +667,10 @@ function freiaCarro(freiaAnterior)
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------
+// Formato e Textura Rampas
+//-------------------------------------------------------------------------------
+
 function RampaShape(size)
 {
     var RampaShape = new THREE.Shape();
@@ -674,6 +679,36 @@ function RampaShape(size)
         RampaShape.lineTo( -size/2, 0);
         RampaShape.lineTo( size/2, 0);
     return RampaShape;
+}
+
+var rampaType = 1;
+function selecionaRampaMaterial(rampaType){
+    switch(rampaType){
+        case 1:
+            rampaTexture = loader.load( 'texture/track1/stardust.jpg' );
+            rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
+            rampaTexture.repeat.set( 0.2, 0.05 );
+            rampaTexture.anisotropy = 16;
+            return new THREE.MeshStandardMaterial( { map: rampaTexture} );
+        case 2:
+            rampaTexture = loader.load( 'texture/track2/road2.png' );
+            rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
+            rampaTexture.repeat.set( 0.02, 0.1 );
+            rampaTexture.anisotropy = 16;
+            return new THREE.MeshStandardMaterial( { map: rampaTexture} );
+        case 3:
+            rampaTexture = loader.load( 'texture/track3/stone.jpg' );
+            rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
+            rampaTexture.repeat.set( 0.02, 0.1 );
+            rampaTexture.anisotropy = 16;
+            return new THREE.MeshStandardMaterial( { map: rampaTexture} );
+        case 5:
+            var cor = '#808080'; // cinza
+            return new THREE.MeshPhongMaterial( {color: cor});
+        default:
+            var cor = '#808080'; // cinza
+            return new THREE.MeshPhongMaterial( {color: cor});
+    }
 }
 
 function createRampa(size, rampaType) {
@@ -692,10 +727,8 @@ function createRampa(size, rampaType) {
         case 3:
     }*/
     var extrudeGeometry = new THREE.ExtrudeGeometry(RampaShape(size), extrudeSettings);
-    rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
-    rampaTexture.repeat.set( 0.02, 0.1 );
-    rampaTexture.anisotropy = 16;
-    var rampaMaterial = new THREE.MeshStandardMaterial( { map: rampaTexture } );
+    var cor = '#808080'; // cinza
+    var rampaMaterial = new THREE.MeshPhongMaterial( {color: cor});
     var rampa = new THREE.Mesh(extrudeGeometry, rampaMaterial);
     return rampa;
 }
@@ -708,9 +741,14 @@ var newRHNumber = 8;
 var todasRampasV = [];
 var todasRampasH = [];
 
+//-------------------------------------------------------------------------------
+// Rampas modelo V
+//-------------------------------------------------------------------------------
+
 function posicionaRampasV(posicionamentoRampas){
     for(var k = 0; k <= RVNumber-1; k++){
         todasRampasV[k].position.set(posicionamentoRampas[k].getComponent(0), 0.0, posicionamentoRampas[k].getComponent(2)-offsetRampa);
+        todasRampasV[k].material = selecionaRampaMaterial(rampaType);
         scene.add(todasRampasV[k]);
     }
 }
@@ -718,7 +756,7 @@ function encontraPosicaoRampasV(){
     var posicaoRampasV = [];
     for (var k = 0; k < platforms.length; k ++){
         if(platforms[k].getBlockType() == "RAMPAV"){
-            var rampa = createRampa(blocoSize);
+            var rampa = createRampa(blocoSize, rampaType);
             todasRampasV.push(rampa);
 
             var posicaoNova = new THREE.Vector3;
@@ -731,9 +769,14 @@ function encontraPosicaoRampasV(){
 var posicionamentoRampasV = encontraPosicaoRampasV();
 posicionaRampasV(posicionamentoRampasV);
 
+//-------------------------------------------------------------------------------
+// Rampas modelo H
+//-------------------------------------------------------------------------------
+
 function posicionaRampasH(posicionamentoRampas){
     for(var k = 0; k <= RHNumber-1; k++){
         todasRampasH[k].position.set(posicionamentoRampas[k].getComponent(0)-offsetRampa, 0.0, posicionamentoRampas[k].getComponent(2));
+        todasRampasH[k].material = selecionaRampaMaterial(rampaType);
         scene.add(todasRampasH[k]);
     }
 }
@@ -741,7 +784,7 @@ function encontraPosicaoRampasH(){
     var posicaoRampasH = [];
     for (var k = 0; k < platforms.length; k ++){
         if(platforms[k].getBlockType() == "RAMPAH"){
-            var rampa = createRampa(blocoSize);
+            var rampa = createRampa(blocoSize, rampaType);
             rampa.material.color.setHex(0xff0000);
             rampa.rotateY(degreesToRadians(90));
             todasRampasH.push(rampa);
@@ -756,33 +799,42 @@ function encontraPosicaoRampasH(){
 var posicionamentoRampasH = encontraPosicaoRampasH();
 posicionaRampasH(posicionamentoRampasH);
 
+//-------------------------------------------------------------------------------
+// Limpa Rampas
+//-------------------------------------------------------------------------------
+
 function limpaRampas(){
     for (let i = 0; i < todasRampasV.length; i++) {
         scene.remove(todasRampasV[i]);
     }
+    for (let i = 0; i < todasRampasV.length; i++) {
+        todasRampasV.pop();
+    }
     for (let i = 0; i < todasRampasH.length; i++) {
         scene.remove(todasRampasH[i]);
     }
+    for (let i = 0; i < todasRampasV.length; i++) {
+        todasRampasH.pop();
+    }
 }
-
 function resetaPosicaoRampasMudancaPista(){
     posicionamentoRampasV = encontraPosicaoRampasV();
-    console.log(posicionamentoRampasV);
+    console.log(todasRampasV);
     posicionaRampasV(posicionamentoRampasV);
 
     posicionamentoRampasH = encontraPosicaoRampasH();
-    console.log(posicionamentoRampasH);
+    console.log(todasRampasH);
     posicionaRampasH(posicionamentoRampasH);
 }
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-// Colisores - Refatorar pro Trab 3 pra um controlador unico
+// Fisica e Colisores
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------
-// Colisor Rampas
+// Colisor e Fisica - Rampas
 //-------------------------------------------------------------------------------
 
 var absDiffX = 0;
@@ -805,7 +857,7 @@ var speedModulo = 0;
 var rampaAngle = (blocoSize/6) / (blocoSize/2);
 
 var offsetColisor = 0.5;
-function colisorRampa(){
+function verificaColisorRampa(){
     for (var k = 0; k < platforms.length; k ++){
         absDiffX = Math.abs(player.position.getComponent(0) - size - platforms[k].bloco.position.getComponent(0));
         absDiffZ = Math.abs(player.position.getComponent(2) + size - platforms[k].bloco.position.getComponent(2));
@@ -934,6 +986,11 @@ function colisorRampa(){
     gravity(player);
 }
 
+
+//-------------------------------------------------------------------------------
+// Fisica - Gravidade Geral
+//-------------------------------------------------------------------------------
+
 function gravity(obj){
     if(obj.position.getComponent(1) >= 2){
         obj.translateY(-1);
@@ -944,6 +1001,10 @@ function gravity(obj){
         playerOnGround = true;
         playerOnRampa = false;
 }
+
+//-------------------------------------------------------------------------------
+// Fisica - Rampa - Modelo V
+//-------------------------------------------------------------------------------
 
 var alturaMaxV = 30;
 function inverseGravityV(obj){
@@ -976,6 +1037,10 @@ function atualizaAlturaMaxV(){
 }
 
 
+//-------------------------------------------------------------------------------
+// Fisica - Rampa - Modelo H
+//-------------------------------------------------------------------------------
+
 var alturaMaxH = 30;
 function inverseGravityH(obj){
     if(playerOnGround){
@@ -1007,7 +1072,7 @@ function atualizaAlturaMaxH(){
 }
 
 //-------------------------------------------------------------------------------
-// Colisor Pista Desaceleração
+// Colisor - Dentro Pista - Desaceleração
 //-------------------------------------------------------------------------------
 var diffRedutorX = 0;
 var diffRedutorZ = 0;
@@ -1047,7 +1112,7 @@ function testaRedutor(){
 }
 
 //-------------------------------------------------------------------------------
-// Colisor Proximidade Eolics
+// Colisor - Proximidade - Eolics
 //-------------------------------------------------------------------------------
 function verificaEolicTurbo(eolicsEmK){
     if(aceleracao > speedMax){
@@ -1186,7 +1251,7 @@ function armazenaTempoMenorVolta(){
 //-------------------------------------------------------------------------------
 
 function verificaColisores(){
-    colisorRampa();
+    verificaColisorRampa();
     verificaDesaceleraFora();
     verificaProximidadeEolic();
     verificaVoltas(player);
@@ -1219,6 +1284,7 @@ function configuraPistas(newflagNumber, newRVNumber, newRHNumber){
         default:
             break;
     }
+    rampaType = pistaAtual;
     criaFlags();
     resetaVoltaAtual();
     resetaPosicaoCheckpointMudancaPista();

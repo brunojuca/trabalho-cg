@@ -23,6 +23,7 @@ export class LambertTestCar extends THREE.Group {
   constructor() {
     super();
     this.wheelAngle = 0;
+    this.carAngle = 0;
     this.rotation = 1;
     var neonColor = "rgb(0,255,255)";
     var neonColor2 = "rgb(255,0,0)";
@@ -184,7 +185,7 @@ export class LambertTestCar extends THREE.Group {
 
   createBody() {
     var bodyGeometry = new THREE.BoxGeometry(3, 1.8, 7, 1, 1, 1);
-    var bodyMaterial = new THREE.MeshLambertMaterial({ color: "rgb(255,0,0)" });
+    var bodyMaterial = new THREE.MeshPhongMaterial({ color: "rgb(0,255,0)" });
     var body = new THREE.Mesh(bodyGeometry, bodyMaterial);
 
     return body;
@@ -339,5 +340,28 @@ export class LambertTestCar extends THREE.Group {
     );
     this.wheel1.matrix.multiply(mat.makeRotationX(this.wheelAngle));
     this.wheel1.matrix.multiply(mat.makeTranslation(0, -2, 0));
+  }
+
+  turnUp(degrees, speed) {
+    if(this.carAngle <= degrees*100){
+      this.body.rotateX(degreesToRadians(-0.6*speed));
+      this.carAngle += 0.6*speed;
+    }
+  }
+  turnDefault(speed) {
+    if(this.carAngle > 0.01){
+      this.body.rotateX(degreesToRadians(1.2*speed));
+      this.carAngle -= 1.2*speed;
+    }
+    else if(this.carAngle < 0.01){
+      this.body.rotateX(degreesToRadians(-1.2*speed));
+      this.carAngle += 1.2*speed;
+    }
+  }
+  turnDown(degrees, speed) {
+    if(this.carAngle >= -degrees*100){
+      this.body.rotateX(degreesToRadians(0.6*speed));
+      this.carAngle -= 0.6*speed;
+    }
   }
 }

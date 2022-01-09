@@ -85,8 +85,6 @@ export class Car extends THREE.Group {
     this.setSpotLight(this.underSpotLight1, "NeonLights1", new THREE.Vector3(0,2,5));
     this.underPointLight1 = new THREE.PointLight(neonColor);
     this.setSpotLight(this.underPointLight1, "NeonLight1", new THREE.Vector3(0,0,0));
-    this.underSpotLight1.visible = false;
-    this.underPointLight1.visible = false;
 
     this.underSpotLight2 = new THREE.SpotLight(neonColor2);
     this.setSpotLight(this.underSpotLight2, "NeonLights2", new THREE.Vector3(0,2,5));

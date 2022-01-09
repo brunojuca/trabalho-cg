@@ -198,7 +198,7 @@ function limpaPista(){
 // Criação e Setagem dos Checkpoints
 //-------------------------------------------------------------------------------
 const checkpointRadius = 1.5*blocoSize;
-var flagNumber = 8;
+var flagNumber = 9;
 
 function createCheckpoint(checkpointRadius)
 {
@@ -334,7 +334,7 @@ function createPole(size)
 }
 
 var flags = [];
-var newflagNumber = 4;
+var newflagNumber = 9;
 
 function criaFlags(){
     for (var i = 0; i <= flagNumber-1; i++){
@@ -1375,27 +1375,55 @@ function alternaPlano(){
     }
 }
 
+//delay pra evitar stop() e play() ao mesmo tempo
+//se tiver baixo so aumentar o %30
+var delayMusica = 1;
+var tocar = false;
 function selectSoundtrack(track){
     assetsMng.stop();
-    switch(track){
-        case 1:
-            assetsMng.play("01-Milkyway");
-            break;
-        case 2:
-            assetsMng.play("02-VeridisQuo");
-            break;
-        case 3:
-            assetsMng.play("03-BowserCastle");
-            break;
-        case 4:
-            assetsMng.play("04-KoopaBeach");
-            break;
-        case 5:
-            assetsMng.play("05-BigBlue");
-            break;
-        default:
-            assetsMng.stop();
+    //fazer liga e desliga musica mais a frente
+    if(!tocar){
+        console.log("começou", delayMusica%30);
+        while (delayMusica%30 != 0 ){
+            console.log("loopInfinito", delayMusica%30);
+            delayMusica += 1;
+            if (delayMusica%30 == 0){
+                switch(track){
+                    case 1:
+                        assetsMng.play("01-Milkyway");
+                        delayMusica = 0 ;
+                        tocar = true;
+                        break;
+                    case 2:
+                        assetsMng.play("02-VeridisQuo");
+                        delayMusica = 0;
+                        tocar = true;
+                        break;
+                    case 3:
+                        assetsMng.play("03-BowserCastle");
+                        delayMusica = 0;
+                        tocar = true;
+                        break;
+                    case 4:
+                        assetsMng.play("04-KoopaBeach");
+                        delayMusica = 0;
+                        tocar = true;
+                        break;
+                    case 5:
+                        assetsMng.play("05-BigBlue");
+                        delayMusica = 0;
+                        tocar = true;
+                        break;
+                    default:
+                        delayMusica = 0;
+                        assetsMng.stop();
+                        tocar = true;
+                }
+            }
+        }
     }
+    tocar = false;
+    delayMusica = 1;
 }
 
 //-------------------------------------------------------------------------------
@@ -1480,7 +1508,7 @@ function keyboardUpdate() {
 
     if (keyboard.pressed("1") && pistaAtual != 1){
         pistaAtual = 1;
-        newflagNumber = 8;
+        newflagNumber = 9;
         newRVNumber = 12;
         newRHNumber = 10;
         setaBloom();

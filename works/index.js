@@ -1643,115 +1643,147 @@ function geraStatusFinal(){
         assetsMng.play("winRace");
         gerou = true
     }
-    var textoVoltas = document.createElement('div');
-    textoVoltas.setAttribute("id", "txt0");
-    textoVoltas.style.position = 'absolute';
-    textoVoltas.style.backgroundColor = "white";
-    textoVoltas.innerHTML = "Voltas: ";
-    textoVoltas.style.top = 0 + 'px';
-    textoVoltas.style.left = window.innerWidth - 366 + 'px';
-    document.body.appendChild(textoVoltas);
 
+    //numero de voltas
     var nDeVoltas = document.createElement('div');
-    nDeVoltas.setAttribute("id", "txt1");
+    nDeVoltas.setAttribute("id", "voltas");
     nDeVoltas.style.position = 'absolute';
     nDeVoltas.style.backgroundColor = "white";
-    nDeVoltas.innerHTML = voltas;
+    nDeVoltas.innerHTML = "Voltas: " + voltas;
     nDeVoltas.style.top = 0 + 'px';
-    nDeVoltas.style.left = window.innerWidth - 310 + 'px';
+    nDeVoltas.style.left = window.innerWidth - 70 + 'px';
     document.body.appendChild(nDeVoltas)
 
+    //tempo total
     var tempoTotal = document.createElement('div');
-    tempoTotal.setAttribute("id", "txt2");
+    tempoTotal.setAttribute("id", "lapTotal");
     tempoTotal.style.position = 'absolute';
     tempoTotal.style.backgroundColor = "white";
-    tempoTotal.innerHTML = anterior/1000 - tempoJogoAnterior;
-    tempoTotal.style.top = 19 + 'px';
-    tempoTotal.style.left = window.innerWidth - 400 + 'px';
-    document.body.appendChild(tempoTotal);
 
-    var textotempoVolta1 = document.createElement('div');
-    textotempoVolta1.setAttribute("id", "txt3");
-    textotempoVolta1.style.position = 'absolute';
-    textotempoVolta1.style.backgroundColor = "white";
-    textotempoVolta1.innerHTML = tempoTodasVoltas[0];
-    textotempoVolta1.style.top = 39 + 'px';
-    textotempoVolta1.style.left = window.innerWidth - 400 + 'px';
-    document.body.appendChild(textotempoVolta1);
+    var minutesTotal = ((anterior/1000 - tempoJogoAnterior)/60 - (anterior/1000 - tempoJogoAnterior)/60%1);
+    var secondsTotal = ((anterior/1000 - tempoJogoAnterior)%60 - (anterior/1000 - tempoJogoAnterior)%60%1);
 
-    var textotempoVolta2 = document.createElement('div');
-    textotempoVolta2.setAttribute("id", "txt4");
-    textotempoVolta2.style.position = 'absolute';
-    textotempoVolta2.style.backgroundColor = "white";
-    textotempoVolta2.innerHTML = tempoTodasVoltas[1];
-    textotempoVolta2.style.top = 59 + 'px';
-    textotempoVolta2.style.left = window.innerWidth - 400 + 'px';
-    document.body.appendChild(textotempoVolta2);
-
-    var textotempoVolta3 = document.createElement('div');
-    textotempoVolta3.setAttribute("id", "txt5");
-    textotempoVolta3.style.position = 'absolute';
-    textotempoVolta3.style.backgroundColor = "white";
-    textotempoVolta3.innerHTML = tempoTodasVoltas[2];
-    textotempoVolta3.style.top = 79 + 'px';
-    textotempoVolta3.style.left = window.innerWidth - 400 + 'px';
-    document.body.appendChild(textotempoVolta3);
-
-    var textotempoVolta4 = document.createElement('div');
-    textotempoVolta4.setAttribute("id", "txt6");
-    textotempoVolta4.style.position = 'absolute';
-    textotempoVolta4.style.backgroundColor = "white";
-    textotempoVolta4.innerHTML = tempoTodasVoltas[3];
-    textotempoVolta4.style.top = 99 + 'px';
-    textotempoVolta4.style.left = window.innerWidth - 400 + 'px';
-    document.body.appendChild(textotempoVolta4);
-
-    var textotempoMenorVolta = document.createElement('div');
-    textotempoMenorVolta.setAttribute("id", "txt7");
-    textotempoMenorVolta.style.position = 'absolute';
-    textotempoMenorVolta.style.backgroundColor = "white";
-    textotempoMenorVolta.innerHTML = tempoMenorVolta;
-    textotempoMenorVolta.style.top = 119 + 'px';
-    textotempoMenorVolta.style.left = window.innerWidth - 400 + 'px';
-    document.body.appendChild(textotempoMenorVolta);
-
-    var textotempoMenorVolta = document.createElement('div');
-    textotempoMenorVolta.setAttribute("id", "velocimetro");
-    textotempoMenorVolta.style.position = 'absolute';
-    textotempoMenorVolta.style.backgroundColor = "white";
-
-    if(carroAcelerando || carroFreiando){
-        textotempoMenorVolta.innerHTML = ((speedModulo*100) - 20) ;
+    if( minutesTotal < 10){
+        tempoTotal.innerHTML = "Total Lap Time: " + "0" + (minutesTotal + ":" + secondsTotal );
+        if(secondsTotal < 10){
+            tempoTotal.innerHTML = "Total Lap Time: " + "0" + (minutesTotal + ":" + "0" + secondsTotal );
+        }
+        else{
+            tempoTotal.innerHTML = "Total Lap Time: " + "0" + (minutesTotal + ":" + secondsTotal );
+        }
     }
     else {
-        textotempoMenorVolta.innerHTML = 0;
+        tempoTotal.innerHTML = "Total Lap Time: " + (minutesTotal + ":" + secondsTotal );
     }
 
-    textotempoMenorVolta.style.top = 139 + 'px';
-    textotempoMenorVolta.style.left = window.innerWidth - 400 + 'px';
+    tempoTotal.style.top =  window.innerHeight - 20 + 'px';
+    tempoTotal.style.left = 0 + 'px';
+    document.body.appendChild(tempoTotal);
+
+    //tempo lap 1
+    var textotempoVolta1 = document.createElement('div');
+    textotempoVolta1.setAttribute("id", "lap1");
+    textotempoVolta1.style.position = 'absolute';
+    textotempoVolta1.style.backgroundColor = "white";
+
+    var minutesLap1 = (tempoTodasVoltas[0]/60 - tempoTodasVoltas[0]/60%1);
+    var secondsLap1 = (tempoTodasVoltas[0]%60 - tempoTodasVoltas[0]%60%1);
+
+    if( minutesLap1 < 10){
+        textotempoVolta1.innerHTML = "1st Lap: " + "0" + (minutesLap1 + ":" + secondsLap1 );
+        if(secondsLap1 < 10){
+            textotempoVolta1.innerHTML = "1st Lap: " + "0" + (minutesLap1 + ":" + "0" + secondsLap1 );
+        }
+        else{
+            textotempoVolta1.innerHTML = "1st Lap: " + "0" + (minutesLap1 + ":" + secondsLap1 );
+        }
+    }
+    else {
+        textotempoVolta1.innerHTML = "1st Lap: " + (minutesLap1 + ":" + secondsLap1 );
+    }
+
+    textotempoVolta1.style.top = window.innerHeight - 120 + 'px';
+    textotempoVolta1.style.left = 0 + 'px';
+    document.body.appendChild(textotempoVolta1);
+
+    //tempo lap 2
+    var textotempoVolta2 = document.createElement('div');
+    textotempoVolta2.setAttribute("id", "lap2");
+    textotempoVolta2.style.position = 'absolute';
+    textotempoVolta2.style.backgroundColor = "white";
+    textotempoVolta2.innerHTML = "2nd Lap: " + (tempoTodasVoltas[1]/60 - tempoTodasVoltas[1]/60%1) + ":" + (tempoTodasVoltas[1]%60 - tempoTodasVoltas[1]%60%1);
+    textotempoVolta2.style.top = window.innerHeight - 100 + 'px';
+    textotempoVolta2.style.left = 0 + 'px';
+    document.body.appendChild(textotempoVolta2);
+
+    //tempo lap 3
+    var textotempoVolta3 = document.createElement('div');
+    textotempoVolta3.setAttribute("id", "lap3");
+    textotempoVolta3.style.position = 'absolute';
+    textotempoVolta3.style.backgroundColor = "white";
+    textotempoVolta3.innerHTML = "3rd Lap: " + (tempoTodasVoltas[2]/60 - tempoTodasVoltas[2]/60%1) + ":" + (tempoTodasVoltas[2]%60 - tempoTodasVoltas[2]%60%1);
+    textotempoVolta3.style.top = window.innerHeight - 80 + 'px';
+    textotempoVolta3.style.left = 0 + 'px';
+    document.body.appendChild(textotempoVolta3);
+
+    //tempo lap 4
+    var textotempoVolta4 = document.createElement('div');
+    textotempoVolta4.setAttribute("id", "lap4");
+    textotempoVolta4.style.position = 'absolute';
+    textotempoVolta4.style.backgroundColor = "white";
+    textotempoVolta4.innerHTML = "4th Lap: " + (tempoTodasVoltas[3]/60 - tempoTodasVoltas[3]/60%1) + ":" + (tempoTodasVoltas[3]%60 - tempoTodasVoltas[3]%60%1);
+    textotempoVolta4.style.top = window.innerHeight - 60 + 'px';
+    textotempoVolta4.style.left = 0 + 'px';
+    document.body.appendChild(textotempoVolta4);
+
+    //tempo menor volta
+    var textotempoMenorVolta = document.createElement('div');
+    textotempoMenorVolta.setAttribute("id", "melhorVolta");
+    textotempoMenorVolta.style.position = 'absolute';
+    textotempoMenorVolta.style.backgroundColor = "white";
+    console.log(tempoMenorVolta);
+    console.log(tempoMenorVolta%60,":",60 - tempoMenorVolta%60)
+    textotempoMenorVolta.innerHTML = "Best Lap: " +(tempoMenorVolta/60 - tempoMenorVolta/60%1) + ":" + (tempoMenorVolta%60 - tempoMenorVolta%60%1);
+    textotempoMenorVolta.style.top = window.innerHeight - 40 + 'px';
+    textotempoMenorVolta.style.left = 0 + 'px';
     document.body.appendChild(textotempoMenorVolta);
+
+    //velocimetro
+    var textoVelocimetro = document.createElement('div');
+    textoVelocimetro.setAttribute("id", "velocimetro");
+    textoVelocimetro.style.position = 'absolute';
+    textoVelocimetro.style.backgroundColor = "white";
+
+    if(carroAcelerando || carroFreiando){
+        textoVelocimetro.innerHTML = "Kph: " + (((speedModulo*100) - 20) - ((speedModulo*100) - 20)%1) + "." ;
+    }
+    else {
+        textoVelocimetro.innerHTML = "Kph: " + 0 + "." + 0;
+    }
+
+    textoVelocimetro.style.top = 20 + 'px';
+    textoVelocimetro.style.left = window.innerWidth - 70 + 'px';
+    document.body.appendChild(textoVelocimetro);
 
 }
 
 function limpaStatusFinal(){
-    var txt0 = document.getElementById("txt0");
-    txt0.remove();
-    var txt1 = document.getElementById("txt1");
-    txt1.remove();
-    var txt2 = document.getElementById("txt2");
-    txt2.remove();
-    var txt3 = document.getElementById("txt3");
-    txt3.remove();
-    var txt4 = document.getElementById("txt4");
-    txt4.remove();
-    var txt5 = document.getElementById("txt5");
-    txt5.remove();
-    var txt6 = document.getElementById("txt6");
-    txt6.remove();
-    var txt7 = document.getElementById("txt7");
-    txt7.remove();
-    var txt8 = document.getElementById("velocimetro");
-    txt8.remove();
+    var voltasDiv = document.getElementById("voltas");
+    voltasDiv.remove();
+    var lapTotalDiv = document.getElementById("lapTotal");
+    lapTotalDiv.remove();
+    var lap1Div = document.getElementById("lap1");
+    lap1Div.remove();
+    var lap2Div = document.getElementById("lap2");
+    lap2Div.remove();
+    var lap3Div = document.getElementById("lap3");
+    lap3Div.remove();
+    var lap4Div = document.getElementById("lap4");
+    lap4Div.remove();
+    var melhorVoltaDiv = document.getElementById("melhorVolta");
+    melhorVoltaDiv.remove();
+    var velocimetroDiv = document.getElementById("velocimetro");
+    velocimetroDiv.remove();
 }
 
 

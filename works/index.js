@@ -1025,7 +1025,7 @@ function inverseGravityV(obj){
             obj.translateY(0.5*speedModulo);
             if(speedModulo >= 1.05){
                 obj.translateY(0.5*speedModulo);
-                obj.translateZ(speedModulo);
+                obj.translateZ(2.5*speedModulo);
             }
         }
     }
@@ -1064,7 +1064,7 @@ function inverseGravityH(obj){
             obj.translateY(0.5*speedModulo);
             if(speedModulo >= 1.05){
                 obj.translateY(0.5*speedModulo);
-                obj.translateZ(speedModulo);
+                obj.translateZ(2.5*speedModulo);
             }
         }
     }
@@ -1799,9 +1799,9 @@ function setaBloom(){
             bloomPass.radius = Number(1.0);
             break;
         case 4:
-            bloomPass.threshold = Number(0.0);
-            bloomPass.strength = Number(0.75);
-            bloomPass.radius = Number(1.0);
+            bloomPass.threshold = Number(0.1);
+            bloomPass.strength = Number(0.32);
+            bloomPass.radius = Number(0.06);
             break;
         case 5:
             bloomPass.threshold = Number(0.0);

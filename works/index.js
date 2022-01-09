@@ -8,7 +8,6 @@ import {pista3 as pista3} from './pistas/pista3.js';
 import {pista4 as pista4} from './pistas/pista4.js';
 import {pista5 as pista5} from './pistas/pista5.js';
 import Pista from './Pista.js';
-import { Car } from './Car.js';
 import { LambertTestCar } from './LambertTestCar.js';
 import { CyberTruck } from './CyberTruck.js';
 import { Turbina } from './Turbina.js';
@@ -23,8 +22,7 @@ import { UnrealBloomPass } from '../build/jsm/postprocessing/UnrealBloomPass.js'
 
 import {InfoBox,
         onWindowResize,
-        degreesToRadians,
-        createGroundPlaneWired,} from "../libs/util/util.js";
+        degreesToRadians,} from "../libs/util/util.js";
 import Roadblock from './Roadblock.js';
 
 //-------------------------------------------------------------------------------
@@ -134,15 +132,15 @@ var ground2Material = new THREE.MeshStandardMaterial( { map: groundtexture3} );
 
 
 //var plane = createGroundPlaneWired(1500, 1500, 80, 80);
-var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 250, 250 ), blackholeMaterial );
+var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 5000, 5000 ), blackholeMaterial );
 var plane3 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 4000, 4000 ), ground2Material );
 var plane5 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground1Material );
 
 plane1.position.y = 0.0;
 plane1.rotation.x = - Math.PI / 2;
-plane1.position.x = 150;
+plane1.position.x = 350;
 plane1.position.y = -6.3;
-plane1.position.z = 150;
+plane1.position.z = 350;
 
 plane3.position.y = 0.0;
 plane3.rotation.x = - Math.PI / 2;
@@ -200,7 +198,7 @@ function limpaPista(){
 // Criação e Setagem dos Checkpoints
 //-------------------------------------------------------------------------------
 const checkpointRadius = 1.5*blocoSize;
-var flagNumber = 4;
+var flagNumber = 8;
 
 function createCheckpoint(checkpointRadius)
 {
@@ -375,7 +373,7 @@ scene.add(cameraHolder);
 // Virtual camera - minimapa
 //-------------------------------------------------------------------------------
 var lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
-var virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 600.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+var virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 1600.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
 
 var vcWidth = 200;
 var vcHeight = 200;
@@ -402,7 +400,7 @@ function atualizaMinimapa(){
     switch(pistaAtual){
         case 1:
             lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
-            virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 600, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+            virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 1600, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
             break;
         case 2:
             lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
@@ -506,9 +504,9 @@ function carregaPokey(){
     for (let i = 0; i < 41; i++) {
         var novoPokey = new Pokey();
         pokey.push(novoPokey);
-        pokey[i].position.set(150 + 60*Math.cos(i*Math.PI/4), 0.0, 150 + 60*Math.sin(i*Math.PI/4));
+        pokey[i].position.set(350 + 60*Math.cos(i*Math.PI/4), 0.0, 350 + 60*Math.sin(i*Math.PI/4));
         if(i > 8){
-            pokey[i].position.set(150 + 250*Math.cos(i*Math.PI/16), 0.0, 150 + 250*Math.sin(i*Math.PI/16));
+            pokey[i].position.set(350 + 250*Math.cos(i*Math.PI/16), 0.0, 350 + 250*Math.sin(i*Math.PI/16));
             pokey[i].head.rotateY(degreesToRadians(180));
         }
         pokey[i].lookAt(moon[0].position);
@@ -745,10 +743,10 @@ function createRampa(size, rampaType) {
 }
 
 var offsetRampa = blocoSize/2;
-var RVNumber = 8;
-var RHNumber = 8;
-var newRVNumber = 8;
-var newRHNumber = 8;
+var RVNumber = 12;
+var RHNumber = 10;
+var newRVNumber = 12;
+var newRHNumber = 10;
 var todasRampasV = [];
 var todasRampasH = [];
 
@@ -1482,9 +1480,9 @@ function keyboardUpdate() {
 
     if (keyboard.pressed("1") && pistaAtual != 1){
         pistaAtual = 1;
-        newflagNumber = 4;
-        newRVNumber = 8;
-        newRHNumber = 8;
+        newflagNumber = 8;
+        newRVNumber = 12;
+        newRHNumber = 10;
         setaBloom();
         configuraPistas(newflagNumber, newRVNumber, newRHNumber);
         limpaProps();
@@ -1902,7 +1900,7 @@ function render(t)
     if(delay%15 == 0 && gerou == false){
         geraStatusFinal();
     }
-    if(delay%16 == 0 && gerou == false){
+    if(delay%30 == 0 && gerou == false){
         limpaStatusFinal();
     }
 

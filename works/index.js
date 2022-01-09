@@ -406,7 +406,7 @@ function atualizaMinimapa(){
             break;
         case 2:
             lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
-            virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 800, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
+            virtualCamPosition = new THREE.Vector3( blocoSize*pista.LINHAS/2 - blocoSize/2, 1600, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
             break;
         case 3:
             lookAtVec   = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
@@ -1496,9 +1496,9 @@ function keyboardUpdate() {
     }
     else if (keyboard.pressed("2") && pistaAtual != 2){
         pistaAtual = 2;
-        newflagNumber = 4;
-        newRVNumber = 6;
-        newRHNumber = 6;
+        newflagNumber = 8;
+        newRVNumber = 10;
+        newRHNumber = 10;
         setaBloom();
         configuraPistas(newflagNumber, newRVNumber, newRHNumber);
         limpaProps();

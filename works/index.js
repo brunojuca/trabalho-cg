@@ -1045,12 +1045,20 @@ function gravity(obj){
 var alturaMaxV = 30;
 function inverseGravityV(obj){
     if(playerOnGround){
-        if(obj.position.getComponent(1) <= alturaMaxV){
-            playerOnRampa = true;
-            obj.translateY(0.5*speedModulo);
-            if(speedModulo >= 1.05){
+        if(!carroFreiando){
+            if(obj.position.getComponent(1) <= alturaMaxV){
+                playerOnRampa = true;
                 obj.translateY(0.5*speedModulo);
-                obj.translateZ(1.0*speedModulo);
+                if(speedModulo >= 1.05){
+                    obj.translateY(0.5*speedModulo);
+                    obj.translateZ(1.0*speedModulo);
+                }
+            }
+        }
+        else{
+            if(obj.position.getComponent(1) >= alturaMaxV){
+                playerOnRampa = true;
+                obj.translateY(-0.5*speedModulo);
             }
         }
     }
@@ -1092,12 +1100,20 @@ function atualizaAlturaMaxV(){
 var alturaMaxH = 30;
 function inverseGravityH(obj){
     if(playerOnGround){
-        if(obj.position.getComponent(1) <= alturaMaxH){
-            playerOnRampa = true;
-            obj.translateY(0.5*speedModulo);
-            if(speedModulo >= 1.05){
+        if(!carroFreiando){
+            if(obj.position.getComponent(1) <= alturaMaxH){
+                playerOnRampa = true;
                 obj.translateY(0.5*speedModulo);
-                obj.translateZ(1.0*speedModulo);
+                if(speedModulo >= 1.05){
+                    obj.translateY(0.5*speedModulo);
+                    obj.translateZ(1.0*speedModulo);
+                }
+            }
+        }
+        else{
+            if(obj.position.getComponent(1) >= alturaMaxH){
+                playerOnRampa = true;
+                obj.translateY(-0.5*speedModulo);
             }
         }
     }

@@ -546,6 +546,39 @@ function moonOrbit(){
 }
 
 //-------------------------------------------------------------------------------
+// GlassSphere
+//-------------------------------------------------------------------------------
+
+var glassSpheres = [];
+function carregaGlassSpheres(){
+    glassSpheres = [];
+    for (let i = 0; i < 40; i++) {
+        var novoglassSphere = new THREE.Mesh( new THREE.SphereGeometry( 100*Math.random(), 32,32 ), retrowaveMaterial );
+        glassSpheres.push(novoglassSphere);
+        var direcaoGlass = Math.random();
+        if(direcaoGlass < 0.25){
+            glassSpheres[i].position.set(350 + 150*Math.random(), -500 + 1000*Math.random(), 350 + 150*Math.random());
+        }
+        else if(direcaoGlass > 0.25 && direcaoGlass < 0.50){
+            glassSpheres[i].position.set(350 + 150*Math.random(), -500 + 1000*Math.random(), 350 - 150*Math.random());
+        }
+        else if(direcaoGlass > 0.50 && direcaoGlass < 0.75){
+            glassSpheres[i].position.set(350 - 150*Math.random(), -500 + 1000*Math.random(), 350 - 150*Math.random());
+        }
+        else if(direcaoGlass > 0.25){
+            glassSpheres[i].position.set(350 - 150*Math.random(), -500 + 1000*Math.random(), 350 + 150*Math.random());
+        }
+        scene.add(glassSpheres[i]);
+    }
+}
+
+function limpaGlassSphere(){
+    for (let i = 0; i < glassSpheres.length; i++) {
+        scene.remove(glassSpheres[i]);
+    }
+}
+
+//-------------------------------------------------------------------------------
 // Pokey
 //-------------------------------------------------------------------------------
 
@@ -630,6 +663,9 @@ function carregaProps(){
             carregaPokey();
             carregaMoon();
             break;
+        case 2:
+            carregaGlassSpheres();
+            break;
         case 5:
             carregaEolics();
             break;
@@ -644,26 +680,31 @@ function limpaProps(){
         case 1:
             limpaPokey();
             limpaMoon();
+            limpaGlassSphere();
             limpaEolics();
             break;
         case 2:
             limpaPokey();
             limpaMoon();
             limpaEolics();
+            limpaGlassSphere();
             break;
         case 3:
             limpaPokey();
             limpaMoon();
+            limpaGlassSphere();
             limpaEolics();
             break;
         case 4:
             limpaPokey();
             limpaMoon();
+            limpaGlassSphere();
             limpaEolics();
             break;
         case 5:
             limpaPokey();
             limpaMoon();
+            limpaGlassSphere();
             limpaEolics();
             break;
         default:
@@ -1449,7 +1490,7 @@ function alternaPlano(){
             scene.background = skyTexture4;
             plane1.visible = false;
             plane2.visible = false;
-            lane3.visible = false;
+            plane3.visible = false;
             plane5.visible = false;
             break;
         case 5:
@@ -1915,7 +1956,7 @@ function geraStatusFinal(){
 
     textotempoMenorVolta.style.top = window.innerHeight - 40 + 'px';
     textotempoMenorVolta.style.left = 0 + 'px';
-    
+
     document.body.appendChild(textotempoMenorVolta);
 
     //velocimetro
@@ -1925,7 +1966,7 @@ function geraStatusFinal(){
     textoVelocimetro.style.backgroundColor = "rgb(200, 200, 200)";
     textoVelocimetro.style.padding = "2px";
     textoVelocimetro.style.borderRadius = "5px";
-    
+
 
     if(carroAcelerando || carroFreiando){
         textoVelocimetro.innerHTML = "Kph: " + (((speedModulo*100) - 20) - ((speedModulo*100) - 20)%1) + "." ;

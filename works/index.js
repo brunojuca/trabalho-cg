@@ -146,8 +146,8 @@ dirLight.shadow.camera.right = 200;
 dirLight.shadow.camera.top = 100;
 dirLight.shadow.camera.bottom = -100;
 
-dirLight.shadow.mapSize.width = 512; // default
-dirLight.shadow.mapSize.height = 512; // default
+dirLight.shadow.mapSize.width = 2048; // default
+dirLight.shadow.mapSize.height = 2048; // default
 dirLight.shadow.camera.near = 100; // default
 dirLight.shadow.camera.far = 500; // default
 

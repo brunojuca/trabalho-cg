@@ -42,6 +42,9 @@ export class CyberTruck extends THREE.Group {
   }
 
   onWheelLoad(gltf) {
+    gltf.scene.traverse( function( node ) {
+      if ( node.isMesh ) { node.castShadow = true; }
+    } );
     this.wheel1 = gltf.scene;
     this.wheel2 = this.wheel1.clone();
     this.wheel3 = this.wheel1.clone();

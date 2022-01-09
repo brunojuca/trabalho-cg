@@ -190,7 +190,7 @@ var ground2Material = new THREE.MeshStandardMaterial( { map: groundtexture3} );
 var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 5000, 5000 ), blackholeMaterial );
 var plane2 = new THREE.Mesh( new THREE.SphereGeometry( 100, 32,32 ), retrowaveMaterial );
 var plane3 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 4000, 4000 ), ground2Material );
-var plane5 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 1000, 10000 ), ground1Material );
+var plane5 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground1Material );
 
 plane1.position.y = 0.0;
 plane1.rotation.x = - Math.PI / 2;
@@ -1534,7 +1534,7 @@ function selectSoundtrack(track){
     //fazer liga e desliga musica mais a frente
     if(!tocar){
         //console.log("começou", delayMusica%30);
-        while (delayMusica%30 != 0 ){
+        while (delayMusica%120 != 0 ){
             //console.log("loopInfinito", delayMusica%30);
             delayMusica += 1;
             if (delayMusica%30 == 0){

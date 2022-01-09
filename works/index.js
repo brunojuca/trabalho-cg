@@ -72,8 +72,10 @@ var assetsMng = new assetsManager();
 assetsMng.loadAudio("startRace", "./soundAssets/startRace.mp3");
 
 assetsMng.loadAudio("01-Milkyway", "./soundAssets/01-milkyWay.mp3");
-assetsMng.loadAudio("02-BigBlue", "./soundAssets/02-bigBlue.mp3");
+assetsMng.loadAudio("02-VeridisQuo", "./soundAssets/02-veridisQuo.mp3");
 assetsMng.loadAudio("03-BowserCastle", "./soundAssets/03-bowserCastle.mp3");
+assetsMng.loadAudio("04-KoopaBeach", "./soundAssets/04-koopaBeach.mp3");
+assetsMng.loadAudio("05-BigBlue", "./soundAssets/05-bigBlue.mp3");
 
 assetsMng.loadAudio("00-CoconutMall", "./soundAssets/00-coconutMall.mp3");
 assetsMng.loadAudio("winRace", "./soundAssets/winRace.mp3");
@@ -1382,11 +1384,17 @@ function selectSoundtrack(track){
         case 1:
             assetsMng.play("01-Milkyway");
             break;
+        case 2:
+            assetsMng.play("02-VeridisQuo");
+            break;
         case 3:
             assetsMng.play("03-BowserCastle");
             break;
+        case 4:
+            assetsMng.play("04-KoopaBeach");
+            break;
         case 5:
-            assetsMng.play("02-BigBlue");
+            assetsMng.play("05-BigBlue");
             break;
         default:
             assetsMng.stop();
@@ -1499,7 +1507,7 @@ function keyboardUpdate() {
         reposicionaPlayer('left');
         alternaPlano();
         carregaProps();
-        selectSoundtrack(1);
+        selectSoundtrack(2);
     }
     else if (keyboard.pressed("3") && pistaAtual != 3){
         pistaAtual = 3;
@@ -1527,7 +1535,7 @@ function keyboardUpdate() {
         reposicionaPlayer('left');
         alternaPlano();
         carregaProps();
-        selectSoundtrack(3);
+        selectSoundtrack(4);
     }
     else if (keyboard.pressed("5") && pistaAtual != 5){
         pistaAtual = 5;
@@ -1541,7 +1549,7 @@ function keyboardUpdate() {
         reposicionaPlayer('right');
         alternaPlano();
         carregaProps();
-        selectSoundtrack(2);
+        selectSoundtrack(5);
     }
 
 

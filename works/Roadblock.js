@@ -109,6 +109,7 @@ export default class Roadblock
         }
 
         this.bloco = this.criaBloco();
+        this.bloco.receiveShadow = true;
     }
 
     criaBloco()

@@ -31,7 +31,11 @@ export class CyberTruck extends THREE.Group {
 
   onBodyLoad(gltf) {
     console.log(gltf);
+    gltf.scene.traverse( function( node ) {
+      if ( node.isMesh ) { node.castShadow = true; }
+    } );
     this.body = gltf.scene;
+    this.body.castShadow = true;
     this.body.position.set(0,-1.4,0);
     this.add(this.body);
     this.carregado = true;

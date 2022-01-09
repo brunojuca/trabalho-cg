@@ -160,9 +160,6 @@ dirLight.position.set(lightPosition);
 scene.add( camera );
 dirLight.position.copy(lightPosition);
 
-const helper = new THREE.CameraHelper( dirLight.shadow.camera );
-scene.add( helper );
-
 // Listen window size changes
 window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, false );
 
@@ -239,7 +236,6 @@ function selecaoPista(pistaescolhida){
     platforms = [];
     platforms = pista.montaPista();
     for (let i = 0; i < platforms.length; i++) {
-        platforms[i].bloco.receiveShadow = true;
         scene.add(platforms[i].bloco);
     }
     blocoSize = platforms[0].LARGURA;
@@ -365,10 +361,9 @@ dirguide.position.set(0.0, 0.0, 2*radius + desvio2);
 
 //ghost guia para a luz
 var lightguide = createSphere(5*radius);
-lightguide.castShadow = true; //default is false
-lightguide.receiveShadow = false; //default
+//lightguide.castShadow = true; //default is false
+//lightguide.receiveShadow = false; //default
 lightguide.position.set(0.0, 0.0, 2*radius + desvio);
-lightguide.visible = true;
 
 //player
 var player = new CyberTruck;

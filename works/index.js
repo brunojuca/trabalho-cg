@@ -792,7 +792,12 @@ var diffDirZ = 0;
 //lock virar durante o pulo
 var keyLock = false;
 
+//evitar pulos voando por cima da rampa
 var playerOnGround = true;
+
+//evitar colisao com parede de rampas gemeas
+var playerOnRampa = false;
+
 var speedModulo = 0;
 var rampaAngle = (blocoSize/6) / (blocoSize/2);
 
@@ -812,20 +817,25 @@ function colisorRampa(){
             //keyLock = true;
 
             //posiçoes com referencia à terceiraView
-
             //bloqueios laterais
+
             //a frente da rampa
             // +offset | limiteLateralFrontalRampa | -offset
-            if(diffZ > (blocoSize/2 + size) - offsetColisor && diffZ < (blocoSize/2 + size) + offsetColisor){
-                player.translateZ(-2*offsetColisor);
+            // absDiffX garante que nao vai bater na parede na entradinha pq o OnRampa vai ta desligado ainda
+            if(!playerOnRampa && diffZ < (blocoSize/2 + 5*size) + offsetColisor && diffZ > (blocoSize/2-+ 5*size) - offsetColisor && absDiffX <= blocoSize/2 - 7*offsetColisor){
+                player.translateZ( -speedModulo -2*offsetColisor);
                 return;
             }
             //atrás da rampa
             // +offset | limiteLateralTraseiroRampa | -offset
-            if(diffZ > -(blocoSize/2 + size) + offsetColisor && diffZ < -(blocoSize/2 + size) - offsetColisor){
-                player.translateZ(-2*offsetColisor);
+            // absDiffX garante que nao vai bater na parede na entradinha pq o OnRampa vai ta desligado ainda
+            if(!playerOnRampa && diffZ < -(blocoSize/2 - 5*size) + offsetColisor && diffZ > -(blocoSize/2 + 5*size) - offsetColisor && absDiffX <= blocoSize/2 - 7*offsetColisor){
+                player.translateZ( -speedModulo -2*offsetColisor);
                 return;
             }
+
+            //posiçoes com referencia à terceiraView
+            //pulos da rampa
 
             //esquerda para direita
             if(diffDirX <= 0){
@@ -838,47 +848,53 @@ function colisorRampa(){
                 //a direita da rampa
                 else if(diffX < 0){
                     player.turnDown(rampaAngle, speedModulo);
-                    inverseGravityV(player);
+                    inverseGravityDescidaSuaveV(player);
                     return;
                 }
             }
             //direita para esquerda
             if(diffDirX >= 0){
-                //a esquerda da rampa
-                if(diffX > 0){
-                    player.turnDown(rampaAngle, speedModulo);
-                    inverseGravityV(player);
-                    return;
-                }
                 //a direita da rampa
-                else if(diffX < 0){
+                if(diffX < 0){
                     player.turnUp(rampaAngle, speedModulo);
                     inverseGravityV(player);
                     return;
                 }
+                //a esquerda da rampa
+                else if(diffX > 0){
+                    player.turnDown(rampaAngle, speedModulo);
+                    inverseGravityDescidaSuaveV(player);
+                    return;
+                }
             }
         }
-        else if(platforms[k].getBlockType() == "RAMPAH"  && absDiffZ <= blocoSize/2 && absDiffX <= blocoSize/2){
+        else if(platforms[k].getBlockType() == "RAMPAH" && absDiffZ <= blocoSize/2 && absDiffX <= blocoSize/2){
             atualizaAlturaMaxH();
+            console.log(alturaMaxH);
+
             //keyLock = true;
 
             //posiçoes com referencia à terceiraView
-
             //bloqueios laterais
+
             //a esquerda da rampa
-            // +offset | limiteLateralEsquerdaRampa | -offset
-            if(diffX > (blocoSize/2 + size) - offsetColisor && diffX < (blocoSize/2 + size) + offsetColisor){
-                player.translateZ(-2*offsetColisor);
+            // +offset | limiteLateralEsquerdaRampa | -offsetS
+            // absDiffZ garante que nao vai bater na parede na entradinha pq o OnRampa vai ta desligado ainda
+            if(!playerOnRampa && diffX < (blocoSize/2 + size) + offsetColisor && diffX > (blocoSize/2 - size) - offsetColisor && absDiffZ <= blocoSize/2 - 7*offsetColisor){
+                player.translateZ( -speedModulo - 5*size - 2*offsetColisor);
                 return;
             }
             //a direita da rampa
             // +offset | limiteLateralDireitaRampa | -offset
-            if(diffX > -(blocoSize/2 + size) + offsetColisor && diffX < -(blocoSize/2 + size) - offsetColisor){
-                player.translateZ(-2*offsetColisor);
+            // absDiffZ garante que nao vai bater na parede na entradinha pq o OnRampa vai ta desligado ainda
+            if(!playerOnRampa && diffX < -(blocoSize/2 - size) + offsetColisor && diffX > -(blocoSize/2 + size) - offsetColisor && absDiffZ <= blocoSize/2 - 7*offsetColisor){
+                player.translateZ( - speedModulo - 2*offsetColisor);
                 return;
             }
 
+            //posiçoes com referencia à terceiraView
             //pulos da rampa
+
             //tras para frente
             if(diffDirZ >= 0){
                 //atrás da rampa
@@ -890,7 +906,7 @@ function colisorRampa(){
                 //a frente da rampa
                 else if(diffZ > 0){
                     player.turnDown(rampaAngle, speedModulo);
-                    inverseGravityH(player);
+                    inverseGravityDescidaSuaveH(player);
                     return;
                 }
             }
@@ -905,7 +921,7 @@ function colisorRampa(){
                 //atrás da rampa
                 else if(diffZ < 0){
                     player.turnDown(rampaAngle, speedModulo);
-                    inverseGravityH(player);
+                    inverseGravityDescidaSuaveH(player);
                     return;
                 }
             }
@@ -916,24 +932,34 @@ function colisorRampa(){
 }
 
 function gravity(obj){
-    if(obj.position.getComponent(1) >= 1){
-        obj.translateY(-0.7*speedModulo);
+    if(obj.position.getComponent(1) >= 2){
+        obj.translateY(-1);
         playerOnGround = false;
     }
     else
         keyLock = false;
         playerOnGround = true;
+        playerOnRampa = false;
 }
 
 var alturaMaxV = 30;
 function inverseGravityV(obj){
-    console.log(playerOnGround);
     if(playerOnGround){
         if(obj.position.getComponent(1) <= alturaMaxV){
-            obj.translateY(0.4*speedModulo);
+            playerOnRampa = true;
+            obj.translateY(0.5*speedModulo);
         }
     }
 }
+function inverseGravityDescidaSuaveV(obj){
+    if(playerOnGround){
+        if(obj.position.getComponent(1) >= alturaMaxV){
+            playerOnRampa = true;
+            obj.translateY(-0.5*speedModulo);
+        }
+    }
+}
+
 function atualizaAlturaMaxV(){
     //metade da vel max pra conseguir saltar
     if(speedModulo >= 1.05){
@@ -949,10 +975,19 @@ function atualizaAlturaMaxV(){
 
 var alturaMaxH = 30;
 function inverseGravityH(obj){
-    //console.log(playerOnGround);
     if(playerOnGround){
         if(obj.position.getComponent(1) <= alturaMaxH){
-            obj.translateY(0.4*speedModulo);
+            playerOnRampa = true;
+            obj.translateY(0.5*speedModulo);
+
+        }
+    }
+}
+function inverseGravityDescidaSuaveH(obj){
+    if(playerOnGround){
+        if(obj.position.getComponent(1) >= alturaMaxH){
+            playerOnRampa = true;
+            obj.translateY(-0.5*speedModulo);
         }
     }
 }

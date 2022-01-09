@@ -12,6 +12,7 @@ export default class Roadblock
         const roadTexture = loader.load( 'texture/track1/road1.jpg' );
         const roadTexture2 = loader.load( 'texture/track2/road2.png' );
         const roadTexture3 = loader.load( 'texture/track3/road3.jpg' );
+        const roadTexture4 = loader.load( 'texture/track4/road4.jpg' );
         const roadTexture5 = loader.load( 'texture/track5/road5.jpeg' );
         const goalTexture = loader.load( 'texture/checkers.png' );
         const rampaTexture = loader.load( 'texture/neondots.png' );
@@ -27,7 +28,7 @@ export default class Roadblock
         this.road1Material = new THREE.MeshStandardMaterial( { map: roadTexture } );
         this.road2Material = new THREE.MeshStandardMaterial( { map: roadTexture2 } );
         this.road3Material = new THREE.MeshStandardMaterial( { map: roadTexture3 } );
-        this.road4Material = new THREE.MeshStandardMaterial( { map: roadTexture } );
+        this.road4Material = new THREE.MeshStandardMaterial( { map: roadTexture4 } );
         this.road5Material = new THREE.MeshStandardMaterial( { map: roadTexture5 } );
 
         this.X = x * largura;

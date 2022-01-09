@@ -32,7 +32,7 @@ const pista3 = [
 ];
 // '0' : fora da pista
 // '1C' : pista comum
-// 2 : ponto de largada/chegada
+// '2' : ponto de largada/chegada
 // '3C' : checkpoint
 // 'RV' : rampa vert
 // 'RH' : rampa horz

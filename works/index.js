@@ -50,6 +50,10 @@ const skyTexture2 = loader.load( 'texture/track2/retrowave.png');
 const groundtexture3 = loader.load( 'texture/track3/magma.jpg' );
 const skyTexture3 = loader.load( 'texture/track3/bowserCastle.jpg');
 
+
+//track5
+const skyTexture4 = loader.load( 'texture/track4/thunder.jpg' );
+
 //track5
 const groundtexture5 = loader.load( 'texture/track5/sand.jpg' );
 const skyTexture5 = loader.load( 'texture/track5/sunsky.png' );
@@ -130,7 +134,6 @@ var ground2Material = new THREE.MeshStandardMaterial( { map: groundtexture3} );
 //var plane = createGroundPlaneWired(1500, 1500, 80, 80);
 var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 250, 250 ), blackholeMaterial );
 var plane3 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 4000, 4000 ), ground2Material );
-var plane4 = createGroundPlaneWired(1500, 1500, 80, 80);
 var plane5 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground1Material );
 
 plane1.position.y = 0.0;
@@ -144,15 +147,12 @@ plane3.rotation.x = - Math.PI / 2;
 plane3.position.y = -0.3;
 plane3.visible = false;
 
-plane4.visible = false;
-
 plane5.position.y = 0.0;
 plane5.rotation.x = - Math.PI / 2;
 plane5.position.y = -0.3;
 plane5.visible = false;
 
 scene.add(plane1);
-scene.add(plane3);
 scene.add(plane3);
 scene.add(plane5);
 
@@ -701,6 +701,12 @@ function selecionaRampaMaterial(rampaType){
             return new THREE.MeshStandardMaterial( { map: rampaTexture} );
         case 3:
             rampaTexture = loader.load( 'texture/track3/stone.jpg' );
+            rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
+            rampaTexture.repeat.set( 0.02, 0.1 );
+            rampaTexture.anisotropy = 16;
+            return new THREE.MeshStandardMaterial( { map: rampaTexture} );
+        case 4:
+            rampaTexture = loader.load( 'texture/track4/clovers.jpg' );
             rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
             rampaTexture.repeat.set( 0.02, 0.1 );
             rampaTexture.anisotropy = 16;
@@ -1340,35 +1346,30 @@ function alternaPlano(){
             scene.background = skyTexture;
             plane1.visible = true;
             plane3.visible = false;
-            plane4.visible = false;
             plane5.visible = false;
             break;
         case 2:
             scene.background = skyTexture2;
             plane1.visible = false;
             plane3.visible = false;
-            plane4.visible = false;
             plane5.visible = false;
             break;
         case 3:
             scene.background = skyTexture3;
             plane1.visible = false;
             plane3.visible = true;
-            plane4.visible = false;
             plane5.visible = false;
             break;
         case 4:
             scene.background = skyTexture4;
             plane1.visible = false;
             plane3.visible = false;
-            plane4.visible = true;
             plane5.visible = false;
             break;
         case 5:
             scene.background = skyTexture5;
             plane1.visible = false;
             plane3.visible = false;
-            plane4.visible = false;
             plane5.visible = true;
             break;
         default:
@@ -1516,9 +1517,9 @@ function keyboardUpdate() {
     }
     else if (keyboard.pressed("4") && pistaAtual != 4){
         pistaAtual = 4;
-        newflagNumber = 8;
-        newRVNumber = 22;
-        newRHNumber = 22;
+        newflagNumber = 11;
+        newRVNumber = 14;
+        newRHNumber = 14;
         setaBloom();
         configuraPistas(newflagNumber,  newRVNumber, newRHNumber);
         limpaProps();
@@ -1571,9 +1572,7 @@ function keyboardUpdate() {
         assetsMng.play("00-CoconutMall");
         controls.add("* 0 to play Coconut Mall");
         plane1.visible = false;
-        plane2.visible = false;
         plane3.visible = false;
-        plane4.visible = false;
         plane5.visible = false;
     }
 }

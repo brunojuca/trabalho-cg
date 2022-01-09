@@ -28,6 +28,6 @@ const pista5 = [
 ];
 // '0' : fora da pista
 // '1E' : pista comum
-// 2 : ponto de largada/chegada
+// '2' : ponto de largada/chegada
 // '3E' : checkpoint
 export {pista5};

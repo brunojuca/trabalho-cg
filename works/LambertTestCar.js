@@ -18,13 +18,13 @@ export class LambertTestCar extends THREE.Group {
   headLight1;
   headLight2;
   wheelAngle;
-  rotation;
+  rotacao;
 
   constructor() {
     super();
     this.wheelAngle = 0;
     this.carAngle = 0;
-    this.rotation = 1;
+    this.rotacao = 1;
     var neonColor = "rgb(0,255,255)";
     var neonColor2 = "rgb(255,0,0)";
     // Axis
@@ -265,11 +265,11 @@ export class LambertTestCar extends THREE.Group {
 
   accelerate(speed) {
     this.translateZ(speed);
-    this.rotation = Math.abs(speed) > 0 ? 4 : -4;
-    this.wheel1.rotateY(degreesToRadians(this.rotation));
-    this.wheel2.rotateY(degreesToRadians(this.rotation));
-    this.wheel3.rotateY(degreesToRadians(this.rotation));
-    this.wheel4.rotateY(degreesToRadians(this.rotation));
+    this.rotacao = Math.abs(speed) > 0 ? 4 : -4;
+    this.wheel1.rotateY(degreesToRadians(this.rotacao));
+    this.wheel2.rotateY(degreesToRadians(this.rotacao));
+    this.wheel3.rotateY(degreesToRadians(this.rotacao));
+    this.wheel4.rotateY(degreesToRadians(this.rotacao));
   }
 
   turnLeft(degrees) {
@@ -312,12 +312,12 @@ export class LambertTestCar extends THREE.Group {
       this.wheelAngle++;
     }
 
-    if (Math.abs(this.rotation) > 1) {
-      this.wheel1.rotateY(degreesToRadians(this.rotation));
-      this.wheel2.rotateY(degreesToRadians(this.rotation));
-      this.wheel3.rotateY(degreesToRadians(this.rotation));
-      this.wheel4.rotateY(degreesToRadians(this.rotation));
-      this.rotation /= 1.05;
+    if (Math.abs(this.rotacao) > 1) {
+      this.wheel1.rotateY(degreesToRadians(this.rotacao));
+      this.wheel2.rotateY(degreesToRadians(this.rotacao));
+      this.wheel3.rotateY(degreesToRadians(this.rotacao));
+      this.wheel4.rotateY(degreesToRadians(this.rotacao));
+      this.rotacao /= 1.05;
     }
     //this.rotateWheel();
   }
@@ -336,9 +336,9 @@ export class LambertTestCar extends THREE.Group {
     var mat = new THREE.Matrix4();
 
     this.wheel1.matrix.multiply(
-      mat.makeRotationY(degreesToRadians(this.rotation))
+      mat.makerotacaoY(degreesToRadians(this.rotacao))
     );
-    this.wheel1.matrix.multiply(mat.makeRotationX(this.wheelAngle));
+    this.wheel1.matrix.multiply(mat.makerotacaoX(this.wheelAngle));
     this.wheel1.matrix.multiply(mat.makeTranslation(0, -2, 0));
   }
 

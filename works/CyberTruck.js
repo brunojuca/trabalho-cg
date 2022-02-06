@@ -12,7 +12,7 @@ export class CyberTruck extends THREE.Group {
   wheel1Holder;
   wheel2Holder;
 
-  rotation;
+  rotacao;
   wheelAngle;
 
   carAngle;
@@ -22,7 +22,7 @@ export class CyberTruck extends THREE.Group {
     super();
     this.wheelAngle = 0;
     this.carAngle = 0;
-    this.rotation = 1;
+    this.rotacao = 1;
     this.carregado = false;
     let loader = new GLTFLoader();
     loader.load("./assets/objects/body.gltf", (gltf) => this.onBodyLoad(gltf));
@@ -53,9 +53,6 @@ export class CyberTruck extends THREE.Group {
     this.wheel1.rotateZ(degreesToRadians(180));
     this.wheel3.rotateZ(degreesToRadians(180));
 
-    this.wheel3.position.set(1.8, -0.4, -3.5);
-    this.wheel4.position.set(-1.8, -0.4, -3.5);
-
     // Front wheels holders
     this.wheel1Holder = new THREE.Object3D();
     this.wheel1Holder.position.set(1.8, -0.4, 3.9);
@@ -66,20 +63,31 @@ export class CyberTruck extends THREE.Group {
     this.wheel1Holder.add(this.wheel1);
     this.wheel2Holder.add(this.wheel2);
 
+
+    // Front wheels holders
+    this.wheel3Holder = new THREE.Object3D();
+    this.wheel3Holder.position.set(1.8, -0.4, -3.5);
+
+    this.wheel4Holder = new THREE.Object3D();
+    this.wheel4Holder.position.set(-1.8, -0.4, -3.5);
+
+    this.wheel3Holder.add(this.wheel3);
+    this.wheel4Holder.add(this.wheel4);
+
     this.add(this.wheel1Holder);
     this.add(this.wheel2Holder);
-    this.add(this.wheel3);
-    this.add(this.wheel4);
+    this.add(this.wheel3Holder);
+    this.add(this.wheel4Holder);
   }
 
   accelerate(speed) {
     if(this.carregado){
       this.translateZ(speed);
-      this.rotation = Math.abs(speed) > 0 ? 4 : -4;
-      this.wheel1.rotateX(degreesToRadians(this.rotation));
-      this.wheel2.rotateX(-degreesToRadians(this.rotation));
-      this.wheel3.rotateX(degreesToRadians(this.rotation));
-      this.wheel4.rotateX(-degreesToRadians(this.rotation));
+      this.rotacao = Math.abs(speed) > 0 ? 4 : -4;
+      this.wheel1.rotateX(degreesToRadians(this.rotacao));
+      this.wheel2.rotateX(-degreesToRadians(this.rotacao));
+      this.wheel3.rotateX(degreesToRadians(this.rotacao));
+      this.wheel4.rotateX(-degreesToRadians(this.rotacao));
     }
   }
 
@@ -126,12 +134,12 @@ export class CyberTruck extends THREE.Group {
         this.wheel2Holder.rotateY(degreesToRadians(-1));
         this.wheelAngle++;
       }
-      if (Math.abs(this.rotation) > 1) {
-        this.wheel1.rotateX(degreesToRadians(this.rotation));
-        this.wheel2.rotateX(-degreesToRadians(this.rotation));
-        this.wheel3.rotateX(degreesToRadians(this.rotation));
-        this.wheel4.rotateX(-degreesToRadians(this.rotation));
-        this.rotation /= 1.15;
+      if (Math.abs(this.rotacao) > 1) {
+        this.wheel1.rotateX(degreesToRadians(this.rotacao));
+        this.wheel2.rotateX(-degreesToRadians(this.rotacao));
+        this.wheel3.rotateX(degreesToRadians(this.rotacao));
+        this.wheel4.rotateX(-degreesToRadians(this.rotacao));
+        this.rotacao /= 1.15;
       }
     }
   }
@@ -141,16 +149,20 @@ export class CyberTruck extends THREE.Group {
       if(this.carAngle <= degrees*100 - 9){
         this.body.rotateX(degreesToRadians(-2.2*speed));
         this.carAngle += 2.2*speed;
-        if(this.carAngle >= (-degrees*100 + 5)/4 && speed < 1.05){
-
-          this.wheel3.position.set(1.8, -2.3, -3.4);
-          this.wheel4.position.set(-1.8, -2.3, -3.4);
+        if(this.carAngle >= (-degrees*100 + 5)/4){
+          this.wheel1Holder.translateY(0.04);
+          this.wheel2Holder.translateY(0.04);
+          this.wheel1Holder.translateZ(-0.02);
+          this.wheel2Holder.translateZ(-0.02);
+          //precisam de holder
+          this.wheel3Holder.translateY(-0.07);
+          this.wheel4Holder.translateY(-0.07);
+        }
+        if (speed > 1.05){
+          this.wheel1Holder.position.set(1.8, 0.0, 3.9);
+          this.wheel2Holder.position.set(-1.8, 0.0, 3.9);
         }
         this.body.position.set(0,-1.6,0);
-      }
-      else if(speed < 1.05){
-        this.wheel1Holder.position.set(1.8, 0.6, 3.4);
-        this.wheel2Holder.position.set(-1.8, 0.6, 3.4);
       }
     }
   }
@@ -169,8 +181,8 @@ export class CyberTruck extends THREE.Group {
       this.body.position.set(0,-1.4,0);
       this.wheel1Holder.position.set(1.8, -0.4, 3.9);
       this.wheel2Holder.position.set(-1.8, -0.4, 3.9);
-      this.wheel3.position.set(1.8, -0.4, -3.5);
-      this.wheel4.position.set(-1.8, -0.4, -3.5);
+      this.wheel3Holder.position.set(1.8, -0.4, -3.5);
+      this.wheel4Holder.position.set(-1.8, -0.4, -3.5);
     }
   }
 
@@ -179,13 +191,18 @@ export class CyberTruck extends THREE.Group {
       if(this.carAngle >= -degrees*100 + 9){
         this.body.rotateX(degreesToRadians(2.2*speed));
         this.carAngle -= 2.2*speed;
-        this.wheel1Holder.position.set(1.8, -2.5, 3.7);
-        this.wheel2Holder.position.set(-1.8, -2.5, 3.7);
-        if(this.carAngle <= (-degrees*100 + 5)/2){
-          if (speed < 1.05){
-            this.wheel3.position.set(1.8, 0.7, -2.9);
-            this.wheel4.position.set(-1.8, 0.7, -2.9);
-          }
+        if(this.carAngle >= (-degrees*100 + 5)/4){
+          this.wheel1Holder.translateY(-0.09);
+          this.wheel2Holder.translateY(-0.09);
+          this.wheel1Holder.translateZ(0.02);
+          this.wheel2Holder.translateZ(0.02);
+          //precisam de holder
+          this.wheel3Holder.translateY(0.07);
+          this.wheel4Holder.translateY(0.07);
+        }
+        if (speed > 1.05){
+          this.wheel1Holder.position.set(1.8, -2.0, 3.9);
+          this.wheel2Holder.position.set(-1.8, -2.0, 3.9);
         }
         this.body.position.set(0,-1.6,0);
       }

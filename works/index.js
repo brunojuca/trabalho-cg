@@ -47,7 +47,7 @@ document.body.appendChild(renderer.domElement);
 //-------------------------------------------------------------------------------
 // Camera
 //-------------------------------------------------------------------------------
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 15000);
+var camera = new THREE.PerspectiveCamera(120, window.innerWidth / window.innerHeight, 0.1, 15000);
   camera.lookAt(0, 0, 0);
   camera.position.set(0, 0, 0);
   camera.up.set( 0, 10, 0 );
@@ -123,12 +123,12 @@ let texture_1up = loader.load( 'texture/track1/penguins/arid_up.jpg');
 let texture_1dn = loader.load( 'texture/track1/penguins/arid_dn.jpg');
 let texture_1rt = loader.load( 'texture/track1/penguins/arid_rt.jpg');
 let texture_1lf = loader.load( 'texture/track1/penguins/arid_lf.jpg');
-texture_1ft.anisotropy = renderer.getMaxAnisotropy();
-texture_1bk.anisotropy = renderer.getMaxAnisotropy();
-texture_1up.anisotropy = renderer.getMaxAnisotropy();
-texture_1dn.anisotropy = renderer.getMaxAnisotropy();
-texture_1rt.anisotropy = renderer.getMaxAnisotropy();
-texture_1lf.anisotropy = renderer.getMaxAnisotropy();
+texture_1ft.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_1bk.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_1up.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_1dn.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_1rt.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_1lf.anisotropy = renderer.capabilities.getMaxAnisotropy();
 materialArray1.push(new THREE.MeshBasicMaterial( { map: texture_1ft }));
 materialArray1.push(new THREE.MeshBasicMaterial( { map: texture_1bk }));
 materialArray1.push(new THREE.MeshBasicMaterial( { map: texture_1up }));
@@ -144,6 +144,8 @@ for (let i = 0; i < 6; i++){
 
 //track2
 const retroTexture = loader.load( 'texture/track2/retrowave3.png');
+const groundtexture2A = loader.load( 'texture/track2/neonPads.jpg');
+const groundtexture2B = loader.load( 'texture/track2/neonWave.jpg');
 const skyTexture2 = loader.load( 'texture/track2/retrowave.png');
 
 let materialArray2 = [];
@@ -153,12 +155,12 @@ let texture_2up = loader.load( 'texture/track2/retrowave2/py.png');
 let texture_2dn = loader.load( 'texture/track2/retrowave2/ny.png');
 let texture_2rt = loader.load( 'texture/track2/retrowave2/pz.png');
 let texture_2lf = loader.load( 'texture/track2/retrowave2/nz.png');
-texture_2ft.anisotropy = renderer.getMaxAnisotropy();
-texture_2bk.anisotropy = renderer.getMaxAnisotropy();
-texture_2up.anisotropy = renderer.getMaxAnisotropy();
-texture_2dn.anisotropy = renderer.getMaxAnisotropy();
-texture_2rt.anisotropy = renderer.getMaxAnisotropy();
-texture_2lf.anisotropy = renderer.getMaxAnisotropy();
+texture_2ft.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_2bk.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_2up.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_2dn.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_2rt.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_2lf.anisotropy = renderer.capabilities.getMaxAnisotropy();
 materialArray2.push(new THREE.MeshBasicMaterial( { map: texture_2ft }));
 materialArray2.push(new THREE.MeshBasicMaterial( { map: texture_2bk }));
 materialArray2.push(new THREE.MeshBasicMaterial( { map: texture_2up }));
@@ -176,18 +178,18 @@ for (let i = 0; i < 6; i++){
 const groundtexture3 = loader.load( 'texture/track3/magma3.jpg' );
 const skyTexture3 = loader.load( 'texture/track3/bowserCastle.jpg');
 let materialArray3 = [];
-let texture_3ft = loader.load( 'texture/track3/penguins/trouble_ft.jpg');
-let texture_3bk = loader.load( 'texture/track3/penguins/trouble_bk.jpg');
-let texture_3up = loader.load( 'texture/track3/penguins/trouble_up.jpg');
-let texture_3dn = loader.load( 'texture/track3/penguins/trouble_dn.jpg');
-let texture_3rt = loader.load( 'texture/track3/penguins/trouble_rt.jpg');
-let texture_3lf = loader.load( 'texture/track3/penguins/trouble_lf.jpg');
-texture_3ft.anisotropy = renderer.getMaxAnisotropy();
-texture_3bk.anisotropy = renderer.getMaxAnisotropy();
-texture_3up.anisotropy = renderer.getMaxAnisotropy();
-texture_3dn.anisotropy = renderer.getMaxAnisotropy();
-texture_3rt.anisotropy = renderer.getMaxAnisotropy();
-texture_3lf.anisotropy = renderer.getMaxAnisotropy();
+let texture_3ft = loader.load( 'texture/track3/penguins/barren_ft.jpg');
+let texture_3bk = loader.load( 'texture/track3/penguins/barren_bk.jpg');
+let texture_3up = loader.load( 'texture/track3/penguins/barren_up.jpg');
+let texture_3dn = loader.load( 'texture/track3/penguins/barren_dn.jpg');
+let texture_3rt = loader.load( 'texture/track3/penguins/barren_rt.jpg');
+let texture_3lf = loader.load( 'texture/track3/penguins/barren_lf.jpg');
+texture_3ft.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_3bk.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_3up.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_3dn.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_3rt.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_3lf.anisotropy = renderer.capabilities.getMaxAnisotropy();
 materialArray3.push(new THREE.MeshBasicMaterial( { map: texture_3ft }));
 materialArray3.push(new THREE.MeshBasicMaterial( { map: texture_3bk }));
 materialArray3.push(new THREE.MeshBasicMaterial( { map: texture_3up }));
@@ -214,12 +216,12 @@ let texture_4up = loader.load( 'texture/track4/eso0932/py_eso0932a.jpg');
 let texture_4dn = loader.load( 'texture/track4/eso0932/ny_eso0932a.jpg');
 let texture_4rt = loader.load( 'texture/track4/eso0932/pz_eso0932a.jpg');
 let texture_4lf = loader.load( 'texture/track4/eso0932/nz_eso0932a.jpg');
-texture_4ft.anisotropy = renderer.getMaxAnisotropy();
-texture_4bk.anisotropy = renderer.getMaxAnisotropy();
-texture_4up.anisotropy = renderer.getMaxAnisotropy();
-texture_4dn.anisotropy = renderer.getMaxAnisotropy();
-texture_4rt.anisotropy = renderer.getMaxAnisotropy();
-texture_4lf.anisotropy = renderer.getMaxAnisotropy();
+texture_4ft.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_4bk.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_4up.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_4dn.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_4rt.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_4lf.anisotropy = renderer.capabilities.getMaxAnisotropy();
 materialArray4.push(new THREE.MeshBasicMaterial( { map: texture_4ft }));
 materialArray4.push(new THREE.MeshBasicMaterial( { map: texture_4bk }));
 materialArray4.push(new THREE.MeshBasicMaterial( { map: texture_4up }));
@@ -235,6 +237,32 @@ for (let i = 0; i < 6; i++){
 //track5
 const groundtexture5 = loader.load( 'texture/track5/sand.jpg' );
 const skyTexture5 = loader.load( 'texture/track5/sunsky.png' );
+let materialArray5 = [];
+let texture_5ft = loader.load( 'texture/track5/penguins/trouble_ft.jpg');
+let texture_5bk = loader.load( 'texture/track5/penguins/trouble_bk.jpg');
+let texture_5up = loader.load( 'texture/track5/penguins/trouble_up.jpg');
+let texture_5dn = loader.load( 'texture/track5/penguins/trouble_dn.jpg');
+let texture_5rt = loader.load( 'texture/track5/penguins/trouble_rt.jpg');
+let texture_5lf = loader.load( 'texture/track5/penguins/trouble_lf.jpg');
+texture_5ft.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_5bk.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_5up.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_5dn.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_5rt.anisotropy = renderer.capabilities.getMaxAnisotropy();
+texture_5lf.anisotropy = renderer.capabilities.getMaxAnisotropy();
+materialArray5.push(new THREE.MeshBasicMaterial( { map: texture_5ft }));
+materialArray5.push(new THREE.MeshBasicMaterial( { map: texture_5bk }));
+materialArray5.push(new THREE.MeshBasicMaterial( { map: texture_5up }));
+materialArray5.push(new THREE.MeshBasicMaterial( { map: texture_5dn }));
+materialArray5.push(new THREE.MeshBasicMaterial( { map: texture_5rt }));
+materialArray5.push(new THREE.MeshBasicMaterial( { map: texture_5lf }));
+for (let i = 0; i < 6; i++){
+    materialArray5[i].side = THREE.BackSide;
+    materialArray5[i].map.generateMipmaps = true;
+    materialArray5[i].map.minFilter =  THREE.LinearMipmapLinearFilter;
+    materialArray5[i].map.magFilter = THREE.LinearFilter;
+}
+
 
 //track0 - secret
 const skyTextureSecret = loader.load( 'texture/secret/coconutMall.jpg' );
@@ -281,24 +309,47 @@ groundtexture1.repeat.set( 50, 50 );
 groundtexture1.anisotropy = 16;
 var ground1Material = new THREE.MeshStandardMaterial( { map: groundtexture1} );
 
+groundtexture2A.wrapS = groundtexture2A.wrapT = THREE.RepeatWrapping;
+groundtexture2A.repeat.set( 50, 50 );
+groundtexture2A.anisotropy = 16;
+var ground2MaterialA = new THREE.MeshStandardMaterial( { map: groundtexture2A} );
+//ground2MaterialA.glass = true;
+//ground2MaterialA.reflectivity = 1.0;
+//ground2MaterialA.refractionRatio = 1.5;
+
+ground2MaterialA.transparent = true;
+ground2MaterialA.opacity = 0.7;
+
+groundtexture2B.wrapS = groundtexture2B.wrapT = THREE.RepeatWrapping;
+groundtexture2B.repeat.set( 100, 100 );
+groundtexture2B.anisotropy =  renderer.capabilities.getMaxAnisotropy();
+
+var ground2MaterialB = new THREE.MeshStandardMaterial( { map: groundtexture2B} );
+ground2MaterialB.transparent = true;
+ground2MaterialB.opacity = 0.5;
+
 groundtexture3.wrapS = groundtexture3.wrapT = THREE.RepeatWrapping;
 groundtexture3.repeat.set( 50, 50 );
-groundtexture3.anisotropy = 16;
+groundtexture3.anisotropy =  renderer.capabilities.getMaxAnisotropy();
+
 var ground3Material = new THREE.MeshStandardMaterial( { map: groundtexture3} );
 
 groundtexture4.wrapS = groundtexture4.wrapT = THREE.RepeatWrapping;
 groundtexture4.repeat.set( 100, 100 );
-groundtexture4.anisotropy = 16;
+groundtexture4.anisotropy =  renderer.capabilities.getMaxAnisotropy();
+
 var ground4Material = new THREE.MeshStandardMaterial( { map: groundtexture4} );
 
 groundtexture5.wrapS = groundtexture5.wrapT = THREE.RepeatWrapping;
 groundtexture5.repeat.set( 1000, 1000 );
-groundtexture5.anisotropy = 16;
+groundtexture5.anisotropy =  renderer.capabilities.getMaxAnisotropy();
+
 var ground5Material = new THREE.MeshStandardMaterial( { map: groundtexture5 } );
 
 //var plane = createGroundPlaneWired(1500, 1500, 80, 80);
 var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 5000, 5000 ), ground1Material );
-var plane2 = new THREE.Mesh( new THREE.SphereGeometry( 100, 32,32 ), retrowaveMaterial );
+var plane2A = new THREE.Mesh( new THREE.PlaneBufferGeometry( 2500, 2500 ), ground2MaterialA );
+var plane2B = new THREE.Mesh( new THREE.PlaneBufferGeometry( 5000, 5000 ), ground2MaterialB );
 var plane3 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 4000, 4000 ), ground3Material );
 var plane5 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground5Material );
 var plane4 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground4Material );
@@ -309,10 +360,21 @@ plane1.position.x = 350;
 plane1.position.y = -6.3;
 plane1.position.z = 350;
 
-plane2.position.x = 350.0;
-plane2.position.y = 0.0;
-plane2.position.z = 350.0;
-plane2.visible = false;
+plane2A.position.y = 0.0;
+plane2A.rotation.x = - Math.PI / 2;
+plane2A.position.y = -0.3;
+plane2A.position.x = 350;
+plane2A.position.y = -0.3;
+plane2A.position.z = 350;
+plane2A.visible = false;
+
+plane2B.position.y = 0.0;
+plane2B.rotation.x = - Math.PI / 2;
+plane2B.position.x = 350;
+plane2B.position.y = -300.3;
+plane2B.position.z = 350;
+plane2B.visible = false;
+
 
 plane3.position.y = 0.0;
 plane3.rotation.x = - Math.PI / 2;
@@ -330,7 +392,8 @@ plane5.position.y = -0.3;
 plane5.visible = false;
 
 scene.add(plane1);
-scene.add(plane2);
+scene.add(plane2A);
+scene.add(plane2B);
 scene.add(plane3);
 scene.add(plane4);
 scene.add(plane5);
@@ -341,61 +404,53 @@ var skyboxGeo = new THREE.BoxGeometry(skyboxSize, skyboxSize, skyboxSize);
 skyGeo.scale(-1,1,1);
 
 skyTexture.wrapS = skyTexture.wrapT = THREE.RepeatWrapping;
-skyTexture.anisotropy = renderer.getMaxAnisotropy();
+skyTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
 skyTexture2.wrapS = skyTexture2.wrapT = THREE.RepeatWrapping;
-skyTexture2.anisotropy = renderer.getMaxAnisotropy();
+skyTexture2.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
 skyTexture3.wrapS = skyTexture3.wrapT = THREE.RepeatWrapping;
-skyTexture3.anisotropy = renderer.getMaxAnisotropy();
+skyTexture3.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
 skyTexture4.wrapS = skyTexture4.wrapT = THREE.RepeatWrapping;
-skyTexture4.anisotropy = renderer.getMaxAnisotropy();
+skyTexture4.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
 skyTexture5.wrapS = skyTexture5.wrapT = THREE.RepeatWrapping;
-skyTexture5.anisotropy = renderer.getMaxAnisotropy();
-
-var skyTextureMaterial2 = new THREE.MeshBasicMaterial( { map: skyTexture2 } );
-var skyTextureMaterial3 = new THREE.MeshBasicMaterial( { map: skyTexture3 } );
-var skyTextureMaterial5 = new THREE.MeshBasicMaterial( { map: skyTexture5 } );
+skyTexture5.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
 var sky1 = new THREE.Mesh(skyboxGeo, materialArray1);
+sky1.position.set(0.0, skyboxSize/10  ,0.0)
 sky1.scale.set(-1, 1, 1);
 sky1.eulerOrder = 'XZY';
 sky1.renderDepth = 1000.0;
 sky1.visible = true;
 
-
-var sky2 = new THREE.Mesh(skyGeo, skyTextureMaterial2);
-sky2.visible = false;
-sky2.position.set(0.0, skyboxSize/3, 0.0)
-
-/*
 var sky2 = new THREE.Mesh(skyboxGeo, materialArray2);
+sky2.position.set(0.0, skyboxSize/10  ,0.0)
 sky2.scale.set(-1, 1, 1);
 sky2.eulerOrder = 'XZY';
 sky2.renderDepth = 1000.0;
 sky2.visible = false;
-*/
-
 
 var sky3 = new THREE.Mesh(skyboxGeo, materialArray3);
+sky3.position.set(0.0, skyboxSize/10  ,0.0)
 sky3.scale.set(-1, 1, 1);
 sky3.eulerOrder = 'XZY';
 sky3.renderDepth = 1000.0;
 sky3.visible = false;
 
-
 var sky4 = new THREE.Mesh(skyboxGeo, materialArray4);
-sky4.position.set(0.0, 0 ,0.0)
+sky4.position.set(0.0, skyboxSize/10 ,0.0)
 sky4.scale.set(-1, 1, 1);
 sky4.eulerOrder = 'XZY';
 sky4.renderDepth = 1000.0;
 sky4.visible = false;
 
-
-var sky5 = new THREE.Mesh(skyGeo, skyTextureMaterial5);
-sky5.position.set(-skyboxSize/2, 0.0, -skyboxSize/2)
+var sky5 = new THREE.Mesh(skyboxGeo, materialArray5);
+sky5.position.set(0.0, skyboxSize/10  ,0.0)
+sky5.scale.set(-1, 1, 1);
+sky5.eulerOrder = 'XZY';
+sky5.renderDepth = 1000.0;
 sky5.visible = false;
 
 scene.add(sky1);
@@ -732,7 +787,8 @@ function setSpotLight(spotLight, lightName, position)
 // Moon
 //-------------------------------------------------------------------------------
 moonTexture.wrapS = moonTexture.wrapT = THREE.RepeatWrapping;
-moonTexture.anisotropy = 16;
+moonTexture.anisotropy =  renderer.capabilities.getMaxAnisotropy();
+
 var moon = [];
 
 function carregaMoon(){
@@ -787,6 +843,25 @@ function limpaGlassSphere(){
 }
 
 //-------------------------------------------------------------------------------
+// Ring
+//-------------------------------------------------------------------------------
+
+var ringTexture = loader.load( 'texture/track1/sand.jpg' );
+ringTexture.wrapS = ringTexture.wrapT = THREE.RepeatWrapping;
+ringTexture.repeat.set( 0.02, 0.1 );
+ringTexture.anisotropy = 16;
+
+var ring = new THREE.Mesh( new THREE.TorusGeometry( 2000, 100, 16, 32 ), new THREE.MeshStandardMaterial( { map: ringTexture} ) );
+ring.rotateX(degreesToRadians(90));
+ring.position.set(350,-50,350)
+scene.add( ring );
+
+var ring2 = new THREE.Mesh( new THREE.TorusGeometry( 100, 10, 16, 32 ), new THREE.MeshStandardMaterial( { map: ringTexture} ) );
+ring2.rotateX(degreesToRadians(90));
+ring2.position.set(350,-5,350)
+scene.add( ring2 );
+
+//-------------------------------------------------------------------------------
 // Pokey
 //-------------------------------------------------------------------------------
 
@@ -796,9 +871,9 @@ function carregaPokey(){
     for (let i = 0; i < 41; i++) {
         var novoPokey = new Pokey();
         pokey.push(novoPokey);
-        pokey[i].position.set(350 + 60*Math.cos(i*Math.PI/4), 0.0, 350 + 60*Math.sin(i*Math.PI/4));
+        pokey[i].position.set(350 + 60*Math.cos(i*Math.PI/4), -5.0, 350 + 60*Math.sin(i*Math.PI/4));
         if(i > 8){
-            pokey[i].position.set(350 + 250*Math.cos(i*Math.PI/16), 0.0, 350 + 250*Math.sin(i*Math.PI/16));
+            pokey[i].position.set(350 + 2000*Math.cos(i*Math.PI/16), 50.0, 350 + 2000*Math.sin(i*Math.PI/16));
             pokey[i].head.rotateY(degreesToRadians(180));
         }
         pokey[i].lookAt(moon[0].position);
@@ -994,7 +1069,7 @@ function selecionaRampaMaterial(rampaType){
             rampaTexture.anisotropy = 16;
             return new THREE.MeshStandardMaterial( { map: rampaTexture} );
         case 2:
-            rampaTexture = loader.load( 'texture/track2/road2.png' );
+            rampaTexture = loader.load( 'texture/track2/road2.jpg' );
             rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
             rampaTexture.repeat.set( 0.02, 0.1 );
             rampaTexture.anisotropy = 16;
@@ -1678,7 +1753,8 @@ function alternaPlano(){
         case 1:
             scene.background = skyTexture;
             plane1.visible = true;
-            plane2.visible = false;
+            plane2A.visible = false;
+            plane2B.visible = false;
             plane3.visible = false;
             plane4.visible = false;
             plane5.visible = false;
@@ -1691,7 +1767,8 @@ function alternaPlano(){
         case 2:
             scene.background = skyTexture2;
             plane1.visible = false;
-            plane2.visible = true;
+            plane2A.visible = true;
+            plane2B.visible = true;
             plane3.visible = false;
             plane4.visible = false;
             plane5.visible = false;
@@ -1704,7 +1781,8 @@ function alternaPlano(){
         case 3:
             scene.background = skyTexture3;
             plane1.visible = false;
-            plane2.visible = false;
+            plane2A.visible = false;
+            plane2B.visible = false;
             plane3.visible = true;
             plane4.visible = false;
             plane5.visible = false;
@@ -1717,7 +1795,8 @@ function alternaPlano(){
         case 4:
             scene.background = skyTexture4;
             plane1.visible = false;
-            plane2.visible = false;
+            plane2A.visible = false;
+            plane2B.visible = false;
             plane3.visible = false;
             plane4.visible = true;
             plane5.visible = false;
@@ -1730,7 +1809,8 @@ function alternaPlano(){
         case 5:
             scene.background = skyTexture5;
             plane1.visible = false;
-            plane2.visible = false;
+            plane2A.visible = false;
+            plane2B.visible = false;
             plane3.visible = false;
             plane4.visible = false;
             plane5.visible = true;
@@ -2015,8 +2095,9 @@ function keyboardUpdate() {
         assetsMng.play("00-CoconutMall");
         controls.add("* 0 to play Coconut Mall");
         plane1.visible = false;
+        plane2A.visible = false;
+        plane2B.visible = false;
         plane3.visible = false;
-        plane2.visible = false;
         plane4.visible = false;
         plane5.visible = false;
     }

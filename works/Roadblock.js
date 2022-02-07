@@ -13,7 +13,7 @@ export default class Roadblock
         roadTexture.wrapS = roadTexture.wrapT = THREE.RepeatWrapping;
         this.road1Material = new THREE.MeshStandardMaterial( { map: roadTexture } );
 
-        const roadTexture2 = loader.load( 'texture/track2/road2.png' );
+        const roadTexture2 = loader.load( 'texture/track2/road2.jpg' );
         this.road2Material = new THREE.MeshStandardMaterial( { map: roadTexture2 } );
 
         const roadTexture3 = loader.load( 'texture/track3/road3.jpg' );

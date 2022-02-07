@@ -27,73 +27,6 @@ import Roadblock from './Roadblock.js';
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-// Loaders
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
-
-//-------------------------------------------------------------------------------
-// Texture Loader
-//-------------------------------------------------------------------------------
-const loader = new THREE.TextureLoader();
-const cubeLoader = new THREE.CubeTextureLoader();
-
-//track1
-const moonTexture = loader.load( 'texture/track1/moon.jpg' );
-const blackholeTexture = loader.load( 'texture/track1/blackhole.jpg' );
-const skyTexture = loader.load( 'texture/track1/sky.jpg' );
-
-//track2
-const skyTexture2 = loader.load( 'texture/track2/retrowave.png');
-const retroTexture = loader.load( 'texture/track2/retrowave3.png');
-
-/*
-const skyBoxTexture2 = cubeLoader.load([
-    'texture/checkers.png',
-    'texture/checkers.png',
-    'texture/checkers.png',
-    'texture/checkers.png',
-    'texture/checkers.png',
-    'texture/checkers.png',
-]);
-*/
-
-//track3
-const groundtexture3 = loader.load( 'texture/track3/magma.jpg' );
-const skyTexture3 = loader.load( 'texture/track3/bowserCastle.jpg');
-
-//track5
-const skyTexture4 = loader.load( 'texture/track4/thunder.jpg' );
-
-//track5
-const groundtexture5 = loader.load( 'texture/track5/sand.jpg' );
-const skyTexture5 = loader.load( 'texture/track5/sunsky.png' );
-
-//track0 - secret
-const skyTextureSecret = loader.load( 'texture/secret/coconutMall.jpg' );
-const flagTexture = loader.load( 'texture/secret/coconutFlagPole.png' );
-
-var rampaTexture = loader.load( 'texture/neondots.png' );
-
-
-//-------------------------------------------------------------------------------
-// Audio Manager
-//-------------------------------------------------------------------------------
-var assetsMng = new assetsManager();
-assetsMng.loadAudio("startRace", "./soundAssets/startRace.mp3");
-
-assetsMng.loadAudio("01-Milkyway", "./soundAssets/01-milkyWay.mp3");
-assetsMng.loadAudio("02-VeridisQuo", "./soundAssets/02-veridisQuo.mp3");
-assetsMng.loadAudio("03-BowserCastle", "./soundAssets/03-bowserCastle.mp3");
-assetsMng.loadAudio("04-KoopaBeach", "./soundAssets/04-koopaBeach.mp3");
-assetsMng.loadAudio("05-BigBlue", "./soundAssets/05-bigBlue.mp3");
-
-assetsMng.loadAudio("00-CoconutMall", "./soundAssets/00-coconutMall.mp3");
-assetsMng.loadAudio("winRace", "./soundAssets/winRace.mp3");
-
-
-
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
 // Scene e Renderer Creation
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -111,17 +44,14 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor( 0x000000 );
 document.body.appendChild(renderer.domElement);
 
-scene.background = skyTexture;
-
 //-------------------------------------------------------------------------------
 // Camera
 //-------------------------------------------------------------------------------
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 15000);
   camera.lookAt(0, 0, 0);
   camera.position.set(0, 0, 0);
   camera.up.set( 0, 10, 0 );
   camera.fov = 20;
-  camera.far = 1000;
   camera.layers.enable(1);
 
 //-------------------------------------------------------------------------------
@@ -159,9 +89,180 @@ dirLight.target = camera;
 dirLight.position.set(lightPosition);
 scene.add( camera );
 dirLight.position.copy(lightPosition);
+dirLight.intensity = 1.5;
 
 // Listen window size changes
 window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, false );
+
+
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+// Loaders
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+
+
+//-------------------------------------------------------------------------------
+// Texture Loader
+//-------------------------------------------------------------------------------
+const loader = new THREE.TextureLoader();
+const cubeLoader = new THREE.CubeTextureLoader();
+
+//track1
+const moonTexture = loader.load( 'texture/track1/moon.jpg' );
+const blackholeTexture = loader.load( 'texture/track1/blackhole.jpg' );
+
+const groundtexture1 = loader.load( 'texture/track1/sand.jpg' );
+const skyTexture = loader.load( 'texture/track1/sky.jpg' );
+
+let materialArray1 = [];
+let texture_1ft = loader.load( 'texture/track1/penguins/arid_ft.jpg');
+let texture_1bk = loader.load( 'texture/track1/penguins/arid_bk.jpg');
+let texture_1up = loader.load( 'texture/track1/penguins/arid_up.jpg');
+let texture_1dn = loader.load( 'texture/track1/penguins/arid_dn.jpg');
+let texture_1rt = loader.load( 'texture/track1/penguins/arid_rt.jpg');
+let texture_1lf = loader.load( 'texture/track1/penguins/arid_lf.jpg');
+texture_1ft.anisotropy = renderer.getMaxAnisotropy();
+texture_1bk.anisotropy = renderer.getMaxAnisotropy();
+texture_1up.anisotropy = renderer.getMaxAnisotropy();
+texture_1dn.anisotropy = renderer.getMaxAnisotropy();
+texture_1rt.anisotropy = renderer.getMaxAnisotropy();
+texture_1lf.anisotropy = renderer.getMaxAnisotropy();
+materialArray1.push(new THREE.MeshBasicMaterial( { map: texture_1ft }));
+materialArray1.push(new THREE.MeshBasicMaterial( { map: texture_1bk }));
+materialArray1.push(new THREE.MeshBasicMaterial( { map: texture_1up }));
+materialArray1.push(new THREE.MeshBasicMaterial( { map: texture_1dn }));
+materialArray1.push(new THREE.MeshBasicMaterial( { map: texture_1rt }));
+materialArray1.push(new THREE.MeshBasicMaterial( { map: texture_1lf }));
+for (let i = 0; i < 6; i++){
+    materialArray1[i].side = THREE.BackSide;
+    materialArray1[i].map.generateMipmaps = true;
+    materialArray1[i].map.minFilter =  THREE.LinearMipmapLinearFilter;
+    materialArray1[i].map.magFilter = THREE.LinearFilter;
+}
+
+//track2
+const retroTexture = loader.load( 'texture/track2/retrowave3.png');
+const skyTexture2 = loader.load( 'texture/track2/retrowave.png');
+
+let materialArray2 = [];
+let texture_2ft = loader.load( 'texture/track2/retrowave2/px.png');
+let texture_2bk = loader.load( 'texture/track2/retrowave2/nx.png');
+let texture_2up = loader.load( 'texture/track2/retrowave2/py.png');
+let texture_2dn = loader.load( 'texture/track2/retrowave2/ny.png');
+let texture_2rt = loader.load( 'texture/track2/retrowave2/pz.png');
+let texture_2lf = loader.load( 'texture/track2/retrowave2/nz.png');
+texture_2ft.anisotropy = renderer.getMaxAnisotropy();
+texture_2bk.anisotropy = renderer.getMaxAnisotropy();
+texture_2up.anisotropy = renderer.getMaxAnisotropy();
+texture_2dn.anisotropy = renderer.getMaxAnisotropy();
+texture_2rt.anisotropy = renderer.getMaxAnisotropy();
+texture_2lf.anisotropy = renderer.getMaxAnisotropy();
+materialArray2.push(new THREE.MeshBasicMaterial( { map: texture_2ft }));
+materialArray2.push(new THREE.MeshBasicMaterial( { map: texture_2bk }));
+materialArray2.push(new THREE.MeshBasicMaterial( { map: texture_2up }));
+materialArray2.push(new THREE.MeshBasicMaterial( { map: texture_2dn }));
+materialArray2.push(new THREE.MeshBasicMaterial( { map: texture_2rt }));
+materialArray2.push(new THREE.MeshBasicMaterial( { map: texture_2lf }));
+for (let i = 0; i < 6; i++){
+    materialArray2[i].side = THREE.BackSide;
+    materialArray2[i].map.generateMipmaps = true;
+    materialArray2[i].map.minFilter =  THREE.LinearMipmapLinearFilter;
+    materialArray2[i].map.magFilter = THREE.LinearFilter;
+}
+
+//track3
+const groundtexture3 = loader.load( 'texture/track3/magma3.jpg' );
+const skyTexture3 = loader.load( 'texture/track3/bowserCastle.jpg');
+let materialArray3 = [];
+let texture_3ft = loader.load( 'texture/track3/penguins/trouble_ft.jpg');
+let texture_3bk = loader.load( 'texture/track3/penguins/trouble_bk.jpg');
+let texture_3up = loader.load( 'texture/track3/penguins/trouble_up.jpg');
+let texture_3dn = loader.load( 'texture/track3/penguins/trouble_dn.jpg');
+let texture_3rt = loader.load( 'texture/track3/penguins/trouble_rt.jpg');
+let texture_3lf = loader.load( 'texture/track3/penguins/trouble_lf.jpg');
+texture_3ft.anisotropy = renderer.getMaxAnisotropy();
+texture_3bk.anisotropy = renderer.getMaxAnisotropy();
+texture_3up.anisotropy = renderer.getMaxAnisotropy();
+texture_3dn.anisotropy = renderer.getMaxAnisotropy();
+texture_3rt.anisotropy = renderer.getMaxAnisotropy();
+texture_3lf.anisotropy = renderer.getMaxAnisotropy();
+materialArray3.push(new THREE.MeshBasicMaterial( { map: texture_3ft }));
+materialArray3.push(new THREE.MeshBasicMaterial( { map: texture_3bk }));
+materialArray3.push(new THREE.MeshBasicMaterial( { map: texture_3up }));
+materialArray3.push(new THREE.MeshBasicMaterial( { map: texture_3dn }));
+materialArray3.push(new THREE.MeshBasicMaterial( { map: texture_3rt }));
+materialArray3.push(new THREE.MeshBasicMaterial( { map: texture_3lf }));
+for (let i = 0; i < 6; i++){
+    materialArray3[i].side = THREE.BackSide;
+    materialArray3[i].map.generateMipmaps = true;
+    materialArray3[i].map.minFilter =  THREE.LinearMipmapLinearFilter;
+    materialArray3[i].map.magFilter = THREE.LinearFilter;
+}
+
+
+//track4
+const groundtexture4 = loader.load( 'texture/track4/iceField.jpg' );
+const skyTexture4 = loader.load( 'texture/track4/sunSky.jpg' );
+
+
+let materialArray4 = [];
+let texture_4ft = loader.load( 'texture/track4/eso0932/px_eso0932a.jpg');
+let texture_4bk = loader.load( 'texture/track4/eso0932/nx_eso0932a.jpg');
+let texture_4up = loader.load( 'texture/track4/eso0932/py_eso0932a.jpg');
+let texture_4dn = loader.load( 'texture/track4/eso0932/ny_eso0932a.jpg');
+let texture_4rt = loader.load( 'texture/track4/eso0932/pz_eso0932a.jpg');
+let texture_4lf = loader.load( 'texture/track4/eso0932/nz_eso0932a.jpg');
+texture_4ft.anisotropy = renderer.getMaxAnisotropy();
+texture_4bk.anisotropy = renderer.getMaxAnisotropy();
+texture_4up.anisotropy = renderer.getMaxAnisotropy();
+texture_4dn.anisotropy = renderer.getMaxAnisotropy();
+texture_4rt.anisotropy = renderer.getMaxAnisotropy();
+texture_4lf.anisotropy = renderer.getMaxAnisotropy();
+materialArray4.push(new THREE.MeshBasicMaterial( { map: texture_4ft }));
+materialArray4.push(new THREE.MeshBasicMaterial( { map: texture_4bk }));
+materialArray4.push(new THREE.MeshBasicMaterial( { map: texture_4up }));
+materialArray4.push(new THREE.MeshBasicMaterial( { map: texture_4dn }));
+materialArray4.push(new THREE.MeshBasicMaterial( { map: texture_4rt }));
+materialArray4.push(new THREE.MeshBasicMaterial( { map: texture_4lf }));
+for (let i = 0; i < 6; i++){
+    materialArray4[i].side = THREE.BackSide;
+    materialArray4[i].map.generateMipmaps = true;
+    materialArray4[i].map.minFilter =  THREE.LinearMipmapLinearFilter;
+    materialArray4[i].map.magFilter = THREE.LinearFilter;
+}
+//track5
+const groundtexture5 = loader.load( 'texture/track5/sand.jpg' );
+const skyTexture5 = loader.load( 'texture/track5/sunsky.png' );
+
+//track0 - secret
+const skyTextureSecret = loader.load( 'texture/secret/coconutMall.jpg' );
+const flagTexture = loader.load( 'texture/secret/coconutFlagPole.png' );
+
+var rampaTexture = loader.load( 'texture/neondots.png' );
+
+var options = {
+    generateMipmaps: true,
+    minFilter: THREE.LinearMipmapLinearFilter,
+    magFilter: THREE.LinearFilter
+};
+scene.background = new THREE.WebGLCubeRenderTarget( 1024, options ).fromEquirectangularTexture( renderer, skyTexture )
+
+//-------------------------------------------------------------------------------
+// Audio Manager
+//-------------------------------------------------------------------------------
+var assetsMng = new assetsManager();
+assetsMng.loadAudio("startRace", "./soundAssets/startRace.mp3");
+
+assetsMng.loadAudio("01-Milkyway", "./soundAssets/01-milkyWay.mp3");
+assetsMng.loadAudio("02-VeridisQuo", "./soundAssets/02-veridisQuo.mp3");
+assetsMng.loadAudio("03-BowserCastle", "./soundAssets/03-bowserCastle.mp3");
+assetsMng.loadAudio("04-KoopaBeach", "./soundAssets/04-koopaBeach.mp3");
+assetsMng.loadAudio("05-BigBlue", "./soundAssets/05-bigBlue.mp3");
+
+assetsMng.loadAudio("00-CoconutMall", "./soundAssets/00-coconutMall.mp3");
+assetsMng.loadAudio("winRace", "./soundAssets/winRace.mp3");
 
 
 
@@ -172,25 +273,35 @@ window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, 
 //-------------------------------------------------------------------------------
 var blackholeMaterial = new THREE.MeshStandardMaterial( { map: blackholeTexture } );
 
-groundtexture5.wrapS = groundtexture5.wrapT = THREE.RepeatWrapping;
-groundtexture5.repeat.set( 1000, 1000 );
-groundtexture5.anisotropy = 16;
-var ground1Material = new THREE.MeshStandardMaterial( { map: groundtexture5 } );
-
 var retrowaveMaterial = new THREE.MeshPhongMaterial( { map: retroTexture } );
 retrowaveMaterial.side = THREE.BackSide;
+
+groundtexture1.wrapS = groundtexture1.wrapT = THREE.RepeatWrapping;
+groundtexture1.repeat.set( 50, 50 );
+groundtexture1.anisotropy = 16;
+var ground1Material = new THREE.MeshStandardMaterial( { map: groundtexture1} );
 
 groundtexture3.wrapS = groundtexture3.wrapT = THREE.RepeatWrapping;
 groundtexture3.repeat.set( 50, 50 );
 groundtexture3.anisotropy = 16;
-var ground2Material = new THREE.MeshStandardMaterial( { map: groundtexture3} );
+var ground3Material = new THREE.MeshStandardMaterial( { map: groundtexture3} );
 
+groundtexture4.wrapS = groundtexture4.wrapT = THREE.RepeatWrapping;
+groundtexture4.repeat.set( 100, 100 );
+groundtexture4.anisotropy = 16;
+var ground4Material = new THREE.MeshStandardMaterial( { map: groundtexture4} );
+
+groundtexture5.wrapS = groundtexture5.wrapT = THREE.RepeatWrapping;
+groundtexture5.repeat.set( 1000, 1000 );
+groundtexture5.anisotropy = 16;
+var ground5Material = new THREE.MeshStandardMaterial( { map: groundtexture5 } );
 
 //var plane = createGroundPlaneWired(1500, 1500, 80, 80);
-var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 5000, 5000 ), blackholeMaterial );
+var plane1 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 5000, 5000 ), ground1Material );
 var plane2 = new THREE.Mesh( new THREE.SphereGeometry( 100, 32,32 ), retrowaveMaterial );
-var plane3 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 4000, 4000 ), ground2Material );
-var plane5 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground1Material );
+var plane3 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 4000, 4000 ), ground3Material );
+var plane5 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground5Material );
+var plane4 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), ground4Material );
 
 plane1.position.y = 0.0;
 plane1.rotation.x = - Math.PI / 2;
@@ -208,6 +319,11 @@ plane3.rotation.x = - Math.PI / 2;
 plane3.position.y = -0.3;
 plane3.visible = false;
 
+plane4.position.y = 0.0;
+plane4.rotation.x = - Math.PI / 2;
+plane4.position.y = -0.3;
+plane4.visible = false;
+
 plane5.position.y = 0.0;
 plane5.rotation.x = - Math.PI / 2;
 plane5.position.y = -0.3;
@@ -216,8 +332,77 @@ plane5.visible = false;
 scene.add(plane1);
 scene.add(plane2);
 scene.add(plane3);
+scene.add(plane4);
 scene.add(plane5);
 
+const skyboxSize = 10000
+var skyGeo = new THREE.SphereGeometry(skyboxSize/2, 720, 360);
+var skyboxGeo = new THREE.BoxGeometry(skyboxSize, skyboxSize, skyboxSize);
+skyGeo.scale(-1,1,1);
+
+skyTexture.wrapS = skyTexture.wrapT = THREE.RepeatWrapping;
+skyTexture.anisotropy = renderer.getMaxAnisotropy();
+
+skyTexture2.wrapS = skyTexture2.wrapT = THREE.RepeatWrapping;
+skyTexture2.anisotropy = renderer.getMaxAnisotropy();
+
+skyTexture3.wrapS = skyTexture3.wrapT = THREE.RepeatWrapping;
+skyTexture3.anisotropy = renderer.getMaxAnisotropy();
+
+skyTexture4.wrapS = skyTexture4.wrapT = THREE.RepeatWrapping;
+skyTexture4.anisotropy = renderer.getMaxAnisotropy();
+
+skyTexture5.wrapS = skyTexture5.wrapT = THREE.RepeatWrapping;
+skyTexture5.anisotropy = renderer.getMaxAnisotropy();
+
+var skyTextureMaterial2 = new THREE.MeshBasicMaterial( { map: skyTexture2 } );
+var skyTextureMaterial3 = new THREE.MeshBasicMaterial( { map: skyTexture3 } );
+var skyTextureMaterial5 = new THREE.MeshBasicMaterial( { map: skyTexture5 } );
+
+var sky1 = new THREE.Mesh(skyboxGeo, materialArray1);
+sky1.scale.set(-1, 1, 1);
+sky1.eulerOrder = 'XZY';
+sky1.renderDepth = 1000.0;
+sky1.visible = true;
+
+
+var sky2 = new THREE.Mesh(skyGeo, skyTextureMaterial2);
+sky2.visible = false;
+sky2.position.set(0.0, skyboxSize/3, 0.0)
+
+/*
+var sky2 = new THREE.Mesh(skyboxGeo, materialArray2);
+sky2.scale.set(-1, 1, 1);
+sky2.eulerOrder = 'XZY';
+sky2.renderDepth = 1000.0;
+sky2.visible = false;
+*/
+
+
+var sky3 = new THREE.Mesh(skyboxGeo, materialArray3);
+sky3.scale.set(-1, 1, 1);
+sky3.eulerOrder = 'XZY';
+sky3.renderDepth = 1000.0;
+sky3.visible = false;
+
+
+var sky4 = new THREE.Mesh(skyboxGeo, materialArray4);
+sky4.position.set(0.0, 0 ,0.0)
+sky4.scale.set(-1, 1, 1);
+sky4.eulerOrder = 'XZY';
+sky4.renderDepth = 1000.0;
+sky4.visible = false;
+
+
+var sky5 = new THREE.Mesh(skyGeo, skyTextureMaterial5);
+sky5.position.set(-skyboxSize/2, 0.0, -skyboxSize/2)
+sky5.visible = false;
+
+scene.add(sky1);
+scene.add(sky2);
+scene.add(sky3);
+scene.add(sky4);
+scene.add(sky5);
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -434,9 +619,14 @@ cameraHolder.position.set(60, 20, 0);
 cameraHolder.lookAt(posAtual)
 cameraHolder.rotateY(degreesToRadians(180))
 
+var cameraHolder2 = new THREE.Object3D();
+cameraHolder2.lookAt(ghostguide.getWorldPosition(new THREE.Vector3()));
+cameraHolder2.rotateY(degreesToRadians(180))
+ghostguide.add(cameraHolder2)
+
 scene.add(player);
 scene.add(cameraHolder);
-
+scene.add(cameraHolder2);
 
 
 //-------------------------------------------------------------------------------
@@ -561,7 +751,6 @@ function limpaMoon(){
 
 function moonOrbit(){
     moon[0].rotateY(degreesToRadians(-1));
-    plane1.rotateZ(degreesToRadians(2));
 }
 
 //-------------------------------------------------------------------------------
@@ -788,10 +977,10 @@ function freiaCarro(freiaAnterior)
 function RampaShape(size)
 {
     var RampaShape = new THREE.Shape();
-        RampaShape.moveTo( size/2, 0);
+        RampaShape.moveTo( size/2 + 1, 0);
         RampaShape.lineTo( 0, size/6 );
-        RampaShape.lineTo( -size/2, 0);
-        RampaShape.lineTo( size/2, 0);
+        RampaShape.lineTo( -size/2 - 1, 0);
+        RampaShape.lineTo( size/2 + 1, 0);
     return RampaShape;
 }
 
@@ -799,7 +988,7 @@ var rampaType = 1;
 function selecionaRampaMaterial(rampaType){
     switch(rampaType){
         case 1:
-            rampaTexture = loader.load( 'texture/track1/stardust.jpg' );
+            rampaTexture = loader.load( 'texture/track1/road1.jpg' );
             rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
             rampaTexture.repeat.set( 0.2, 0.05 );
             rampaTexture.anisotropy = 16;
@@ -817,7 +1006,7 @@ function selecionaRampaMaterial(rampaType){
             rampaTexture.anisotropy = 16;
             return new THREE.MeshStandardMaterial( { map: rampaTexture} );
         case 4:
-            rampaTexture = loader.load( 'texture/track4/clovers.jpg' );
+            rampaTexture = loader.load( 'texture/track4/road4.jpg' );
             rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
             rampaTexture.repeat.set( 0.02, 0.01 );
             rampaTexture.anisotropy = 16;
@@ -1491,35 +1680,65 @@ function alternaPlano(){
             plane1.visible = true;
             plane2.visible = false;
             plane3.visible = false;
+            plane4.visible = false;
             plane5.visible = false;
+            sky1.visible = true;
+            sky2.visible = false;
+            sky3.visible = false;
+            sky4.visible = false;
+            sky5.visible = false;
             break;
         case 2:
             scene.background = skyTexture2;
             plane1.visible = false;
             plane2.visible = true;
             plane3.visible = false;
+            plane4.visible = false;
             plane5.visible = false;
+            sky1.visible = false;
+            sky2.visible = true;
+            sky3.visible = false;
+            sky4.visible = false;
+            sky5.visible = false;
             break;
         case 3:
             scene.background = skyTexture3;
             plane1.visible = false;
             plane2.visible = false;
             plane3.visible = true;
+            plane4.visible = false;
             plane5.visible = false;
+            sky1.visible = false;
+            sky2.visible = false;
+            sky3.visible = true;
+            sky4.visible = false;
+            sky5.visible = false;
             break;
         case 4:
             scene.background = skyTexture4;
             plane1.visible = false;
             plane2.visible = false;
             plane3.visible = false;
+            plane4.visible = true;
             plane5.visible = false;
+            sky1.visible = false;
+            sky2.visible = false;
+            sky3.visible = false;
+            sky4.visible = true;
+            sky5.visible = false;
             break;
         case 5:
             scene.background = skyTexture5;
             plane1.visible = false;
             plane2.visible = false;
             plane3.visible = false;
+            plane4.visible = false;
             plane5.visible = true;
+            sky1.visible = false;
+            sky2.visible = false;
+            sky3.visible = false;
+            sky4.visible = false;
+            sky5.visible = true;
             break;
         default:
     }
@@ -1607,6 +1826,18 @@ var panoramicotraseiro = false;
 function keyboardUpdate() {
     keyboard.update();
 
+    if (keyboard.pressed("W")){
+        camera.translateZ(10);
+    }
+    if (keyboard.pressed("S")){
+        camera.translateZ(-10);
+    }
+    if (keyboard.pressed("A")){
+        camera.rotateY(degreesToRadians(-10));
+    }
+    if (keyboard.pressed("D")){
+        camera.rotateY(degreesToRadians(10));
+    }
     //controles do player
     if (keyboard.pressed("X")){
         carroAcelerando = true;
@@ -1649,12 +1880,18 @@ function keyboardUpdate() {
             if(aceleracao > 1 || freia < -1){
                 player.turnLeft(5);
             }
+            if(panoramicotraseiro == true){
+                ghostguide.rotateY(degreesToRadians(5));
+            }
         }
     }
     else if (keyboard.pressed("right")) {
         if(keyLock == false){
             if(aceleracao > 1 || freia < -1){
                 player.turnRight(5);
+            }
+            if(panoramicotraseiro == true){
+                ghostguide.rotateY(degreesToRadians(-5));
             }
         }
     }
@@ -1739,16 +1976,22 @@ function keyboardUpdate() {
 
     //cameras
     if (keyboard.pressed(",")){
+        cameraHolder2.remove(camera);
+        cameraHolder.add(camera);
         panoramicotraseiro = false;
         panoramico = true;
         playerIcon.visible = false;
     }
     else if (keyboard.pressed(".")){
+        cameraHolder2.remove(camera);
+        cameraHolder.add(camera);
         panoramico = false;
         panoramicotraseiro = false;
         playerIcon.visible = true;
     }
     else if (keyboard.pressed("/")){ //; em alguns teclados
+        cameraHolder.remove(camera);
+        cameraHolder2.add(camera);
         panoramico = false;
         panoramicotraseiro = true;
         playerIcon.visible = false;
@@ -1773,6 +2016,8 @@ function keyboardUpdate() {
         controls.add("* 0 to play Coconut Mall");
         plane1.visible = false;
         plane3.visible = false;
+        plane2.visible = false;
+        plane4.visible = false;
         plane5.visible = false;
     }
 }
@@ -2238,14 +2483,16 @@ function render(t)
     posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
 
     cameraHolder.lookAt(ghostguide.getWorldPosition(new THREE.Vector3()));
+    cameraHolder2.lookAt(ghostguide.getWorldPosition(new THREE.Vector3()));
     cameraHolder.position.set(player.position.getComponent(0)+60, player.position.getComponent(1)+80, player.position.getComponent(2)-50);
     if (panoramico){
         cameraHolder.position.set(player.position.getComponent(0)+140, player.position.getComponent(1)+45, player.position.getComponent(2)-150);
     }
     if (panoramicotraseiro){
-        cameraHolder.position.set(player.position.getComponent(0)+0, player.position.getComponent(1)+20, player.position.getComponent(2)-150);
+        cameraHolder2.position.set(player.position.getComponent(0)+0, player.position.getComponent(1)+10, player.position.getComponent(2)-40);
     }
     cameraHolder.rotateY(degreesToRadians(180));
+    cameraHolder2.rotateY(degreesToRadians(180));
 
     //controle de voltas
     delay+=1;

@@ -1753,6 +1753,8 @@ function alternaPlano(){
         case 1:
             scene.background = skyTexture;
             plane1.visible = true;
+            ring.visible = true;
+            ring2.visible = true;
             plane2A.visible = false;
             plane2B.visible = false;
             plane3.visible = false;
@@ -1767,6 +1769,8 @@ function alternaPlano(){
         case 2:
             scene.background = skyTexture2;
             plane1.visible = false;
+            ring.visible = false;
+            ring2.visible = false;
             plane2A.visible = true;
             plane2B.visible = true;
             plane3.visible = false;
@@ -1781,6 +1785,8 @@ function alternaPlano(){
         case 3:
             scene.background = skyTexture3;
             plane1.visible = false;
+            ring.visible = false;
+            ring2.visible = false;
             plane2A.visible = false;
             plane2B.visible = false;
             plane3.visible = true;
@@ -1795,6 +1801,8 @@ function alternaPlano(){
         case 4:
             scene.background = skyTexture4;
             plane1.visible = false;
+            ring.visible = false;
+            ring2.visible = false;
             plane2A.visible = false;
             plane2B.visible = false;
             plane3.visible = false;
@@ -1809,6 +1817,8 @@ function alternaPlano(){
         case 5:
             scene.background = skyTexture5;
             plane1.visible = false;
+            ring.visible = false;
+            ring2.visible = false;
             plane2A.visible = false;
             plane2B.visible = false;
             plane3.visible = false;

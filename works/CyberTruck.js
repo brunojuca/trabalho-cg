@@ -12,6 +12,11 @@ export class CyberTruck extends THREE.Group {
   wheel1Holder;
   wheel2Holder;
 
+  vynilRight;
+  vynilLeft;
+
+  speakers;
+
   rotacao;
   wheelAngle;
 
@@ -25,20 +30,61 @@ export class CyberTruck extends THREE.Group {
     this.rotacao = 1;
     this.carregado = false;
     let loader = new GLTFLoader();
+    let textureLoader = new THREE.TextureLoader()
+    
+    let akatsukiTexture = textureLoader.load("./texture/akatsuki.png");
+    let speakerTexture = textureLoader.load("./texture/speakerMargin.png")
+    speakerTexture.wrapS = THREE.RepeatWrapping;
+    speakerTexture.wrapT = THREE.RepeatWrapping;
+    //speakerTexture.offset = 0.1;
+    speakerTexture.repeat.set(2,2)
+
     loader.load("./assets/objects/body.gltf", (gltf) => this.onBodyLoad(gltf));
     loader.load("./assets/objects/wheel.gltf", (gltf) => this.onWheelLoad(gltf));
+
+    var vynilGeometry = new THREE.PlaneGeometry(6, 1.8, 10, 10);
+    var vynilMaterial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 1});
+    this.vynilRight = new THREE.Mesh(vynilGeometry, vynilMaterial);
+    this.vynilRight.position.set(-1.9,1.7,0)
+    this.vynilRight.rotateY(degreesToRadians(90))
+    this.vynilRight.rotateZ(degreesToRadians(2))
+    this.vynilRight.rotateX(degreesToRadians(175))
+    this.vynilRight.rotateZ(degreesToRadians(180))
+    this.vynilRight.material.map = akatsukiTexture;
+
+    this.vynilLeft = new THREE.Mesh(vynilGeometry, vynilMaterial);
+    this.vynilLeft.position.set(1.9,1.7,0)
+    this.vynilLeft.rotateY(degreesToRadians(90))
+    this.vynilLeft.rotateZ(degreesToRadians(2))
+    this.vynilLeft.rotateX(degreesToRadians(5))
+    
+    this.vynilLeft.rotateZ(degreesToRadians(180))
+
+    var speakerGeometry = new THREE.PlaneGeometry(3,3.3, 10, 10);
+    var speakerMaterial = new THREE.MeshBasicMaterial({side:THREE.DoubleSide, transparent: true, opacity: 1});
+    this.speakers = new THREE.Mesh(speakerGeometry, speakerMaterial);
+    this.speakers.position.set(0,3.11,-3.7);
+    this.speakers.rotateX(degreesToRadians(81))
+    this.speakers.material.map = speakerTexture;
   }
 
   onBodyLoad(gltf) {
-    console.log(gltf);
     gltf.scene.traverse( function( node ) {
       if ( node.isMesh ) { node.castShadow = true; }
     } );
     this.body = gltf.scene;
     this.body.castShadow = true;
     this.body.position.set(0,-1.4,0);
+    this.body.traverse((o)=>{
+      if (o.isMesh) {
+        o.material.metalness = 0;
+      }
+    })
     this.add(this.body);
     this.carregado = true;
+    this.body.add(this.speakers)
+    this.body.add(this.vynilRight)
+    this.body.add(this.vynilLeft)
   }
 
   onWheelLoad(gltf) {

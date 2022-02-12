@@ -1,0 +1,11 @@
+Model Information:
+* title:	Stylized Lava
+* source:	https://sketchfab.com/3d-models/stylized-lava-a3799d3d111243cd9c30f25f5616f6c3
+* author:	Akif Akdemir (https://sketchfab.com/akifakdemir)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Stylized Lava" (https://sketchfab.com/3d-models/stylized-lava-a3799d3d111243cd9c30f25f5616f6c3) by Akif Akdemir (https://sketchfab.com/akifakdemir) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -1,51 +1,79 @@
 import * as THREE from "../build/three.module.js";
-import { degreesToRadians } from "../libs/util/util.js";
-import { Turbina } from './turbina.js';
-
+import {GLTFLoader} from '../build/jsm/loaders/GLTFLoader.js';
+import {
+  getMaxSize,
+  degreesToRadians,} from "../libs/util/util.js";
 export class PropManager extends THREE.Group {
-    constructor() {
-        super();
-    }
+  gltfArray;
+  bodyArray;
+  playAction;
+  mixer;
+  carregado; // garante que nao executa função antes do gltf carregar
 
-    carregaEolics(eolics, scene){
-        eolics = [];
-        for (let i = 0; i < 21; i++) {
-            var eolicTurbine = new Turbina();
-            eolicTurbine.rotateY(degreesToRadians(180));
-            eolics.push(eolicTurbine);
-            eolics[i].position.set(-600+100*i, 0.0, 500.0);
-            scene.add(eolics[i]);
+  constructor() {
+      super();
+      this.gltfArray = [];
+      this.bodyArray = [];
+      this.playAction = true;
+      this.mixer = [];
+  }
+
+  loadGLTFFile(modelPath, modelFolder, desiredScale, angle, visibility, scene, newX, newY, newZ)
+  {
+    let gtlfloader = new GLTFLoader( );
+    let funcao = function ( gltf )
+    {
+      var obj = gltf.scene;
+      obj.visible = visibility;
+      obj.name = modelFolder;
+      obj.traverse( function ( child ) {
+        if ( child ) {
+            child.castShadow = true;
         }
-        return eolics;
+      });
+      obj.traverse( function( node )
+      {
+        if( node.material ) node.material.side = THREE.DoubleSide;
+      });
+      // Normalize scale and multiple by the newScale
+      var scale = getMaxSize(obj); // Available in 'utils.js'
+      obj.scale.set(desiredScale * (1.0/scale),
+                    desiredScale * (1.0/scale),
+                    desiredScale * (1.0/scale));
+
+      // Fix position of the object over the ground plane
+      var box = new THREE.Box3().setFromObject( obj );
+      if(box.min.y > 0)
+        obj.translateY(-box.min.y);
+      else
+        obj.translateY(-1*box.min.y);
+
+      obj.rotateY(degreesToRadians(angle));
+      this.setaPosicao(obj, newX, newY, newZ);
+
+      let body = gltf.scene;
+      this.bodyArray.push(body);
+
+      scene.add(obj);
+      this.gltfArray.push(obj);
+      var mixerLocal = new THREE.AnimationMixer(obj);
+      mixerLocal.clipAction( gltf.animations[0] ).play();
+      this.mixer.push(mixerLocal);
     }
+    funcao = funcao.bind(this);
+    gtlfloader.load( modelPath + modelFolder + '/scene.gltf', funcao);
+  }
 
+  setaPosicao(obj, newX, newY, newZ){
+    obj.position.set(newX,newY,newZ);
+  }
 
-    carregaScenaryEolics(scenicEolics, scenicTemp, scene){
-        for(let j = 0; j < 5; j++){
-            scenicTemp = [];
-            for (let i = 0; i < 21; i++) {
-                var eolicTurbine = new Turbina();
-                eolicTurbine.rotateY(degreesToRadians(180));
-                scenicTemp.push(eolicTurbine);
-            }
-            scenicEolics.push(scenicTemp)
-            for (let i = 0; i < 21; i++) {
-                scenicEolics[j][i].position.set(-600+100*i, 0.0, 500.0 + 200*j);
-                scene.add(scenicEolics[j][i]);
-            }
-        }
+  limpaGLFTArray(scene){
+    for (let i = 0; i < this.gltfArray.length; i++) {
+      scene.remove(this.gltfArray[i]);
+      scene.remove(this.bodyArray[i]);
     }
-
-    limpaEolics(eolics, scenicEolics, scene){
-        for (let i = 0; i < eolics.length; i++) {
-            scene.remove(eolics[i]);
-        }
-        for(let j = 0; j < 5; j++){
-            for (let i = 0; i < 21; i++) {
-                scene.remove(scenicEolics[j][i]);
-            }
-        }
-    }
-
-
+    this.gltfArray = [];
+    this.bodyArray = [];
+  }
 }

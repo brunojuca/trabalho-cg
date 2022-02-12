@@ -27,25 +27,25 @@ export default class Pista {
     montaPista()
     {
         var blockArray = [];
+        var lastRoadIndice = 0;
         for (let j=0; j<this.COLUNAS; j++) {
             for (let i=0; i<this.LINHAS; i++) {
                 if (this.roadblocks[i][j] != 0) {
                     var blockType = this.roadblocks[i][j];
-                    var lastRoadIndice = 0;
                     switch(blockType){
-                        case '3A':
+                        case '1A':
                             lastRoadIndice = 1;
                             break;
-                        case '3B':
+                        case '1B':
                             lastRoadIndice = 2;
                             break;
-                        case '3C':
+                        case '1C':
                             lastRoadIndice = 3;
                             break;
-                        case '3D':
+                        case '1D':
                             lastRoadIndice = 4;
                             break;
-                        case '3E':
+                        case '1E':
                             lastRoadIndice = 5;
                             break;
                         default:

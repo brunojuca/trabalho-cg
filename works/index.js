@@ -11,8 +11,10 @@ import Pista from './Pista.js';
 import { LambertTestCar } from './LambertTestCar.js';
 import { CyberTruck } from './CyberTruck.js';
 import { Turbina } from './Turbina.js';
+import { Obstacles } from './obstacles.js';
 import { Pokey } from './Pokey.js';
 import { assetsManager } from './assetsManager.js';
+import { PropManager } from './propManager.js';
 import { EffectComposer } from '../build/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from '../build/jsm/postprocessing/RenderPass.js';
 import { PixelShader } from '../build/jsm/shaders/PixelShader.js';
@@ -292,7 +294,44 @@ assetsMng.loadAudio("05-BigBlue", "./soundAssets/05-bigBlue.mp3");
 assetsMng.loadAudio("00-CoconutMall", "./soundAssets/00-coconutMall.mp3");
 assetsMng.loadAudio("winRace", "./soundAssets/winRace.mp3");
 
+//-------------------------------------------------------------------------------
+// Prop Manager
+//-------------------------------------------------------------------------------
 
+var propMng = new PropManager;
+propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, 350, -10, 1350);
+propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, -600, -10, 350);
+propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, 350, -10, -600);
+propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, 1350, -10, 350);
+
+function selecionaProps(){
+    switch(pistaAtual){
+        case 1:
+            propMng.limpaGLFTArray(scene);
+            propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, 350, -10, 1350);
+            propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, -600, -10, 350);
+            propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, 350, -10, -600);
+            propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, 1350, -10, 350);
+            break;
+        case 2:
+            propMng.limpaGLFTArray(scene);
+            break;
+        case 3:
+            propMng.limpaGLFTArray(scene);
+            break;
+        case 4:
+            propMng.limpaGLFTArray(scene);
+            propMng.loadGLTFFile('./assets/', 'titanic', 5000.0, 0, true, scene, 200, -30, -500);
+            propMng.loadGLTFFile('./assets/', 'asian_pirate_ship', 5000.0, 0, true, scene, 100, -30, 1500);
+
+            break;
+        case 5:
+            propMng.limpaGLFTArray(scene);
+            break;
+        default:
+            break;
+    }
+}
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -501,6 +540,7 @@ function limpaPista(){
 //-------------------------------------------------------------------------------
 const checkpointRadius = 1.5*blocoSize;
 var flagNumber = 9;
+var newflagNumber = 9;
 
 function createCheckpoint(checkpointRadius)
 {
@@ -548,9 +588,6 @@ function encontraPosicaoCheckpoints(){
             posicaoCheckpoints.push(posicaoNova);
         }
     }
-    /*if(pistaAtual == 2){
-        posicaoCheckpoints.reverse();
-    }*/
     return posicaoCheckpoints.reverse();
 }
 
@@ -573,7 +610,6 @@ posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada);
 
 function resetaPosicaoCheckpointMudancaPista(){
     posicionamentoCheckpoints = encontraPosicaoCheckpoints();
-    console.log(posicionamentoCheckpoints);
     posicionamentoChegada = encontraPosicaoChegada();
     posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada);
 }
@@ -607,14 +643,24 @@ lightguide.position.set(0.0, 0.0, 2*radius + desvio);
 
 //player
 var player = new CyberTruck;
-var playerNewType = new LambertTestCar;
+//var playerNewType = new LambertTestCar;
 
 player.scale.set(1.4,1.4,1.4);
 player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.8*size, posicionamentoChegada[0].getComponent(2) - size);
 
+var playerBoxHelper = new THREE.BoxHelper(player, 0x00ff00);
+playerBoxHelper.setFromObject(player)
+scene.add(playerBoxHelper);
+
+var playerBox3 = new THREE.Box3();
+playerBox3.setFromObject(playerBoxHelper);
+
+var playerboxSetada = false;
+
 player.add(ghostguide);
 player.add(dirguide);
 player.add(lightguide);
+
 
 var posAtual = new THREE.Vector3(0, 0, 0);
 posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
@@ -627,39 +673,6 @@ function createSphere(radius)
     var guideSphere = new THREE.Mesh( guideSphereGeometry, guideSphereMaterial );
     guideSphere.visible = false;
     return guideSphere;
-}
-
-//-------------------------------------------------------------------------------
-// Modelo de Chegada (Flags)
-//-------------------------------------------------------------------------------
-
-
-function createPole(size)
-{
-    var poleGeometry = new THREE.BoxGeometry(size, 2*size, size);
-    var poleMaterial = new THREE.MeshBasicMaterial( { map: flagTexture } );
-    var pole = new THREE.Mesh( poleGeometry, poleMaterial );
-    pole.visible = false;
-    return pole;
-}
-
-var flags = [];
-var newflagNumber = 9;
-
-function criaFlags(){
-    for (var i = 0; i <= flagNumber-1; i++){
-        var flag = createPole(20*size/2);
-        flags.push(flag);
-        flags[i].position.set(0, 20*size+20*size*i, 0);
-        player.add(flags[i]);
-    }
-}
-criaFlags();
-
-function removeFlags(){
-    for (var i = 0; i <= flagNumber-1; i++){
-        scene.remove(flags[i]);
-    }
 }
 
 //-------------------------------------------------------------------------------
@@ -762,26 +775,6 @@ player.add(playerIcon);
 //-------------------------------------------------------------------------------
 
 let centroPistaAtual = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
-
-//-------------------------------------------------------------------------------
-// SpotLight - em desenvolvimento
-//-------------------------------------------------------------------------------
-/*
-setSpotLight(ambientspotLight, "ambientLight", new THREE.Vector3(0,0,0));
-function setSpotLight(spotLight, lightName, position)
-{
-  spotLight.position.copy(position);
-  spotLight.shadow.mapSize.width = 1024;
-  spotLight.shadow.mapSize.height = 1024;
-  spotLight.angle = degreesToRadians(40);
-  spotLight.castShadow = true;
-  spotLight.decay = 2;
-  spotLight.penumbra = 0.5;
-  spotLight.name = lightName;
-
-  scene.add(spotLight);
-}
-*/
 
 //-------------------------------------------------------------------------------
 // Moon
@@ -959,6 +952,7 @@ function carregaProps(){
 
 //tinha algum bug q precisou do switch, n lembro qual
 function limpaProps(){
+    selecionaProps();
     switch(pistaAtual){
         case 1:
             limpaPokey();
@@ -1205,13 +1199,82 @@ function limpaRampas(){
 }
 function resetaPosicaoRampasMudancaPista(){
     posicionamentoRampasV = encontraPosicaoRampasV();
-    console.log(todasRampasV);
     posicionaRampasV(posicionamentoRampasV);
 
     posicionamentoRampasH = encontraPosicaoRampasH();
-    console.log(todasRampasH);
     posicionaRampasH(posicionamentoRampasH);
 }
+
+//-------------------------------------------------------------------------------
+// Obstacles
+//-------------------------------------------------------------------------------
+
+var obstacles = [];
+var obstaclesBoxHelper = [];
+var obstaclesBox3 = [];
+var obstaclesExistem = true;
+
+function carregaObstacles(){
+    for (let i = 0; i < 20; i++) {
+        if(i < 10){
+            var obs = new Obstacles('./assets/', 'hay_bale', 'SLOW');
+        }
+        else{
+            var obs = new Obstacles('./assets/', 'japan_porcelain_vase', 'SOLID');
+            obs.scale.set(5,5,5);
+        }
+        var obsBoxHelper = new THREE.BoxHelper(obs, 0x00ff00);
+        scene.add(obsBoxHelper);
+        var obsBox3 = new THREE.Box3();
+        obsBox3.setFromObject(obsBoxHelper);
+        obstaclesBoxHelper.push(obsBoxHelper);
+        obstaclesBox3.push(obsBox3);
+        obstacles.push(obs);
+    }
+}
+function limpaObstacles(){
+    obstaclesExistem = false;
+    for (let i = 0; i < obstacles.length; i++) {
+        scene.remove(obstacles[i]);
+        scene.remove(obstaclesBox3[i]);
+        scene.remove(obstaclesBoxHelper[i]);
+    }
+    obstacles = []
+    obstaclesBox3 = []
+    obstaclesBoxHelper = [];
+}
+function posicionaObstacles(posicionamentoObstacles){
+    carregaObstacles();
+    for(var k = 0; k < posicionamentoObstacles.length; k++){
+        obstacles[k].position.set(posicionamentoObstacles[k].getComponent(0), 0.0, posicionamentoObstacles[k].getComponent(2));
+        if (obstacles[k].tipoColisao == 'SOLID'){
+            obstacles[k].position.set(posicionamentoObstacles[k].getComponent(0), 4.8, posicionamentoObstacles[k].getComponent(2));
+            console.log(k, obstacles[k], obstacles[k].tipoColisao)
+        }
+        scene.add(obstacles[k]);
+    }
+    obstaclesExistem = true;
+}
+function encontraPosicaoObstacles(){
+    var posicaoObstacles = [];
+    for (var k = 0; k < platforms.length; k ++){
+        if(platforms[k].getBlockType() == "OBSTACLE"){
+            var posicaoNova = new THREE.Vector3;
+            posicaoNova.copy(platforms[k].bloco.position);
+            posicaoObstacles.push(posicaoNova);
+        }
+    }
+    return posicaoObstacles;
+}
+var posicionamentoObstacles = encontraPosicaoObstacles();
+posicionaObstacles(posicionamentoObstacles);
+
+function resetaPosicaoObstaclesMudancaPista(){
+    posicionamentoObstacles = encontraPosicaoObstacles();
+    posicionaObstacles(posicionamentoObstacles);
+}
+
+
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -1430,13 +1493,10 @@ function inverseGravityDescidaSuaveV(obj){
 }
 
 function atualizaAlturaMaxV(){
-    //metade da vel max pra conseguir saltar
     if(speedModulo >= 1.05){
         alturaMaxV = 30;
     }
     else{
-        /*console.log("tipo V - Azul:", "Z: ", absDiffZ, "X: ", absDiffX);
-        console.log("tipo V - Azul:", "Z: ", diffZ, "X: ", diffX);*/
         alturaMaxV = (blocoSize/2 - absDiffX)* rampaAngle + 5*offsetColisor;
     }
 }
@@ -1484,13 +1544,10 @@ function inverseGravityDescidaSuaveH(obj){
     }
 }
 function atualizaAlturaMaxH(){
-    //metade da vel max pra conseguir saltar
     if(speedModulo >= 1.05){
         alturaMaxH = 30;
     }
     else{
-        /*console.log("tipo H - Vermelho:", "Z: ", absDiffZ, "X: ", absDiffX);
-        console.log("tipo H - Vermelho:", "Z: ", diffZ, "X: ", diffX);*/
         alturaMaxH = (blocoSize/2 - absDiffZ)* rampaAngle + 5*offsetColisor;
     }
 }
@@ -1501,7 +1558,6 @@ function atualizaAlturaMaxH(){
 var diffRedutorX = 0;
 var diffRedutorZ = 0;
 function verificaDesaceleraFora(){
-    testaRedutor();
     for (var k = 0; k < platforms.length; k ++){
         diffRedutorX = Math.abs(player.position.getComponent(0) - size - platforms[k].bloco.position.getComponent(0));
         diffRedutorZ = Math.abs(player.position.getComponent(2) + size - platforms[k].bloco.position.getComponent(2));
@@ -1513,26 +1569,6 @@ function verificaDesaceleraFora(){
         }
     }
     redutor = 0.5;
-}
-
-//estético, indicador do redutor acoplado ao carro
-var flagRedutor = createPole(size);
-var flagRedutor2 = createPole(size);
-flagRedutor.position.set(-0.7, 2*size, -0.5);
-flagRedutor2.position.set(0.7, 2*size, -0.5);
-
-player.add(flagRedutor);
-player.add(flagRedutor2);
-
-function testaRedutor(){
-    if (redutor >= 1){
-        flagRedutor.material.color.setHex(0xff0000);
-        flagRedutor2.material.color.setHex(0xff0000);
-    }
-    else{
-        flagRedutor.material.color.setHex(0x000000);
-        flagRedutor2.material.color.setHex(0x000000);
-    }
 }
 
 //-------------------------------------------------------------------------------
@@ -1570,6 +1606,29 @@ function verificaProximidadeEolic(){
   }
 }
 
+
+//-------------------------------------------------------------------------------
+// Colisor - Bounding Box
+//-------------------------------------------------------------------------------
+
+function colisorBoundingBox(){
+    if(obstaclesExistem && playerboxSetada){
+        for (let i = 0; i < obstaclesBox3.length; i++) {
+            if(playerBox3.intersectsBox(obstaclesBox3[i])){
+                if(obstacles[i].tipoColisao == 'SLOW')
+                    redutor = 0.2;
+                else if(obstacles[i].tipoColisao == 'SOLID'){
+                    var dirGuidePosition = dirguide.getWorldPosition(new THREE.Vector3());
+                    obstacles[i].body.lookAt(dirGuidePosition);
+                    obstacles[i].body.translateZ(speedModulo);
+                }
+                console.log(obstacles[i], i, obstacles[i].tipoColisao)
+            }
+        }
+    }
+}
+
+
 //-------------------------------------------------------------------------------
 // Colisor - Dentro - Checkpoints
 //-------------------------------------------------------------------------------
@@ -1591,7 +1650,6 @@ criaCheckpointColisores();
 function resetaVoltaAtual(){
     for (var i = 0; i <= flagNumber-1; i++){
         colidiuCheckpoints[i] = reset;
-        flags[i].material.color.setHex(0xff0000)
     }
 }
 
@@ -1601,7 +1659,6 @@ function verificaCheckpoint(checkpoint, player, i){
         Math.abs(checkpoint.position.getComponent(2) - player.position.getComponent(2)) < checkpointRadius){
         colidiuCheckpoints[i] = true;
         checkpointsRestantes--;
-        flags[i].material.color.setHex(0x00ff00);
     }
 }
 
@@ -1684,7 +1741,7 @@ function verificaColisores(){
 function configuraPistas(newflagNumber, newRVNumber, newRHNumber){
     limpaPista();
     limpaRampas();
-    removeFlags();
+    limpaObstacles();
     flagNumber = newflagNumber;
     RVNumber = newRVNumber;
     RHNumber = newRHNumber;
@@ -1709,10 +1766,10 @@ function configuraPistas(newflagNumber, newRVNumber, newRHNumber){
             break;
     }
     rampaType = pistaAtual;
-    criaFlags();
     resetaVoltaAtual();
     resetaPosicaoCheckpointMudancaPista();
     resetaPosicaoRampasMudancaPista();
+    resetaPosicaoObstaclesMudancaPista();
     atualizaMinimapa();
 }
 
@@ -1842,9 +1899,7 @@ function selectSoundtrack(track){
     assetsMng.stop();
     //fazer liga e desliga musica mais a frente
     if(!tocar){
-        //console.log("começou", delayMusica%30);
         while (delayMusica%120 != 0 ){
-            //console.log("loopInfinito", delayMusica%30);
             delayMusica += 1;
             if (delayMusica%30 == 0){
                 switch(track){
@@ -1884,6 +1939,44 @@ function selectSoundtrack(track){
     tocar = false;
     delayMusica = 1;
 }
+
+
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+// Bounding Boxes
+//-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+const helper3 = new THREE.Box3Helper( playerBox3, 0xffff00 );
+scene.add( helper3 );
+
+function atualizaBoundingPlayer(){
+    player.remove(ghostguide);
+    player.remove(dirguide);
+    player.remove(lightguide);
+    player.remove(playerIcon)
+    playerboxSetada = true;
+    playerBox3.setFromObject(player);
+    player.add(ghostguide);
+    player.add(dirguide);
+    player.add(lightguide);
+    player.add(playerIcon)
+    colisorBoundingBox();
+}
+function atualizaBoundingObstacles(){
+    if(obstaclesExistem){
+        for (let i = 0; i < obstaclesBoxHelper.length; i++) {
+            obstaclesBoxHelper[i].update();
+            obstaclesBox3[i].setFromObject(obstacles[i]);
+        }
+    }
+}
+
+function boundingBoxesUpdate(){
+    atualizaBoundingPlayer();
+    atualizaBoundingObstacles();
+}
+
+
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -1927,6 +2020,12 @@ function keyboardUpdate() {
     }
     if (keyboard.pressed("D")){
         camera.rotateY(degreesToRadians(10));
+    }
+    if (keyboard.pressed("Q")){
+        camera.rotateX(degreesToRadians(-10));
+    }
+    if (keyboard.pressed("E")){
+        camera.rotateX(degreesToRadians(10));
     }
     //controles do player
     if (keyboard.pressed("X")){
@@ -2562,9 +2661,17 @@ function render(t)
     requestAnimationFrame(render);
     dt = (t - anterior) / 100;
     anterior = t;
-
+    if (propMng.playAction) {
+        for(var i = 0; i<propMng.mixer.length; i++)
+            if(pistaAtual == 4){
+                propMng.mixer[i].update(dt);
+            }
+            else
+            propMng.mixer[i].update(dt/100);
+    }
     //movimentação do player
     keyboardUpdate();
+    boundingBoxesUpdate();
     verificaColisores();
     aceleraCarro(aceleracao);
     freiaCarro(freia);

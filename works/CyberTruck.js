@@ -33,7 +33,7 @@ export class CyberTruck extends THREE.Group {
     this.carregado = false;
     let loader = new GLTFLoader();
     let textureLoader = new THREE.TextureLoader()
-    
+
     let akatsukiTexture = textureLoader.load("./texture/akatsuki.png");
     let speakerTexture = textureLoader.load("./texture/speakerMargin.png")
     let hoodTexture = textureLoader.load("./texture/herby.png");
@@ -60,7 +60,7 @@ export class CyberTruck extends THREE.Group {
     this.vynilLeft.rotateY(degreesToRadians(90))
     this.vynilLeft.rotateZ(degreesToRadians(2))
     this.vynilLeft.rotateX(degreesToRadians(5))
-    
+
     this.vynilLeft.rotateZ(degreesToRadians(180))
 
     var speakerGeometry = new THREE.PlaneGeometry(3,3.3, 10, 10);
@@ -78,7 +78,7 @@ export class CyberTruck extends THREE.Group {
     this.hood.position.set(0,2.33,5);
     this.hood.rotateX(degreesToRadians(289.5))
     //this.hood.rotateY(degreesToRadians(180))
-    
+
     this.hood.material.map = hoodTexture;
   }
 
@@ -231,11 +231,11 @@ export class CyberTruck extends THREE.Group {
   turnDefault(speed) {
     //tremedeira extremamente leve no carro, pode usar como efeito pra carro ligado
     if(this.carregado){
-      if(this.carAngle >= 0.5){
+      if(this.carAngle >= 2.0){
         this.body.rotateX(degreesToRadians(10.5*speed));
         this.carAngle -= 10.5*speed;
       }
-      else if(this.carAngle < 0.0){
+      else if(this.carAngle < -2.0){
         this.body.rotateX(degreesToRadians(-10.5*speed));
         this.carAngle += 10.5*speed;
       }

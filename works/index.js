@@ -54,6 +54,7 @@ var camera = new THREE.PerspectiveCamera(120, window.innerWidth / window.innerHe
   camera.position.set(0, 0, 0);
   camera.up.set( 0, 10, 0 );
   camera.fov = 20;
+  camera.updateProjectionMatrix();
   camera.layers.enable(1);
 
 //-------------------------------------------------------------------------------
@@ -395,23 +396,23 @@ var plane4 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 10000, 10000 ), grou
 
 plane1.position.y = 0.0;
 plane1.rotation.x = - Math.PI / 2;
-plane1.position.x = 350;
+plane1.position.x = 224;
 plane1.position.y = -6.3;
-plane1.position.z = 350;
+plane1.position.z = 224;
 
 plane2A.position.y = 0.0;
 plane2A.rotation.x = - Math.PI / 2;
 plane2A.position.y = -0.3;
-plane2A.position.x = 350;
+plane2A.position.x = 224;
 plane2A.position.y = -0.3;
-plane2A.position.z = 350;
+plane2A.position.z = 224;
 plane2A.visible = false;
 
 plane2B.position.y = 0.0;
 plane2B.rotation.x = - Math.PI / 2;
-plane2B.position.x = 350;
+plane2B.position.x = 224;
 plane2B.position.y = -300.3;
-plane2B.position.z = 350;
+plane2B.position.z = 224;
 plane2B.visible = false;
 
 
@@ -816,16 +817,16 @@ function carregaGlassSpheres(){
         glassSpheres.push(novoglassSphere);
         var direcaoGlass = Math.random();
         if(direcaoGlass < 0.25){
-            glassSpheres[i].position.set(350 + 150*Math.random(), -500 + 1000*Math.random(), 350 + 150*Math.random());
+            glassSpheres[i].position.set(224 + 150*Math.random(), -500 + 1050*Math.random(), 224 + 150*Math.random());
         }
         else if(direcaoGlass > 0.25 && direcaoGlass < 0.50){
-            glassSpheres[i].position.set(350 + 150*Math.random(), -500 + 1000*Math.random(), 350 - 150*Math.random());
+            glassSpheres[i].position.set(224 + 150*Math.random(), -500 + 1050*Math.random(), 224 - 150*Math.random());
         }
         else if(direcaoGlass > 0.50 && direcaoGlass < 0.75){
-            glassSpheres[i].position.set(350 - 150*Math.random(), -500 + 1000*Math.random(), 350 - 150*Math.random());
+            glassSpheres[i].position.set(224 - 150*Math.random(), -500 + 1050*Math.random(), 224 - 150*Math.random());
         }
         else if(direcaoGlass > 0.25){
-            glassSpheres[i].position.set(350 - 150*Math.random(), -500 + 1000*Math.random(), 350 + 150*Math.random());
+            glassSpheres[i].position.set(224 - 150*Math.random(), -500 + 1050*Math.random(), 224 + 150*Math.random());
         }
         scene.add(glassSpheres[i]);
     }
@@ -848,12 +849,12 @@ ringTexture.anisotropy = 16;
 
 var ring = new THREE.Mesh( new THREE.TorusGeometry( 2000, 100, 16, 32 ), new THREE.MeshStandardMaterial( { map: ringTexture} ) );
 ring.rotateX(degreesToRadians(90));
-ring.position.set(350,-50,350)
+ring.position.set(224,-50,224)
 scene.add( ring );
 
 var ring2 = new THREE.Mesh( new THREE.TorusGeometry( 100, 10, 16, 32 ), new THREE.MeshStandardMaterial( { map: ringTexture} ) );
 ring2.rotateX(degreesToRadians(90));
-ring2.position.set(350,-5,350)
+ring2.position.set(224,-5,224)
 scene.add( ring2 );
 
 //-------------------------------------------------------------------------------
@@ -866,7 +867,7 @@ function carregaPokey(){
     for (let i = 0; i < 8; i++) {
         var novoPokey = new Pokey();
         pokey.push(novoPokey);
-        pokey[i].position.set(350 + 60*Math.cos(i*Math.PI/4), -5.0, 350 + 60*Math.sin(i*Math.PI/4));
+        pokey[i].position.set(224 + 60*Math.cos(i*Math.PI/4), -5.0, 224 + 60*Math.sin(i*Math.PI/4));
         pokey[i].lookAt(moon[0].position);
         scene.add(pokey[i]);
     }
@@ -1216,14 +1217,14 @@ function carregaObstacles(){
     for (let i = 0; i < 20; i++) {
         if(i < 10){
             var obs = new Obstacles('./assets/', 'hay_bale2', 'SLOW');
-            obs.scale.set(20,30,20);
+            obs.scale.set(10,15,10);
         }
         else{
             var obs = new Obstacles('./assets/', 'japan_porcelain_vase', 'SOLID');
             obs.scale.set(5,5,5);
         }
         var obsBoxHelper = new THREE.BoxHelper(obs, 0x00ff00);
-        obsBoxHelper.visible = true;
+        obsBoxHelper.visible = false;
         scene.add(obsBoxHelper);
         var obsBox3 = new THREE.Box3();
         obsBox3.setFromObject(obsBoxHelper);
@@ -2676,7 +2677,13 @@ function render(t)
     posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
 
     cameraHolder.lookAt(ghostguide.getWorldPosition(new THREE.Vector3()));
+    camera.fov = 20;
+    camera.updateProjectionMatrix();
     cameraHolder2.lookAt(ghostguide.getWorldPosition(new THREE.Vector3()));
+    if(panoramicotraseiro){
+        camera.fov = 120;
+        camera.updateProjectionMatrix();
+    }
     cameraHolder.position.set(player.position.getComponent(0)+60, player.position.getComponent(1)+80, player.position.getComponent(2)-50);
     if (panoramico){
         cameraHolder.position.set(player.position.getComponent(0)+140, player.position.getComponent(1)+45, player.position.getComponent(2)-150);

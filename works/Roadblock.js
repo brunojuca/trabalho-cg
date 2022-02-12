@@ -2,7 +2,7 @@ import * as THREE from "../build/three.module.js";
 
 export default class Roadblock
 {
-    constructor(x, y, z, blockType, finalRoadIndice, largura=50, comprimento=50, altura=0.3) {
+    constructor(x, y, z, blockType, finalRoadIndice, largura=32, comprimento=32, altura=0.3) {
         this.LARGURA = largura;
         this.COMPRIMENTO = comprimento;
         this.ALTURA = altura;

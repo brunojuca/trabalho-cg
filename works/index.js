@@ -676,12 +676,13 @@ cameraHolder.rotateY(degreesToRadians(180))
 
 var cameraHolder2 = new THREE.Object3D();
 cameraHolder2.lookAt(ghostguide.getWorldPosition(new THREE.Vector3()));
+cameraHolder2.position.set(0, 4, -8);
 cameraHolder2.rotateY(degreesToRadians(180))
 ghostguide.add(cameraHolder2)
 
 scene.add(player);
 scene.add(cameraHolder);
-scene.add(cameraHolder2);
+player.add(cameraHolder2);
 
 
 //-------------------------------------------------------------------------------
@@ -2058,9 +2059,16 @@ function keyboardUpdate() {
         selectSoundtrack(5);
     }
 
-
-    if (keyboard.pressed("space")){
+    if (keyboard.up("space")) {
+      if (!panoramicotraseiro) {
+        cameraHolder.remove(camera);
+        cameraHolder2.add(camera);
+        panoramico = false;
+        panoramicotraseiro = true;
+        playerIcon.visible = false;
+      } else {
         window.location.href = "carView.html";
+      }
     }
 
 
@@ -2578,9 +2586,6 @@ function render(t)
     cameraHolder.position.set(player.position.getComponent(0)+60, player.position.getComponent(1)+80, player.position.getComponent(2)-50);
     if (panoramico){
         cameraHolder.position.set(player.position.getComponent(0)+140, player.position.getComponent(1)+45, player.position.getComponent(2)-150);
-    }
-    if (panoramicotraseiro){
-        cameraHolder2.position.set(player.position.getComponent(0)+0, player.position.getComponent(1)+10, player.position.getComponent(2)-40);
     }
     cameraHolder.rotateY(degreesToRadians(180));
     cameraHolder2.rotateY(degreesToRadians(180));

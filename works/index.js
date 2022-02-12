@@ -2155,6 +2155,9 @@ function keyboardUpdate() {
         window.location.href = "carView.html";
       }
     }
+    if (keyboard.pressed("esc")){
+        window.location.href = "carARView.html";
+      }
 
 
     //cameras

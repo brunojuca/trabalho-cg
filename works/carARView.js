@@ -227,7 +227,7 @@ function keyboardUpdate() {
     player.turnRight(0);
   }
 
-  if (keyboard.pressed("space")){
+  if (keyboard.pressed("esc")){
     window.location.href = "index.html";
   }
 

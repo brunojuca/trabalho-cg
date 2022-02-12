@@ -84,6 +84,9 @@ function keyboardUpdate() {
   if (keyboard.pressed("space")){
     window.location.href = "index.html";
   }
+  if (keyboard.pressed("esc")){
+    window.location.href = "carARView.html";
+  }
 
   if (keyboard.down("0")){
     carroGirando = true;

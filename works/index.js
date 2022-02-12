@@ -650,6 +650,7 @@ player.position.set(posicionamentoChegada[0].getComponent(0) + size, 1.8*size, p
 
 var playerBoxHelper = new THREE.BoxHelper(player, 0x00ff00);
 playerBoxHelper.setFromObject(player)
+playerBoxHelper.visible = false;
 scene.add(playerBoxHelper);
 
 var playerBox3 = new THREE.Box3();
@@ -1224,6 +1225,7 @@ function carregaObstacles(){
             obs.scale.set(5,5,5);
         }
         var obsBoxHelper = new THREE.BoxHelper(obs, 0x00ff00);
+        obsBoxHelper.visible = false;
         scene.add(obsBoxHelper);
         var obsBox3 = new THREE.Box3();
         obsBox3.setFromObject(obsBoxHelper);
@@ -1232,24 +1234,13 @@ function carregaObstacles(){
         obstacles.push(obs);
     }
 }
-function limpaObstacles(){
-    obstaclesExistem = false;
-    for (let i = 0; i < obstacles.length; i++) {
-        scene.remove(obstacles[i]);
-        scene.remove(obstaclesBox3[i]);
-        scene.remove(obstaclesBoxHelper[i]);
-    }
-    obstacles = []
-    obstaclesBox3 = []
-    obstaclesBoxHelper = [];
-}
+carregaObstacles();
+
 function posicionaObstacles(posicionamentoObstacles){
-    carregaObstacles();
     for(var k = 0; k < posicionamentoObstacles.length; k++){
         obstacles[k].position.set(posicionamentoObstacles[k].getComponent(0), 0.0, posicionamentoObstacles[k].getComponent(2));
         if (obstacles[k].tipoColisao == 'SOLID'){
             obstacles[k].position.set(posicionamentoObstacles[k].getComponent(0), 4.8, posicionamentoObstacles[k].getComponent(2));
-            console.log(k, obstacles[k], obstacles[k].tipoColisao)
         }
         scene.add(obstacles[k]);
     }
@@ -1374,8 +1365,6 @@ function verificaColisorRampa(){
         }
         else if(platforms[k].getBlockType() == "RAMPAH" && absDiffZ <= blocoSize/2 && absDiffX <= blocoSize/2){
             atualizaAlturaMaxH();
-            /*console.log(alturaMaxH);
-              keyLock = true;*/
 
             //posiçoes com referencia à terceiraView
             //bloqueios laterais
@@ -1622,7 +1611,6 @@ function colisorBoundingBox(){
                     obstacles[i].body.lookAt(dirGuidePosition);
                     obstacles[i].body.translateZ(speedModulo);
                 }
-                console.log(obstacles[i], i, obstacles[i].tipoColisao)
             }
         }
     }
@@ -1741,7 +1729,6 @@ function verificaColisores(){
 function configuraPistas(newflagNumber, newRVNumber, newRHNumber){
     limpaPista();
     limpaRampas();
-    limpaObstacles();
     flagNumber = newflagNumber;
     RVNumber = newRVNumber;
     RHNumber = newRHNumber;
@@ -1899,7 +1886,7 @@ function selectSoundtrack(track){
     assetsMng.stop();
     //fazer liga e desliga musica mais a frente
     if(!tocar){
-        while (delayMusica%120 != 0 ){
+        while (delayMusica%300 != 0 ){
             delayMusica += 1;
             if (delayMusica%30 == 0){
                 switch(track){
@@ -1947,6 +1934,7 @@ function selectSoundtrack(track){
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 const helper3 = new THREE.Box3Helper( playerBox3, 0xffff00 );
+helper3.visible = false;
 scene.add( helper3 );
 
 function atualizaBoundingPlayer(){
@@ -2670,7 +2658,9 @@ function render(t)
             propMng.mixer[i].update(dt/100);
     }
     //movimentação do player
-    keyboardUpdate();
+    if(obstaclesExistem){
+        keyboardUpdate();
+    }
     boundingBoxesUpdate();
     verificaColisores();
     aceleraCarro(aceleracao);

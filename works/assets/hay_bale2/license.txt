@@ -1,0 +1,11 @@
+Model Information:
+* title:	hay_bale
+* source:	https://sketchfab.com/3d-models/hay-bale-f0982fa719f44931970611eff2720406
+* author:	friidilinen (https://sketchfab.com/friidilinen)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "hay_bale" (https://sketchfab.com/3d-models/hay-bale-f0982fa719f44931970611eff2720406) by friidilinen (https://sketchfab.com/friidilinen) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)

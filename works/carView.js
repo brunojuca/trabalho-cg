@@ -45,6 +45,17 @@ spotlight.target.position.set( 0, 0, -1 );
 spotlight.position.copy( camera.position );
 
 
+const cubeLoader = new THREE.CubeTextureLoader();
+const texture = cubeLoader.load([
+  'texture/secret/penguins/divine_ft.jpg',
+  'texture/secret/penguins/divine_bk.jpg',
+  'texture/secret/penguins/divine_up.jpg',
+  'texture/secret/penguins/divine_dn.jpg',
+  'texture/secret/penguins/divine_rt.jpg',
+  'texture/secret/penguins/divine_lf.jpg'
+]);
+scene.background = texture;
+
 var player = new CyberTruck();
 // position the player
 player.position.set(0.0, 0, 1.3);

@@ -30,6 +30,7 @@ export default class Roadblock
         this.goalMaterial = new THREE.MeshStandardMaterial( { map: goalTexture } );
 
         this.rampaMaterial = new THREE.MeshStandardMaterial();
+        this.obstacleMaterial = new THREE.MeshStandardMaterial();
         this.finalRoadMaterial = new THREE.MeshStandardMaterial();
 
         this.X = x * largura;
@@ -42,22 +43,27 @@ export default class Roadblock
             case 1:
                 this.finalRoadMaterial = this.road1Material;
                 this.rampaMaterial = this.road1Material;
+                this.obstacleMaterial = this.road1Material;
                 break;
             case 2:
                 this.finalRoadMaterial = this.road2Material;
                 this.rampaMaterial = this.road2Material;
+                this.obstacleMaterial = this.road2Material;
                 break
             case 3:
                 this.finalRoadMaterial = this.road3Material;
                 this.rampaMaterial = this.road3Material;
+                this.obstacleMaterial = this.road3Material;
                 break
             case 4:
                 this.finalRoadMaterial = this.road4Material;
                 this.rampaMaterial = this.road4Material;
+                this.obstacleMaterial = this.road4Material;
                 break
             case 5:
                 this.finalRoadMaterial = this.road5Material;
                 this.rampaMaterial = this.road5Material;
+                this.obstacleMaterial = this.road5Material;
                 break
         }
 
@@ -93,7 +99,9 @@ export default class Roadblock
             case 'RH':
                 this.blockType = "RAMPAH";
                 break;
-
+            case 'OB':
+                this.blockType = "OBSTACLE";
+                break;
             case '3A':
                 this.blockType = "CHECKPOINT";
                 break;
@@ -158,6 +166,11 @@ export default class Roadblock
                 cor = '#808080'; // cinza
                 //var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
                 var bloco = new THREE.Mesh( cubeGeometry, this.rampaMaterial);
+                break;
+            case "OBSTACLE":
+                cor = '#808080'; // cinza
+                //var cubeMaterial = new THREE.MeshPhongMaterial( {color: cor} );
+                var bloco = new THREE.Mesh( cubeGeometry, this.obstacleMaterial);
                 break;
             case "CHECKPOINT":
                 cor = '#808080'; // cinza

@@ -17,6 +17,8 @@ export class CyberTruck extends THREE.Group {
 
   speakers;
 
+  hood;
+
   rotacao;
   wheelAngle;
 
@@ -34,6 +36,7 @@ export class CyberTruck extends THREE.Group {
     
     let akatsukiTexture = textureLoader.load("./texture/akatsuki.png");
     let speakerTexture = textureLoader.load("./texture/speakerMargin.png")
+    let hoodTexture = textureLoader.load("./texture/herby.png");
     speakerTexture.wrapS = THREE.RepeatWrapping;
     speakerTexture.wrapT = THREE.RepeatWrapping;
     //speakerTexture.offset = 0.1;
@@ -63,9 +66,20 @@ export class CyberTruck extends THREE.Group {
     var speakerGeometry = new THREE.PlaneGeometry(3,3.3, 10, 10);
     var speakerMaterial = new THREE.MeshBasicMaterial({side:THREE.DoubleSide, transparent: true, opacity: 1});
     this.speakers = new THREE.Mesh(speakerGeometry, speakerMaterial);
+    this.speakers.renderOrder = 1
     this.speakers.position.set(0,3.11,-3.7);
     this.speakers.rotateX(degreesToRadians(81))
     this.speakers.material.map = speakerTexture;
+
+    var hoodGeometry = new THREE.PlaneGeometry(1.49,1.49, 10, 10);
+    var hoodMaterial = new THREE.MeshBasicMaterial({side:THREE.DoubleSide, transparent: true, opacity: 1});
+    this.hood = new THREE.Mesh(hoodGeometry, hoodMaterial);
+    this.hood.renderOrder = 1
+    this.hood.position.set(0,2.33,5);
+    this.hood.rotateX(degreesToRadians(289.5))
+    //this.hood.rotateY(degreesToRadians(180))
+    
+    this.hood.material.map = hoodTexture;
   }
 
   onBodyLoad(gltf) {
@@ -82,9 +96,10 @@ export class CyberTruck extends THREE.Group {
     })
     this.add(this.body);
     this.carregado = true;
-    this.body.add(this.speakers)
     this.body.add(this.vynilRight)
     this.body.add(this.vynilLeft)
+    this.body.add(this.speakers)
+    this.body.add(this.hood)
   }
 
   onWheelLoad(gltf) {

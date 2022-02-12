@@ -862,14 +862,10 @@ scene.add( ring2 );
 var pokey = [];
 function carregaPokey(){
     pokey = [];
-    for (let i = 0; i < 41; i++) {
+    for (let i = 0; i < 8; i++) {
         var novoPokey = new Pokey();
         pokey.push(novoPokey);
         pokey[i].position.set(350 + 60*Math.cos(i*Math.PI/4), -5.0, 350 + 60*Math.sin(i*Math.PI/4));
-        if(i > 8){
-            pokey[i].position.set(350 + 2000*Math.cos(i*Math.PI/16), 50.0, 350 + 2000*Math.sin(i*Math.PI/16));
-            pokey[i].head.rotateY(degreesToRadians(180));
-        }
         pokey[i].lookAt(moon[0].position);
         scene.add(pokey[i]);
     }
@@ -1218,14 +1214,15 @@ var obstaclesExistem = true;
 function carregaObstacles(){
     for (let i = 0; i < 20; i++) {
         if(i < 10){
-            var obs = new Obstacles('./assets/', 'hay_bale', 'SLOW');
+            var obs = new Obstacles('./assets/', 'hay_bale2', 'SLOW');
+            obs.scale.set(20,30,20);
         }
         else{
             var obs = new Obstacles('./assets/', 'japan_porcelain_vase', 'SOLID');
             obs.scale.set(5,5,5);
         }
         var obsBoxHelper = new THREE.BoxHelper(obs, 0x00ff00);
-        obsBoxHelper.visible = false;
+        obsBoxHelper.visible = true;
         scene.add(obsBoxHelper);
         var obsBox3 = new THREE.Box3();
         obsBox3.setFromObject(obsBoxHelper);

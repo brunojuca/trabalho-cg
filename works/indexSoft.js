@@ -7,7 +7,7 @@ import {pista3 as pista3} from './pistas/pista3.js';
 import {pista4 as pista4} from './pistas/pista4.js';
 import {pista5 as pista5} from './pistas/pista5.js';
 import Pista from './Pista.js';
-import { CyberTruck } from './CyberTruck.js';
+import { CyberTruckSoft } from './CyberTruckSoft.js';
 import { Buttons } from "../libs/other/buttons.js";
 import {onWindowResize,
         degreesToRadians,} from "../libs/util/util.js";
@@ -433,7 +433,7 @@ var dirguide = createSphere(radius);
 dirguide.position.set(0.0, 0.0, 2*radius + desvio2);
 
 //player
-var player = new CyberTruck;
+var player = new CyberTruckSoft;
 //var playerNewType = new LambertTestCar;
 
 player.scale.set(1.4,1.4,1.4);

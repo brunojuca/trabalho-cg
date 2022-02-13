@@ -8,11 +8,8 @@ import {pista3 as pista3} from './pistas/pista3.js';
 import {pista4 as pista4} from './pistas/pista4.js';
 import {pista5 as pista5} from './pistas/pista5.js';
 import Pista from './Pista.js';
-import { LambertTestCar } from './LambertTestCar.js';
 import { CyberTruck } from './CyberTruck.js';
-import { Turbina } from './Turbina.js';
 import { Obstacles } from './obstacles.js';
-import { Pokey } from './Pokey.js';
 import { assetsManager } from './assetsManager.js';
 import { PropManager } from './propManager.js';
 import { EffectComposer } from '../build/jsm/postprocessing/EffectComposer.js';
@@ -40,7 +37,7 @@ var scene = new THREE.Scene();    // Create main scene
 var renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true });
 renderer.shadowMap.enabled = true;
 renderer.shadowMapSoft = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = THREE.BasicShadowMap;
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor( 0x000000 );
 document.body.appendChild(renderer.domElement);
@@ -109,7 +106,6 @@ window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, 
 // Texture Loader
 //-------------------------------------------------------------------------------
 const loader = new THREE.TextureLoader();
-const cubeLoader = new THREE.CubeTextureLoader();
 
 //track1
 const moonTexture = loader.load( 'texture/track1/moon.jpg' );
@@ -125,12 +121,6 @@ let texture_1up = loader.load( 'texture/track1/penguins/arid_up.jpg');
 let texture_1dn = loader.load( 'texture/track1/penguins/arid_dn.jpg');
 let texture_1rt = loader.load( 'texture/track1/penguins/arid_rt.jpg');
 let texture_1lf = loader.load( 'texture/track1/penguins/arid_lf.jpg');
-texture_1ft.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_1bk.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_1up.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_1dn.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_1rt.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_1lf.anisotropy = renderer.capabilities.getMaxAnisotropy();
 materialArray1.push(new THREE.MeshBasicMaterial( { map: texture_1ft }));
 materialArray1.push(new THREE.MeshBasicMaterial( { map: texture_1bk }));
 materialArray1.push(new THREE.MeshBasicMaterial( { map: texture_1up }));
@@ -139,9 +129,6 @@ materialArray1.push(new THREE.MeshBasicMaterial( { map: texture_1rt }));
 materialArray1.push(new THREE.MeshBasicMaterial( { map: texture_1lf }));
 for (let i = 0; i < 6; i++){
     materialArray1[i].side = THREE.BackSide;
-    materialArray1[i].map.generateMipmaps = true;
-    materialArray1[i].map.minFilter =  THREE.LinearMipmapLinearFilter;
-    materialArray1[i].map.magFilter = THREE.LinearFilter;
 }
 
 //track2
@@ -157,12 +144,6 @@ let texture_2up = loader.load( 'texture/track2/retrowave2/py.png');
 let texture_2dn = loader.load( 'texture/track2/retrowave2/ny.png');
 let texture_2rt = loader.load( 'texture/track2/retrowave2/pz.png');
 let texture_2lf = loader.load( 'texture/track2/retrowave2/nz.png');
-texture_2ft.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_2bk.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_2up.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_2dn.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_2rt.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_2lf.anisotropy = renderer.capabilities.getMaxAnisotropy();
 materialArray2.push(new THREE.MeshBasicMaterial( { map: texture_2ft }));
 materialArray2.push(new THREE.MeshBasicMaterial( { map: texture_2bk }));
 materialArray2.push(new THREE.MeshBasicMaterial( { map: texture_2up }));
@@ -171,9 +152,6 @@ materialArray2.push(new THREE.MeshBasicMaterial( { map: texture_2rt }));
 materialArray2.push(new THREE.MeshBasicMaterial( { map: texture_2lf }));
 for (let i = 0; i < 6; i++){
     materialArray2[i].side = THREE.BackSide;
-    materialArray2[i].map.generateMipmaps = true;
-    materialArray2[i].map.minFilter =  THREE.LinearMipmapLinearFilter;
-    materialArray2[i].map.magFilter = THREE.LinearFilter;
 }
 
 //track3
@@ -186,12 +164,6 @@ let texture_3up = loader.load( 'texture/track3/penguins/barren_up.jpg');
 let texture_3dn = loader.load( 'texture/track3/penguins/barren_dn.jpg');
 let texture_3rt = loader.load( 'texture/track3/penguins/barren_rt.jpg');
 let texture_3lf = loader.load( 'texture/track3/penguins/barren_lf.jpg');
-texture_3ft.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_3bk.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_3up.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_3dn.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_3rt.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_3lf.anisotropy = renderer.capabilities.getMaxAnisotropy();
 materialArray3.push(new THREE.MeshBasicMaterial( { map: texture_3ft }));
 materialArray3.push(new THREE.MeshBasicMaterial( { map: texture_3bk }));
 materialArray3.push(new THREE.MeshBasicMaterial( { map: texture_3up }));
@@ -200,9 +172,6 @@ materialArray3.push(new THREE.MeshBasicMaterial( { map: texture_3rt }));
 materialArray3.push(new THREE.MeshBasicMaterial( { map: texture_3lf }));
 for (let i = 0; i < 6; i++){
     materialArray3[i].side = THREE.BackSide;
-    materialArray3[i].map.generateMipmaps = true;
-    materialArray3[i].map.minFilter =  THREE.LinearMipmapLinearFilter;
-    materialArray3[i].map.magFilter = THREE.LinearFilter;
 }
 
 
@@ -218,12 +187,6 @@ let texture_4up = loader.load( 'texture/track4/eso0932/py_eso0932a.jpg');
 let texture_4dn = loader.load( 'texture/track4/eso0932/ny_eso0932a.jpg');
 let texture_4rt = loader.load( 'texture/track4/eso0932/pz_eso0932a.jpg');
 let texture_4lf = loader.load( 'texture/track4/eso0932/nz_eso0932a.jpg');
-texture_4ft.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_4bk.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_4up.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_4dn.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_4rt.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_4lf.anisotropy = renderer.capabilities.getMaxAnisotropy();
 materialArray4.push(new THREE.MeshBasicMaterial( { map: texture_4ft }));
 materialArray4.push(new THREE.MeshBasicMaterial( { map: texture_4bk }));
 materialArray4.push(new THREE.MeshBasicMaterial( { map: texture_4up }));
@@ -232,9 +195,6 @@ materialArray4.push(new THREE.MeshBasicMaterial( { map: texture_4rt }));
 materialArray4.push(new THREE.MeshBasicMaterial( { map: texture_4lf }));
 for (let i = 0; i < 6; i++){
     materialArray4[i].side = THREE.BackSide;
-    materialArray4[i].map.generateMipmaps = true;
-    materialArray4[i].map.minFilter =  THREE.LinearMipmapLinearFilter;
-    materialArray4[i].map.magFilter = THREE.LinearFilter;
 }
 //track5
 const groundtexture5 = loader.load( 'texture/track5/sand.jpg' );
@@ -246,38 +206,18 @@ let texture_5up = loader.load( 'texture/track5/penguins/trouble_up.jpg');
 let texture_5dn = loader.load( 'texture/track5/penguins/trouble_dn.jpg');
 let texture_5rt = loader.load( 'texture/track5/penguins/trouble_rt.jpg');
 let texture_5lf = loader.load( 'texture/track5/penguins/trouble_lf.jpg');
-texture_5ft.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_5bk.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_5up.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_5dn.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_5rt.anisotropy = renderer.capabilities.getMaxAnisotropy();
-texture_5lf.anisotropy = renderer.capabilities.getMaxAnisotropy();
 materialArray5.push(new THREE.MeshBasicMaterial( { map: texture_5ft }));
 materialArray5.push(new THREE.MeshBasicMaterial( { map: texture_5bk }));
 materialArray5.push(new THREE.MeshBasicMaterial( { map: texture_5up }));
 materialArray5.push(new THREE.MeshBasicMaterial( { map: texture_5dn }));
 materialArray5.push(new THREE.MeshBasicMaterial( { map: texture_5rt }));
 materialArray5.push(new THREE.MeshBasicMaterial( { map: texture_5lf }));
+
 for (let i = 0; i < 6; i++){
     materialArray5[i].side = THREE.BackSide;
-    materialArray5[i].map.generateMipmaps = true;
-    materialArray5[i].map.minFilter =  THREE.LinearMipmapLinearFilter;
-    materialArray5[i].map.magFilter = THREE.LinearFilter;
 }
 
-
-//track0 - secret
-const skyTextureSecret = loader.load( 'texture/secret/coconutMall.jpg' );
-const flagTexture = loader.load( 'texture/secret/coconutFlagPole.png' );
-
 var rampaTexture = loader.load( 'texture/neondots.png' );
-
-var options = {
-    generateMipmaps: true,
-    minFilter: THREE.LinearMipmapLinearFilter,
-    magFilter: THREE.LinearFilter
-};
-scene.background = new THREE.WebGLCubeRenderTarget( 1024, options ).fromEquirectangularTexture( renderer, skyTexture )
 
 //-------------------------------------------------------------------------------
 // Audio Manager
@@ -561,18 +501,6 @@ function posicionaCheckpoints(posicionamentoCheckpoints,posicionamentoChegada){
             scene.add(todosCheckpoints[k]);
             return;
         }
-        if (k <= 5){
-            console.log(k, "vermelho");
-            todosCheckpoints[k].material.color.setHex(0xff0000);
-        }
-        else if (k > 5 && k <= 10){
-            console.log(k, "verde");
-            todosCheckpoints[k].material.color.setHex(0x00ff00);
-        }
-        else if (k > 10 && k < 15){
-            console.log(k, "azul");
-            todosCheckpoints[k].material.color.setHex(0x0000ff);
-        }
         todosCheckpoints[k].position.set(posicionamentoCheckpoints[k].getComponent(0), 0.0, posicionamentoCheckpoints[k].getComponent(2));
         scene.add(todosCheckpoints[k]);
     }
@@ -811,21 +739,21 @@ function moonOrbit(){
 var glassSpheres = [];
 function carregaGlassSpheres(){
     glassSpheres = [];
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 20; i++) {
         var novoglassSphere = new THREE.Mesh( new THREE.SphereGeometry( 100*Math.random(), 32,32 ), retrowaveMaterial );
         glassSpheres.push(novoglassSphere);
         var direcaoGlass = Math.random();
         if(direcaoGlass < 0.25){
-            glassSpheres[i].position.set(224 + 150*Math.random(), -500 + 1050*Math.random(), 224 + 150*Math.random());
+            glassSpheres[i].position.set(224 + 96*Math.random(), -500 + 1050*Math.random(), 224 + 96*Math.random());
         }
         else if(direcaoGlass > 0.25 && direcaoGlass < 0.50){
-            glassSpheres[i].position.set(224 + 150*Math.random(), -500 + 1050*Math.random(), 224 - 150*Math.random());
+            glassSpheres[i].position.set(224 + 96*Math.random(), -500 + 1050*Math.random(), 224 - 96*Math.random());
         }
         else if(direcaoGlass > 0.50 && direcaoGlass < 0.75){
-            glassSpheres[i].position.set(224 - 150*Math.random(), -500 + 1050*Math.random(), 224 - 150*Math.random());
+            glassSpheres[i].position.set(224 - 96*Math.random(), -500 + 1050*Math.random(), 224 - 96*Math.random());
         }
         else if(direcaoGlass > 0.25){
-            glassSpheres[i].position.set(224 - 150*Math.random(), -500 + 1050*Math.random(), 224 + 150*Math.random());
+            glassSpheres[i].position.set(224 - 96*Math.random(), -500 + 1050*Math.random(), 224 + 96*Math.random());
         }
         scene.add(glassSpheres[i]);
     }
@@ -856,77 +784,6 @@ ring2.rotateX(degreesToRadians(90));
 ring2.position.set(224,-5,224)
 scene.add( ring2 );
 
-//-------------------------------------------------------------------------------
-// Pokey
-//-------------------------------------------------------------------------------
-
-var pokey = [];
-function carregaPokey(){
-    pokey = [];
-    for (let i = 0; i < 8; i++) {
-        var novoPokey = new Pokey();
-        pokey.push(novoPokey);
-        pokey[i].position.set(224 + 60*Math.cos(i*Math.PI/4), -5.0, 224 + 60*Math.sin(i*Math.PI/4));
-        pokey[i].lookAt(moon[0].position);
-        scene.add(pokey[i]);
-    }
-}
-carregaPokey();
-function limpaPokey(){
-    for (let i = 0; i < pokey.length; i++) {
-        scene.remove(pokey[i]);
-    }
-}
-
-var pokeyCooldown = 0;
-function pokeyDance()
-{
-    if(dt >=0){
-        pokeyCooldown -= dt;
-    }
-    if(pokeyCooldown <= 0){
-        for (let i = 0; i < pokey.length; i++) {
-            if(pokey[i].update1){
-                pokey[i].defaultUpdate1();
-            }
-            else if(pokey[i].update2){
-                pokey[i].defaultUpdate2();
-            }
-        }
-        pokeyCooldown = 3;
-    }
-}
-
-
-//-------------------------------------------------------------------------------
-// Eolics
-//-------------------------------------------------------------------------------
-var eolics = [];
-
-function carregaEolics(){
-    eolics = [];
-    for (let i = 0; i < 100; i++) {
-        var eolicTurbine = new Turbina();
-        eolicTurbine.rotateY(degreesToRadians(180));
-        eolics.push(eolicTurbine);
-        eolics[i].position.set(-50+15*i, 0.0, -100 + 150*(i%15));
-        scene.add(eolics[i]);
-    }
-}
-
-function limpaEolics(){
-    for (let i = 0; i < eolics.length; i++) {
-        scene.remove(eolics[i]);
-    }
-}
-var eolicsSpeed = 5.0;
-
-function spinBlades()
-{
-    for (let i = 0; i < eolics.length; i++) {
-        eolics[i].defaultUpdate(eolicsSpeed + eolics[i].turbo);
-    }
-}
 
 //-------------------------------------------------------------------------------
 // Props
@@ -934,14 +791,10 @@ function spinBlades()
 function carregaProps(){
     switch(pistaAtual){
         case 1:
-            carregaPokey();
             carregaMoon();
             break;
         case 2:
             carregaGlassSpheres();
-            break;
-        case 5:
-            carregaEolics();
             break;
         default:
             break;
@@ -953,34 +806,24 @@ function limpaProps(){
     selecionaProps();
     switch(pistaAtual){
         case 1:
-            limpaPokey();
             limpaMoon();
             limpaGlassSphere();
-            limpaEolics();
             break;
         case 2:
-            limpaPokey();
             limpaMoon();
-            limpaEolics();
             limpaGlassSphere();
             break;
         case 3:
-            limpaPokey();
             limpaMoon();
             limpaGlassSphere();
-            limpaEolics();
             break;
         case 4:
-            limpaPokey();
             limpaMoon();
             limpaGlassSphere();
-            limpaEolics();
             break;
         case 5:
-            limpaPokey();
             limpaMoon();
             limpaGlassSphere();
-            limpaEolics();
             break;
         default:
             break;
@@ -1558,41 +1401,6 @@ function verificaDesaceleraFora(){
     redutor = 0.5;
 }
 
-//-------------------------------------------------------------------------------
-// Colisor - Proximidade - Eolics
-//-------------------------------------------------------------------------------
-function verificaEolicTurbo(eolicsEmK){
-    if(aceleracao > speedMax){
-        if(eolicsEmK.turbo <= 10){
-        eolicsEmK.turbo += speedForward;
-        }
-    }
-    else if(freia < -speedMax){
-        if(eolicsEmK.turbo <= 10){
-        eolicsEmK.turbo -= speedBackward;
-        }
-    }
-}
-function resetaEolicsTurbo(eolicsEmKReset){
-    if(eolicsEmKReset.turbo > 0.1){
-        eolicsEmKReset.turbo -= 0.01;
-    }
-}
-var diffEolicsX = 0;
-var diffEolicsZ = 0;
-function verificaProximidadeEolic(){
-  for (var k = 0; k < eolics.length; k ++){
-      diffEolicsX = Math.abs(player.position.getComponent(0) - 1 - eolics[k].position.getComponent(0));
-      diffEolicsZ = Math.abs(player.position.getComponent(2) + 1 - eolics[k].position.getComponent(2));
-      if( diffEolicsX <= 50 && diffEolicsZ <= 50){
-        verificaEolicTurbo(eolics[k]);
-      }
-      else{
-        resetaEolicsTurbo(eolics[k]);
-      }
-  }
-}
-
 
 //-------------------------------------------------------------------------------
 // Colisor - Bounding Box
@@ -1720,7 +1528,6 @@ function armazenaTempoMenorVolta(){
 function verificaColisores(){
     verificaColisorRampa();
     verificaDesaceleraFora();
-    verificaProximidadeEolic();
     verificaVoltas(player);
 }
 
@@ -1990,7 +1797,7 @@ var speedForward = 0;
 var speedBackward = 0;
 var tempoJogoAnterior = 0;
 var panoramico = false;
-var panoramicotraseiro = false;
+var panoramicotraseiro = true;
 
 function keyboardUpdate() {
     keyboard.update();
@@ -2186,26 +1993,6 @@ function keyboardUpdate() {
     if (keyboard.down("B")){
         chaveBloom();
     }
-
-    if (keyboard.down("M")){
-        sobePersonSelecionado();
-    }
-    else if (keyboard.down("N")){
-        descePersonSelecionado();
-    }
-
-    //mapa secreto
-    if (keyboard.down("0")){
-        scene.background = skyTextureSecret;
-        assetsMng.play("00-CoconutMall");
-        controls.add("* 0 to play Coconut Mall");
-        plane1.visible = false;
-        plane2A.visible = false;
-        plane2B.visible = false;
-        plane3.visible = false;
-        plane4.visible = false;
-        plane5.visible = false;
-    }
 }
 
 
@@ -2217,6 +2004,7 @@ function keyboardUpdate() {
 //-------------------------------------------------------------------------------
 
 var gerou = false;
+
 function atualizaStatusFinal(){
 
     if(voltas >= flagNumber && gerou == false){
@@ -2464,38 +2252,6 @@ function chaveBloom(){
     params.bloomTrue = !params.bloomTrue;
 }
 
-function sobePersonSelecionado(){
-    if(params.characterSelect < params.characters)
-        params.characterSelect++;
-    console.log("teste",params.characterSelect);
-}
-
-function descePersonSelecionado(){
-    if(params.characterSelect > 1)
-        params.characterSelect--;
-    console.log("teste",params.characterSelect);
-}
-
-//Controle pra ver qual setagem e melhor para cada shader
-/*
-var gui = new GUI();
-gui.add(params, 'pixelSize').min(2).max(32).step(2);
-gui.add(params, 'pixelizar');
-gui.add(params, 'bloomThreshold', 0.0, 1.0).onChange(function (value){
-    bloomPass.threshold = Number(value);
-});
-gui.add(params, 'bloomStrength', 0.0, 3.0).onChange(function (value){
-    bloomPass.strength = Number(value);
-});
-gui.add(params, 'bloomRadius', 0.0, 1.0).onChange(function (value){
-    bloomPass.radius = Number(value);
-});
-gui.add(params, 'bloomTrue');
-gui.add(params, 'characterSelect').min(1).max(2).step(1).onChange(function (value){
-    personSelecionado = Number(value);
-});
-*/
-
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 // PostProcessing
@@ -2578,29 +2334,6 @@ function setaBloom(){
 }
 
 //-------------------------------------------------------------------------------
-// Selecionador de Person - Não Implementado ainda
-//-------------------------------------------------------------------------------
-
-function selecionaPlayer(){
-    console.log("selecionou")
-    switch(params.characterSelect){
-        case 1:
-            player.visible = true;
-            player2.visible = false;
-            break;
-        case 2:
-            player.visible = true;
-            player2.visible = true;
-            break;
-        default:
-            player.visible = true;
-            player2.visible = false;
-            break;
-    }
-}
-
-
-//-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 // Render
 //-------------------------------------------------------------------------------
@@ -2636,6 +2369,8 @@ function controlledRender(t)
     renderer.setClearColor("rgb(60, 50, 150)");  // Use a darker clear color in the small viewport
     renderer.render(scene, virtualCamera);  // Render scene of the virtual camera
 }
+cameraHolder.remove(camera);
+cameraHolder2.add(camera);
 
 geraStatusFinal();
 var delay = 0;
@@ -2645,14 +2380,6 @@ function render(t)
     requestAnimationFrame(render);
     dt = (t - anterior) / 100;
     anterior = t;
-    if (propMng.playAction) {
-        for(var i = 0; i<propMng.mixer.length; i++)
-            if(pistaAtual == 4){
-                propMng.mixer[i].update(dt);
-            }
-            else
-            propMng.mixer[i].update(dt/100);
-    }
     //movimentação do player
     if(obstaclesExistem){
         keyboardUpdate();
@@ -2686,13 +2413,8 @@ function render(t)
     atualizaStatusFinal();
 
     if(pistaAtual == 1){
-        pokeyDance();
         moonOrbit();
     }
-    if(pistaAtual == 5){
-        spinBlades();
-    }
-
     controlledRender(t);
 }
 

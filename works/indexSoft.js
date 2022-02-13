@@ -1425,6 +1425,23 @@ function boundingBoxesUpdate(){
 var buttons = new Buttons(onButtonDown, onButtonUp);
 
 function sync(dt) {
+    if(actions.pulaFase){
+        mapa++;
+        if(mapa >=6){
+            mapa = 1;
+        }
+    }
+    if(actions.mudaCamera){
+        if (!panoramicotraseiro) {
+            cameraHolder.remove(camera);
+            cameraHolder2.add(camera);
+            panoramicotraseiro = !panoramicotraseiro;
+        } else {
+            cameraHolder2.remove(camera);
+            cameraHolder.add(camera);
+            panoramicotraseiro = !panoramicotraseiro;
+        }
+    }
     if (actions.acceleration) {
         carroAcelerando = true;
         speedForward = (Speed/100 + aceleracao/100)*redutor;
@@ -1508,6 +1525,12 @@ function onButtonDown(event) {
 			actions.braking = true;
 			actions.acceleration = false;
 		break;
+        case "Start":
+			actions.mudaCamera = true;
+		break;
+        case "Select":
+			actions.pulaFase = true;
+		break;
 		case "full":
 			buttons.setFullScreen();
 		break;
@@ -1517,6 +1540,8 @@ function onButtonDown(event) {
 function onButtonUp(event) {
 	actions.acceleration = false;
 	actions.braking = false;
+    actions.mudaCamera = false;
+    actions.pulaFase = false;
 }
 
 var keyboard = new KeyboardState();
@@ -1590,29 +1615,6 @@ function selecaoMapa(){
         reposicionaPlayer('right');
         alternaPlano();
         carregaProps();
-    }
-
-    //cameras
-    if (keyboard.pressed(",")){
-        cameraHolder2.remove(camera);
-        cameraHolder.add(camera);
-        panoramicotraseiro = false;
-        panoramico = true;
-        playerIcon.visible = false;
-    }
-    else if (keyboard.pressed(".")){
-        cameraHolder2.remove(camera);
-        cameraHolder.add(camera);
-        panoramico = false;
-        panoramicotraseiro = false;
-        playerIcon.visible = true;
-    }
-    else if (keyboard.pressed("/")){ //; em alguns teclados
-        cameraHolder.remove(camera);
-        cameraHolder2.add(camera);
-        panoramico = false;
-        panoramicotraseiro = true;
-        playerIcon.visible = false;
     }
 }
 
@@ -1912,9 +1914,6 @@ function render(t)
         camera.updateProjectionMatrix();
     }
     cameraHolder.position.set(player.position.getComponent(0)+60, player.position.getComponent(1)+80, player.position.getComponent(2)-50);
-    if (panoramico){
-        cameraHolder.position.set(player.position.getComponent(0)+140, player.position.getComponent(1)+45, player.position.getComponent(2)-150);
-    }
     cameraHolder.rotateY(degreesToRadians(180));
     cameraHolder2.rotateY(degreesToRadians(180));
 

@@ -2120,7 +2120,7 @@ function keyboardUpdate() {
         cameraHolder2.add(camera);
         panoramico = false;
         panoramicotraseiro = true;
-        playerIcon.visible = false;
+        playerIcon.visible = true;
       } else {
         window.location.href = "carView.html";
       }

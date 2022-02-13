@@ -275,35 +275,30 @@ skyGeo.scale(-1,1,1);
 var sky1 = new THREE.Mesh(skyboxGeo, materialArray1);
 sky1.position.set(0.0, skyboxSize/10  ,0.0)
 sky1.scale.set(-1, 1, 1);
-sky1.eulerOrder = 'XZY';
 sky1.renderDepth = 1000.0;
 sky1.visible = true;
 
 var sky2 = new THREE.Mesh(skyboxGeo, materialArray2);
 sky2.position.set(0.0, skyboxSize/10  ,0.0)
 sky2.scale.set(-1, 1, 1);
-sky2.eulerOrder = 'XZY';
 sky2.renderDepth = 1000.0;
 sky2.visible = false;
 
 var sky3 = new THREE.Mesh(skyboxGeo, materialArray3);
 sky3.position.set(0.0, skyboxSize/10  ,0.0)
 sky3.scale.set(-1, 1, 1);
-sky3.eulerOrder = 'XZY';
 sky3.renderDepth = 1000.0;
 sky3.visible = false;
 
 var sky4 = new THREE.Mesh(skyboxGeo, materialArray4);
 sky4.position.set(0.0, skyboxSize/10 ,0.0)
 sky4.scale.set(-1, 1, 1);
-sky4.eulerOrder = 'XZY';
 sky4.renderDepth = 1000.0;
 sky4.visible = false;
 
 var sky5 = new THREE.Mesh(skyboxGeo, materialArray5);
 sky5.position.set(0.0, skyboxSize/10  ,0.0)
 sky5.scale.set(-1, 1, 1);
-sky5.eulerOrder = 'XZY';
 sky5.renderDepth = 1000.0;
 sky5.visible = false;
 

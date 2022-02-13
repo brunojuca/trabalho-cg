@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Joystick Example</title>
+  <link rel="shortcut icon" href="../favicon.ico">
+  <link rel="stylesheet" href="../html/resources/default.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">  
+
+  <style>  
+    #joystickWrapper1 {
+      pointer-events: auto;
+      position: absolute;       
+      bottom: 0;
+      left: 0;
+      display: block; 
+      touch-action: manipulation;
+    }
+  
+    #joystickWrapper2 {
+      pointer-events: auto;
+      position: absolute;       
+      bottom: 0;
+      right: 0;
+      display: block; 
+      touch-action: manipulation;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="webgl-output"></div>
+  <div id="joystickWrapper1"></div>
+  <div id="joystickWrapper2"></div>
+
+  <script src="../libs/other/nipplejs.js"></script>        
+  <script type="module" src="exampleJoystick.js"></script>
+</body>
+</html>

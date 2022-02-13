@@ -4,7 +4,18 @@
     <title>Mickey on Coconut Mall</title>
     <link rel="shortcut icon" href="../favicon.ico">
     <link rel="stylesheet" href="../html/resources/default.css">
+    <link rel="stylesheet" href="../libs/other/buttons.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      #joystickWrapper1 {
+        pointer-events: auto;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        display: block;
+        touch-action: manipulation;
+      }
+    </style>
 </head>
 
 <body>
@@ -23,7 +34,19 @@
       gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
     }
   </script>
+  <div id="joystickWrapper1"></div>
+
+  <button style="bottom:20px; right: 120px;"
+  id="A" class="video-game-button">A</button>
+
+  <button style="bottom:20px; right: 20px;"
+  id="B" class="video-game-button">B</button>
+
+  <button style="top:10px; right: 10px; width: 1emp; line-height: 1.4em; font-size: 10pt; background-color: #cccccc; background-image:none"
+  id="full" class="video-game-button">[ ]</button>
+
   <div id="webgl-output">
+    <script src="../libs/other/nipplejs.js"></script>
     <script type="module" src="indexSoft.js"></script>
   </div>
 </body>

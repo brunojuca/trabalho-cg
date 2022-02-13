@@ -9,7 +9,7 @@ import {pista5 as pista5} from './pistas/pista5.js';
 import Pista from './Pista.js';
 import { CyberTruck } from './CyberTruck.js';
 import { Obstacles } from './obstacles.js';
-
+import { Buttons } from "../libs/other/buttons.js";
 import {onWindowResize,
         degreesToRadians,} from "../libs/util/util.js";
 
@@ -1378,7 +1378,6 @@ function resetaVariaveis(){
     speedForward = 0;
     tempoTodasVoltas = [];
     tempoJogoAnterior = anterior/1000;
-    gerou = false;
 }
 
 function reposicionaPlayer(dir){
@@ -1514,6 +1513,110 @@ function boundingBoxesUpdate(){
 // Controles
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
+var buttons = new Buttons(onButtonDown, onButtonUp);
+var pressedA = false;
+var pressedB = false;
+
+let fwdValue = 0;
+let bkdValue = 0;
+let rgtValue = 0;
+let lftValue = 0;
+let joyManager;
+
+function sync(dt) {
+    if (actions.acceleration) {
+        carroAcelerando = true;
+        speedForward = (Speed/100 + aceleracao/100)*redutor;
+        //evita bug ao sair da pag, devido aos cálculos que continuam sendo feitos em segundo plano pelo browser
+        if(speedForward < -0.01){
+            speedForward = 1;
+            aceleracao = 1;
+        }
+        player.accelerate(speedForward);
+        speedModulo = speedForward;
+        player.defaultUpdate();
+    }
+    if (actions.braking) {
+        carroFreiando = true
+        speedBackward = (-Speed/100 + freia/100)*redutor;
+        //evita bug ao sair da pag, devido aos cálculos que continuam sendo feitos em segundo plano pelo browser
+        if(speedBackward > 0.01){
+            speedBackward = -1;
+            aceleracao = 1;
+        }
+        player.accelerate(speedBackward);
+        speedModulo = -speedBackward;
+        player.defaultUpdate();
+    }
+    if (actions.left) {
+        if(aceleracao > 1 || freia < -1){
+            player.turnLeft(5);
+        }
+        if(panoramicotraseiro == true){
+            ghostguide.rotateY(degreesToRadians(5));
+        }
+    }
+    else {
+        if (actions.right) {
+            if(aceleracao > 1 || freia < -1){
+                player.turnRight(5);
+            }
+            if(panoramicotraseiro == true){
+                ghostguide.rotateY(degreesToRadians(-5));
+            }
+        }
+        else {
+            carroAcelerando = false;
+            carroFreiando = false
+            player.defaultUpdate();
+        }
+    }
+}
+
+function addJoysticks(){
+	// Details in the link bellow:
+	// https://yoannmoi.net/nipplejs/
+
+	let joystickL = nipplejs.create({
+		zone: document.getElementById('joystickWrapper1'),
+		mode: 'static',
+		lockX: true, // only move on the Y axis
+		position: { top: '-80px', left: '80px' }
+	});
+
+	joystickL.on('move', function (evt, data) {
+		const steer = data.vector.x;
+		actions.left = actions.right = false;
+		if(steer > 0) actions.right = true;
+		if(steer < 0) actions.left = true;
+	})
+
+	joystickL.on('end', function (evt) {
+		actions.left = actions.right = false;
+	})
+}
+
+function onButtonDown(event) {
+	switch(event.target.id)
+	{
+		case "A":
+			actions.braking = false;
+			actions.acceleration = true;
+		break;
+		case "B":
+			actions.braking = true;
+			actions.acceleration = false;
+		break;
+		case "full":
+			buttons.setFullScreen();
+		break;
+	}
+}
+
+function onButtonUp(event) {
+	actions.acceleration = false;
+	actions.braking = false;
+}
 
 var keyboard = new KeyboardState();
 var Speed = 40;
@@ -1582,27 +1685,6 @@ function keyboardUpdate() {
         carroFreiando = false
         speedModulo = -speedBackward;
         player.defaultUpdate();
-    }
-
-    if (keyboard.pressed("left")) {
-        if(keyLock == false){
-            if(aceleracao > 1 || freia < -1){
-                player.turnLeft(5);
-            }
-            if(panoramicotraseiro == true){
-                ghostguide.rotateY(degreesToRadians(5));
-            }
-        }
-    }
-    else if (keyboard.pressed("right")) {
-        if(keyLock == false){
-            if(aceleracao > 1 || freia < -1){
-                player.turnRight(5);
-            }
-            if(panoramicotraseiro == true){
-                ghostguide.rotateY(degreesToRadians(-5));
-            }
-        }
     }
 
     //mapas
@@ -1714,8 +1796,6 @@ function keyboardUpdate() {
 // Status da Partida
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-
-var gerou = false;
 
 function atualizaStatusFinal(){
 
@@ -1970,14 +2050,22 @@ function controlledRender(t)
 cameraHolder.remove(camera);
 cameraHolder2.add(camera);
 
+var syncList = [];
+var actions = {};
+syncList.push(sync);
+
 geraStatusFinal();
-var delay = 0;
+addJoysticks();
+
+
 function render(t)
 {
     stats.update();
     requestAnimationFrame(render);
     dt = (t - anterior) / 100;
     anterior = t;
+	for (var i = 0; i < syncList.length; i++)
+		syncList[i](dt);
     //movimentação do player
     if(obstaclesExistem){
         keyboardUpdate();
@@ -2007,7 +2095,6 @@ function render(t)
     cameraHolder2.rotateY(degreesToRadians(180));
 
     //controle de voltas
-    delay+=1;
     atualizaStatusFinal();
     controlledRender(t);
 }

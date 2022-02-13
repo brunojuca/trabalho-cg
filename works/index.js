@@ -1340,7 +1340,7 @@ function verificaColisorRampa(){
                 }
                 //a direita da rampa
                 else if(diffX < 0){
-                    player.turnDown(rampaAngle, speedModulo);
+                    player.turnDown(rampaAngle, speedModulo, carroFreiando);
                     inverseGravityDescidaSuaveV(player);
                     return;
                 }
@@ -1355,7 +1355,7 @@ function verificaColisorRampa(){
                 }
                 //a esquerda da rampa
                 else if(diffX > 0){
-                    player.turnDown(rampaAngle, speedModulo);
+                    player.turnDown(rampaAngle, speedModulo, carroFreiando);
                     inverseGravityDescidaSuaveV(player);
                     return;
                 }
@@ -1395,7 +1395,7 @@ function verificaColisorRampa(){
                 }
                 //a frente da rampa
                 else if(diffZ > 0){
-                    player.turnDown(rampaAngle, speedModulo);
+                    player.turnDown(rampaAngle, speedModulo, carroFreiando);
                     inverseGravityDescidaSuaveH(player);
                     return;
                 }
@@ -1410,7 +1410,7 @@ function verificaColisorRampa(){
                 }
                 //atrás da rampa
                 else if(diffZ < 0){
-                    player.turnDown(rampaAngle, speedModulo);
+                    player.turnDown(rampaAngle, speedModulo, carroFreiando);
                     inverseGravityDescidaSuaveH(player);
                     return;
                 }

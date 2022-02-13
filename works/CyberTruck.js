@@ -190,7 +190,7 @@ export class CyberTruck extends THREE.Group {
         this.wheel1Holder.rotateY(degreesToRadians(1));
         this.wheel2Holder.rotateY(degreesToRadians(1));
         this.wheelAngle--;
-      } else if (this.wheelAngle < 0) {
+      } else if (this.wheelAngle <= -1.1) {
         this.wheel1Holder.rotateY(degreesToRadians(-1));
         this.wheel2Holder.rotateY(degreesToRadians(-1));
         this.wheelAngle++;
@@ -247,11 +247,15 @@ export class CyberTruck extends THREE.Group {
     }
   }
 
-  turnDown(degrees, speed) {
+  turnDown(degrees, speed, carrofreiando) {
     if(this.carregado){
       if(this.carAngle >= -degrees*100 + 9){
         this.body.rotateX(degreesToRadians(2.2*speed));
         this.carAngle -= 2.2*speed;
+        if(carrofreiando){
+          this.wheel1Holder.translateY(-0.03);
+          this.wheel2Holder.translateY(-0.03);
+        }
         if(this.carAngle >= (-degrees*100 + 5)/4){
           this.wheel1Holder.translateY(-0.09);
           this.wheel2Holder.translateY(-0.09);

@@ -34,10 +34,7 @@ import {InfoBox,
 //-------------------------------------------------------------------------------
 var stats = new Stats();          // To show FPS information
 var scene = new THREE.Scene();    // Create main scene
-var renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true });
-renderer.shadowMap.enabled = true;
-renderer.shadowMapSoft = true;
-renderer.shadowMap.type = THREE.BasicShadowMap;
+var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor( 0x000000 );
 document.body.appendChild(renderer.domElement);
@@ -60,35 +57,8 @@ var camera = new THREE.PerspectiveCamera(120, window.innerWidth / window.innerHe
 var ambientColor = "rgb(100,100,100)";
 var ambientLight = new THREE.AmbientLight(ambientColor, 0.5);
 ambientLight.castShadow = false;
+ambientLight.intensity = 2;
 scene.add( ambientLight );
-
-var lightPosition = new THREE.Vector3(300, 200, 50);
-
-var dirLight = new THREE.DirectionalLight(0xffffff, 3);
-dirLight.shadow.mapSize.width = 2048;
-dirLight.shadow.mapSize.height = 2048;
-dirLight.castShadow = true;
-camera.add(dirLight);
-
-dirLight.shadow.camera.left = -50;
-dirLight.shadow.camera.right = 200;
-dirLight.shadow.camera.top = 100;
-dirLight.shadow.camera.bottom = -100;
-
-dirLight.shadow.mapSize.width = 2048; // default
-dirLight.shadow.mapSize.height = 2048; // default
-dirLight.shadow.camera.near = 100; // default
-dirLight.shadow.camera.far = 500; // default
-
-scene.add(dirLight.target);
-
-scene.add(dirLight.target);
-dirLight.target = camera;
-// set the dirlight to follow camera
-dirLight.position.set(lightPosition);
-scene.add( camera );
-dirLight.position.copy(lightPosition);
-dirLight.intensity = 1.5;
 
 // Listen window size changes
 window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, false );
@@ -563,12 +533,6 @@ const desvio2 = 10000;
 var dirguide = createSphere(radius);
 dirguide.position.set(0.0, 0.0, 2*radius + desvio2);
 
-//ghost guia para a luz
-var lightguide = createSphere(5*radius);
-//lightguide.castShadow = true; //default is false
-//lightguide.receiveShadow = false; //default
-lightguide.position.set(0.0, 0.0, 2*radius + desvio);
-
 //player
 var player = new CyberTruck;
 //var playerNewType = new LambertTestCar;
@@ -588,8 +552,6 @@ var playerboxSetada = false;
 
 player.add(ghostguide);
 player.add(dirguide);
-player.add(lightguide);
-
 
 var posAtual = new THREE.Vector3(0, 0, 0);
 posAtual.set(player.position.getComponent(0), player.position.getComponent(1), player.position.getComponent(2));
@@ -1183,7 +1145,7 @@ function verificaColisorRampa(){
                 }
                 //a direita da rampa
                 else if(diffX < 0){
-                    player.turnDown(rampaAngle, speedModulo);
+                    player.turnDown(rampaAngle, speedModulo, carroFreiando);
                     inverseGravityDescidaSuaveV(player);
                     return;
                 }
@@ -1198,7 +1160,7 @@ function verificaColisorRampa(){
                 }
                 //a esquerda da rampa
                 else if(diffX > 0){
-                    player.turnDown(rampaAngle, speedModulo);
+                    player.turnDown(rampaAngle, speedModulo, carroFreiando);
                     inverseGravityDescidaSuaveV(player);
                     return;
                 }
@@ -1238,7 +1200,7 @@ function verificaColisorRampa(){
                 }
                 //a frente da rampa
                 else if(diffZ > 0){
-                    player.turnDown(rampaAngle, speedModulo);
+                    player.turnDown(rampaAngle, speedModulo, carroFreiando);
                     inverseGravityDescidaSuaveH(player);
                     return;
                 }
@@ -1253,7 +1215,7 @@ function verificaColisorRampa(){
                 }
                 //atrás da rampa
                 else if(diffZ < 0){
-                    player.turnDown(rampaAngle, speedModulo);
+                    player.turnDown(rampaAngle, speedModulo, carroFreiando);
                     inverseGravityDescidaSuaveH(player);
                     return;
                 }
@@ -1745,13 +1707,11 @@ scene.add( helper3 );
 function atualizaBoundingPlayer(){
     player.remove(ghostguide);
     player.remove(dirguide);
-    player.remove(lightguide);
     player.remove(playerIcon)
     playerboxSetada = true;
     playerBox3.setFromObject(player);
     player.add(ghostguide);
     player.add(dirguide);
-    player.add(lightguide);
     player.add(playerIcon)
     colisorBoundingBox();
 }

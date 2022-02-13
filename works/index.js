@@ -2156,7 +2156,7 @@ function keyboardUpdate() {
     }
     if (keyboard.pressed("esc")){
         window.location.href = "carARView.html";
-      }
+    }
 
 
     //cameras
@@ -2185,6 +2185,9 @@ function keyboardUpdate() {
     //liga e desliga Bloom
     if (keyboard.down("B")){
         chaveBloom();
+    }
+    if (keyboard.pressed("L")){
+        window.location.href = "indexSoft.html";
     }
 
     if (keyboard.down("M")){

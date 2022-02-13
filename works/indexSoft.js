@@ -9,11 +9,6 @@ import {pista5 as pista5} from './pistas/pista5.js';
 import Pista from './Pista.js';
 import { CyberTruck } from './CyberTruck.js';
 import { Obstacles } from './obstacles.js';
-import { PropManager } from './propManager.js';
-import { EffectComposer } from '../build/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from '../build/jsm/postprocessing/RenderPass.js';
-import { PixelShader } from '../build/jsm/shaders/PixelShader.js';
-import { ShaderPass } from '../build/jsm/postprocessing/ShaderPass.js';
 
 import {onWindowResize,
         degreesToRadians,} from "../libs/util/util.js";
@@ -72,11 +67,7 @@ window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, 
 const loader = new THREE.TextureLoader();
 
 //track1
-const moonTexture = loader.load( 'texture/track1/moon.jpg' );
-
 const groundtexture1 = loader.load( 'texture/track1/sand.jpg' );
-const skyTexture = loader.load( 'texture/track1/sky.jpg' );
-
 let materialArray1 = [];
 let texture_1ft = loader.load( 'texture/track1/penguins/arid_ft.jpg');
 let texture_1bk = loader.load( 'texture/track1/penguins/arid_bk.jpg');
@@ -98,8 +89,6 @@ for (let i = 0; i < 6; i++){
 const retroTexture = loader.load( 'texture/track2/retrowave3.png');
 const groundtexture2A = loader.load( 'texture/track2/neonPads.jpg');
 const groundtexture2B = loader.load( 'texture/track2/neonWave.jpg');
-const skyTexture2 = loader.load( 'texture/track2/retrowave.png');
-
 let materialArray2 = [];
 let texture_2ft = loader.load( 'texture/track2/retrowave2/px.png');
 let texture_2bk = loader.load( 'texture/track2/retrowave2/nx.png');
@@ -119,7 +108,6 @@ for (let i = 0; i < 6; i++){
 
 //track3
 const groundtexture3 = loader.load( 'texture/track3/magma3.jpg' );
-const skyTexture3 = loader.load( 'texture/track3/bowserCastle.jpg');
 let materialArray3 = [];
 let texture_3ft = loader.load( 'texture/track3/penguins/barren_ft.jpg');
 let texture_3bk = loader.load( 'texture/track3/penguins/barren_bk.jpg');
@@ -137,12 +125,8 @@ for (let i = 0; i < 6; i++){
     materialArray3[i].side = THREE.BackSide;
 }
 
-
 //track4
 const groundtexture4 = loader.load( 'texture/track4/iceField.jpg' );
-const skyTexture4 = loader.load( 'texture/track4/sunSky.jpg' );
-
-
 let materialArray4 = [];
 let texture_4ft = loader.load( 'texture/track4/eso0932/px_eso0932a.jpg');
 let texture_4bk = loader.load( 'texture/track4/eso0932/nx_eso0932a.jpg');
@@ -161,7 +145,6 @@ for (let i = 0; i < 6; i++){
 }
 //track5
 const groundtexture5 = loader.load( 'texture/track5/sand.jpg' );
-const skyTexture5 = loader.load( 'texture/track5/sunsky.png' );
 let materialArray5 = [];
 let texture_5ft = loader.load( 'texture/track5/penguins/trouble_ft.jpg');
 let texture_5bk = loader.load( 'texture/track5/penguins/trouble_bk.jpg');
@@ -183,45 +166,6 @@ for (let i = 0; i < 6; i++){
 var rampaTexture = loader.load( 'texture/neondots.png' );
 
 //-------------------------------------------------------------------------------
-// Prop Manager
-//-------------------------------------------------------------------------------
-
-var propMng = new PropManager;
-propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, 350, -10, 1350);
-propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, -600, -10, 350);
-propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, 350, -10, -600);
-propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, 1350, -10, 350);
-
-function selecionaProps(){
-    switch(pistaAtual){
-        case 1:
-            propMng.limpaGLFTArray(scene);
-            propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, 350, -10, 1350);
-            propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, -600, -10, 350);
-            propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, 350, -10, -600);
-            propMng.loadGLTFFile('./assets/', 'pyramid', 500.0, 0, true, scene, 1350, -10, 350);
-            break;
-        case 2:
-            propMng.limpaGLFTArray(scene);
-            break;
-        case 3:
-            propMng.limpaGLFTArray(scene);
-            break;
-        case 4:
-            propMng.limpaGLFTArray(scene);
-            propMng.loadGLTFFile('./assets/', 'titanic', 5000.0, 0, true, scene, 200, -30, -500);
-            propMng.loadGLTFFile('./assets/', 'asian_pirate_ship', 5000.0, 0, true, scene, 100, -30, 1500);
-
-            break;
-        case 5:
-            propMng.limpaGLFTArray(scene);
-            break;
-        default:
-            break;
-    }
-}
-
-//-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 // Ambiente - Eixos e Plano
 //-------------------------------------------------------------------------------
@@ -231,12 +175,12 @@ retrowaveMaterial.side = THREE.BackSide;
 
 groundtexture1.wrapS = groundtexture1.wrapT = THREE.RepeatWrapping;
 groundtexture1.repeat.set( 50, 50 );
-groundtexture1.anisotropy = 16;
+groundtexture1.anisotropy = 4;
 var ground1Material = new THREE.MeshStandardMaterial( { map: groundtexture1} );
 
 groundtexture2A.wrapS = groundtexture2A.wrapT = THREE.RepeatWrapping;
 groundtexture2A.repeat.set( 50, 50 );
-groundtexture2A.anisotropy = 16;
+groundtexture2A.anisotropy = 4;
 var ground2MaterialA = new THREE.MeshStandardMaterial( { map: groundtexture2A} );
 //ground2MaterialA.glass = true;
 //ground2MaterialA.reflectivity = 1.0;
@@ -247,7 +191,7 @@ ground2MaterialA.opacity = 0.7;
 
 groundtexture2B.wrapS = groundtexture2B.wrapT = THREE.RepeatWrapping;
 groundtexture2B.repeat.set( 100, 100 );
-groundtexture2B.anisotropy =  renderer.capabilities.getMaxAnisotropy();
+groundtexture2B.anisotropy =  4;
 
 var ground2MaterialB = new THREE.MeshStandardMaterial( { map: groundtexture2B} );
 ground2MaterialB.transparent = true;
@@ -255,19 +199,19 @@ ground2MaterialB.opacity = 0.5;
 
 groundtexture3.wrapS = groundtexture3.wrapT = THREE.RepeatWrapping;
 groundtexture3.repeat.set( 50, 50 );
-groundtexture3.anisotropy =  renderer.capabilities.getMaxAnisotropy();
+groundtexture3.anisotropy =  4;
 
 var ground3Material = new THREE.MeshStandardMaterial( { map: groundtexture3} );
 
 groundtexture4.wrapS = groundtexture4.wrapT = THREE.RepeatWrapping;
 groundtexture4.repeat.set( 100, 100 );
-groundtexture4.anisotropy =  renderer.capabilities.getMaxAnisotropy();
+groundtexture4.anisotropy =  4;
 
 var ground4Material = new THREE.MeshStandardMaterial( { map: groundtexture4} );
 
 groundtexture5.wrapS = groundtexture5.wrapT = THREE.RepeatWrapping;
 groundtexture5.repeat.set( 1000, 1000 );
-groundtexture5.anisotropy =  renderer.capabilities.getMaxAnisotropy();
+groundtexture5.anisotropy =  4;
 
 var ground5Material = new THREE.MeshStandardMaterial( { map: groundtexture5 } );
 
@@ -327,21 +271,6 @@ const skyboxSize = 10000
 var skyGeo = new THREE.SphereGeometry(skyboxSize/2, 720, 360);
 var skyboxGeo = new THREE.BoxGeometry(skyboxSize, skyboxSize, skyboxSize);
 skyGeo.scale(-1,1,1);
-
-skyTexture.wrapS = skyTexture.wrapT = THREE.RepeatWrapping;
-skyTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-
-skyTexture2.wrapS = skyTexture2.wrapT = THREE.RepeatWrapping;
-skyTexture2.anisotropy = renderer.capabilities.getMaxAnisotropy();
-
-skyTexture3.wrapS = skyTexture3.wrapT = THREE.RepeatWrapping;
-skyTexture3.anisotropy = renderer.capabilities.getMaxAnisotropy();
-
-skyTexture4.wrapS = skyTexture4.wrapT = THREE.RepeatWrapping;
-skyTexture4.anisotropy = renderer.capabilities.getMaxAnisotropy();
-
-skyTexture5.wrapS = skyTexture5.wrapT = THREE.RepeatWrapping;
-skyTexture5.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
 var sky1 = new THREE.Mesh(skyboxGeo, materialArray1);
 sky1.position.set(0.0, skyboxSize/10  ,0.0)
@@ -642,34 +571,6 @@ player.add(playerIcon);
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 
-let centroPistaAtual = new THREE.Vector3(blocoSize*pista.LINHAS/2 - blocoSize/2, 0.0, blocoSize*pista.COLUNAS/2 - blocoSize/2 );
-
-//-------------------------------------------------------------------------------
-// Moon
-//-------------------------------------------------------------------------------
-moonTexture.wrapS = moonTexture.wrapT = THREE.RepeatWrapping;
-moonTexture.anisotropy =  renderer.capabilities.getMaxAnisotropy();
-
-var moon = [];
-
-function carregaMoon(){
-    var moonMaterial = new THREE.MeshStandardMaterial( { map: moonTexture } );
-    var sphereGeometry = new THREE.SphereGeometry(10*radius, 32, 32);
-    var moonObj = new THREE.Mesh( sphereGeometry, moonMaterial );
-    moonObj.position.set(centroPistaAtual.getComponent(0), 10*radius, centroPistaAtual.getComponent(2));
-    moon.push(moonObj);
-    scene.add(moon[0]);
-}
-carregaMoon();
-
-function limpaMoon(){
-    scene.remove(moon[0]);
-}
-
-function moonOrbit(){
-    moon[0].rotateY(degreesToRadians(-1));
-}
-
 //-------------------------------------------------------------------------------
 // GlassSphere
 //-------------------------------------------------------------------------------
@@ -704,33 +605,10 @@ function limpaGlassSphere(){
 }
 
 //-------------------------------------------------------------------------------
-// Ring
-//-------------------------------------------------------------------------------
-
-var ringTexture = loader.load( 'texture/track1/sand.jpg' );
-ringTexture.wrapS = ringTexture.wrapT = THREE.RepeatWrapping;
-ringTexture.repeat.set( 0.02, 0.1 );
-ringTexture.anisotropy = 16;
-
-var ring = new THREE.Mesh( new THREE.TorusGeometry( 2000, 100, 16, 32 ), new THREE.MeshStandardMaterial( { map: ringTexture} ) );
-ring.rotateX(degreesToRadians(90));
-ring.position.set(224,-50,224)
-scene.add( ring );
-
-var ring2 = new THREE.Mesh( new THREE.TorusGeometry( 100, 10, 16, 32 ), new THREE.MeshStandardMaterial( { map: ringTexture} ) );
-ring2.rotateX(degreesToRadians(90));
-ring2.position.set(224,-5,224)
-scene.add( ring2 );
-
-
-//-------------------------------------------------------------------------------
 // Props
 //-------------------------------------------------------------------------------
 function carregaProps(){
     switch(pistaAtual){
-        case 1:
-            carregaMoon();
-            break;
         case 2:
             carregaGlassSpheres();
             break;
@@ -741,26 +619,20 @@ function carregaProps(){
 
 //tinha algum bug q precisou do switch, n lembro qual
 function limpaProps(){
-    selecionaProps();
     switch(pistaAtual){
         case 1:
-            limpaMoon();
             limpaGlassSphere();
             break;
         case 2:
-            limpaMoon();
             limpaGlassSphere();
             break;
         case 3:
-            limpaMoon();
             limpaGlassSphere();
             break;
         case 4:
-            limpaMoon();
             limpaGlassSphere();
             break;
         case 5:
-            limpaMoon();
             limpaGlassSphere();
             break;
         default:
@@ -839,25 +711,25 @@ function selecionaRampaMaterial(rampaType){
             rampaTexture = loader.load( 'texture/track1/road1.jpg' );
             rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
             rampaTexture.repeat.set( 0.2, 0.05 );
-            rampaTexture.anisotropy = 16;
+            rampaTexture.anisotropy = 4;
             return new THREE.MeshStandardMaterial( { map: rampaTexture} );
         case 2:
             rampaTexture = loader.load( 'texture/track2/road2.jpg' );
             rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
             rampaTexture.repeat.set( 0.02, 0.1 );
-            rampaTexture.anisotropy = 16;
+            rampaTexture.anisotropy = 4;
             return new THREE.MeshStandardMaterial( { map: rampaTexture} );
         case 3:
             rampaTexture = loader.load( 'texture/track3/stone.jpg' );
             rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
             rampaTexture.repeat.set( 0.02, 0.1 );
-            rampaTexture.anisotropy = 16;
+            rampaTexture.anisotropy = 4;
             return new THREE.MeshStandardMaterial( { map: rampaTexture} );
         case 4:
             rampaTexture = loader.load( 'texture/track4/road4.jpg' );
             rampaTexture.wrapS = rampaTexture.wrapT = THREE.RepeatWrapping;
             rampaTexture.repeat.set( 0.02, 0.01 );
-            rampaTexture.anisotropy = 16;
+            rampaTexture.anisotropy = 4;
             return new THREE.MeshStandardMaterial( { map: rampaTexture} );
         case 5:
             var cor = '#808080'; // cinza
@@ -1538,10 +1410,7 @@ function reposicionaPlayer(dir){
 function alternaPlano(){
     switch(pistaAtual){
         case 1:
-            scene.background = skyTexture;
             plane1.visible = true;
-            ring.visible = true;
-            ring2.visible = true;
             plane2A.visible = false;
             plane2B.visible = false;
             plane3.visible = false;
@@ -1554,10 +1423,7 @@ function alternaPlano(){
             sky5.visible = false;
             break;
         case 2:
-            scene.background = skyTexture2;
             plane1.visible = false;
-            ring.visible = false;
-            ring2.visible = false;
             plane2A.visible = true;
             plane2B.visible = true;
             plane3.visible = false;
@@ -1570,10 +1436,7 @@ function alternaPlano(){
             sky5.visible = false;
             break;
         case 3:
-            scene.background = skyTexture3;
             plane1.visible = false;
-            ring.visible = false;
-            ring2.visible = false;
             plane2A.visible = false;
             plane2B.visible = false;
             plane3.visible = true;
@@ -1586,10 +1449,7 @@ function alternaPlano(){
             sky5.visible = false;
             break;
         case 4:
-            scene.background = skyTexture4;
             plane1.visible = false;
-            ring.visible = false;
-            ring2.visible = false;
             plane2A.visible = false;
             plane2B.visible = false;
             plane3.visible = false;
@@ -1602,10 +1462,7 @@ function alternaPlano(){
             sky5.visible = false;
             break;
         case 5:
-            scene.background = skyTexture5;
             plane1.visible = false;
-            ring.visible = false;
-            ring2.visible = false;
             plane2A.visible = false;
             plane2B.visible = false;
             plane3.visible = false;
@@ -2082,42 +1939,11 @@ function geraStatusFinal(){
 
 }
 
-
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
-// GUI
-//-------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------
-
-let params = {
-    //pixel
-    pixelSize: 1,
-    pixelizar: true,
-};
-
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 // PostProcessing
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-
-//-------------------------------------------------------------------------------
-// PostProcessing - PixelPass
-//-------------------------------------------------------------------------------
-const renderScene = new RenderPass( scene, camera );
-
-let pixelComposer;
-pixelComposer = new EffectComposer(renderer);
-pixelComposer.addPass( renderScene );
-
-let pixelPass = new ShaderPass(PixelShader);
-pixelPass.uniforms[ "resolution" ].value = new THREE.Vector2(window.innerWidth, window.innerHeight);
-pixelPass.uniforms[ "resolution" ].value.multiplyScalar(window.devicePixelRatio);
-pixelComposer.addPass( pixelPass );
-
-function updateGUI(){
-    pixelPass.uniforms[ "pixelSize" ].value = params.pixelSize;
-}
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -2135,13 +1961,7 @@ function controlledRender(t)
     renderer.setScissorTest(false); // Disable scissor to paint the entire window
     renderer.autoClear = false;
     renderer.clear();   // Clean the window
-    updateGUI();
-    if(params.pixelizar){
-        pixelComposer.render();
-    }
-    else {
-        renderer.render(scene, camera);
-    }
+    renderer.render(scene, camera);
     renderer.clearDepth();
 
     // Set virtual camera viewport
@@ -2194,10 +2014,6 @@ function render(t)
     //controle de voltas
     delay+=1;
     atualizaStatusFinal();
-
-    if(pistaAtual == 1){
-        moonOrbit();
-    }
     controlledRender(t);
 }
 

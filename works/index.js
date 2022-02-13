@@ -116,7 +116,6 @@ const moonTexture = loader.load( 'texture/track1/moon.jpg' );
 const blackholeTexture = loader.load( 'texture/track1/blackhole.jpg' );
 
 const groundtexture1 = loader.load( 'texture/track1/sand.jpg' );
-const skyTexture = loader.load( 'texture/track1/sky.jpg' );
 
 let materialArray1 = [];
 let texture_1ft = loader.load( 'texture/track1/penguins/arid_ft.jpg');
@@ -148,8 +147,6 @@ for (let i = 0; i < 6; i++){
 const retroTexture = loader.load( 'texture/track2/retrowave3.png');
 const groundtexture2A = loader.load( 'texture/track2/neonPads.jpg');
 const groundtexture2B = loader.load( 'texture/track2/neonWave.jpg');
-const skyTexture2 = loader.load( 'texture/track2/retrowave.png');
-
 let materialArray2 = [];
 let texture_2ft = loader.load( 'texture/track2/retrowave2/px.png');
 let texture_2bk = loader.load( 'texture/track2/retrowave2/nx.png');
@@ -178,7 +175,6 @@ for (let i = 0; i < 6; i++){
 
 //track3
 const groundtexture3 = loader.load( 'texture/track3/magma3.jpg' );
-const skyTexture3 = loader.load( 'texture/track3/bowserCastle.jpg');
 let materialArray3 = [];
 let texture_3ft = loader.load( 'texture/track3/penguins/barren_ft.jpg');
 let texture_3bk = loader.load( 'texture/track3/penguins/barren_bk.jpg');
@@ -208,9 +204,6 @@ for (let i = 0; i < 6; i++){
 
 //track4
 const groundtexture4 = loader.load( 'texture/track4/iceField.jpg' );
-const skyTexture4 = loader.load( 'texture/track4/sunSky.jpg' );
-
-
 let materialArray4 = [];
 let texture_4ft = loader.load( 'texture/track4/eso0932/px_eso0932a.jpg');
 let texture_4bk = loader.load( 'texture/track4/eso0932/nx_eso0932a.jpg');
@@ -238,7 +231,6 @@ for (let i = 0; i < 6; i++){
 }
 //track5
 const groundtexture5 = loader.load( 'texture/track5/sand.jpg' );
-const skyTexture5 = loader.load( 'texture/track5/sunsky.png' );
 let materialArray5 = [];
 let texture_5ft = loader.load( 'texture/track5/penguins/trouble_ft.jpg');
 let texture_5bk = loader.load( 'texture/track5/penguins/trouble_bk.jpg');
@@ -277,7 +269,6 @@ var options = {
     minFilter: THREE.LinearMipmapLinearFilter,
     magFilter: THREE.LinearFilter
 };
-scene.background = new THREE.WebGLCubeRenderTarget( 1024, options ).fromEquirectangularTexture( renderer, skyTexture )
 
 //-------------------------------------------------------------------------------
 // Audio Manager
@@ -441,21 +432,6 @@ const skyboxSize = 10000
 var skyGeo = new THREE.SphereGeometry(skyboxSize/2, 720, 360);
 var skyboxGeo = new THREE.BoxGeometry(skyboxSize, skyboxSize, skyboxSize);
 skyGeo.scale(-1,1,1);
-
-skyTexture.wrapS = skyTexture.wrapT = THREE.RepeatWrapping;
-skyTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
-
-skyTexture2.wrapS = skyTexture2.wrapT = THREE.RepeatWrapping;
-skyTexture2.anisotropy = renderer.capabilities.getMaxAnisotropy();
-
-skyTexture3.wrapS = skyTexture3.wrapT = THREE.RepeatWrapping;
-skyTexture3.anisotropy = renderer.capabilities.getMaxAnisotropy();
-
-skyTexture4.wrapS = skyTexture4.wrapT = THREE.RepeatWrapping;
-skyTexture4.anisotropy = renderer.capabilities.getMaxAnisotropy();
-
-skyTexture5.wrapS = skyTexture5.wrapT = THREE.RepeatWrapping;
-skyTexture5.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
 var sky1 = new THREE.Mesh(skyboxGeo, materialArray1);
 sky1.position.set(0.0, skyboxSize/10  ,0.0)
@@ -1793,7 +1769,6 @@ function reposicionaPlayer(dir){
 function alternaPlano(){
     switch(pistaAtual){
         case 1:
-            scene.background = skyTexture;
             plane1.visible = true;
             ring.visible = true;
             ring2.visible = true;
@@ -1809,7 +1784,6 @@ function alternaPlano(){
             sky5.visible = false;
             break;
         case 2:
-            scene.background = skyTexture2;
             plane1.visible = false;
             ring.visible = false;
             ring2.visible = false;
@@ -1825,7 +1799,6 @@ function alternaPlano(){
             sky5.visible = false;
             break;
         case 3:
-            scene.background = skyTexture3;
             plane1.visible = false;
             ring.visible = false;
             ring2.visible = false;
@@ -1841,7 +1814,6 @@ function alternaPlano(){
             sky5.visible = false;
             break;
         case 4:
-            scene.background = skyTexture4;
             plane1.visible = false;
             ring.visible = false;
             ring2.visible = false;
@@ -1857,7 +1829,6 @@ function alternaPlano(){
             sky5.visible = false;
             break;
         case 5:
-            scene.background = skyTexture5;
             plane1.visible = false;
             ring.visible = false;
             ring2.visible = false;

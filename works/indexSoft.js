@@ -1,6 +1,5 @@
 import * as THREE from  '../build/three.module.js';
 import Stats from       '../build/jsm/libs/stats.module.js';
-import {GUI} from       '../build/jsm/libs/dat.gui.module.js';
 import KeyboardState from '../libs/util/KeyboardState.js';
 import {pista1 as pista1} from './pistas/pista1.js';
 import {pista2 as pista2} from './pistas/pista2.js';
@@ -10,17 +9,13 @@ import {pista5 as pista5} from './pistas/pista5.js';
 import Pista from './Pista.js';
 import { CyberTruck } from './CyberTruck.js';
 import { Obstacles } from './obstacles.js';
-import { assetsManager } from './assetsManager.js';
 import { PropManager } from './propManager.js';
 import { EffectComposer } from '../build/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from '../build/jsm/postprocessing/RenderPass.js';
 import { PixelShader } from '../build/jsm/shaders/PixelShader.js';
 import { ShaderPass } from '../build/jsm/postprocessing/ShaderPass.js';
-import { UnrealBloomPass } from '../build/jsm/postprocessing/UnrealBloomPass.js';
-//import {TrackballControls} from '../build/jsm/controls/TrackballControls.js';
 
-import {InfoBox,
-        onWindowResize,
+import {onWindowResize,
         degreesToRadians,} from "../libs/util/util.js";
 
 //-------------------------------------------------------------------------------
@@ -64,7 +59,6 @@ scene.add( ambientLight );
 window.addEventListener('resize', function(){onWindowResize(camera, renderer)}, false );
 
 
-
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 // Loaders
@@ -79,7 +73,6 @@ const loader = new THREE.TextureLoader();
 
 //track1
 const moonTexture = loader.load( 'texture/track1/moon.jpg' );
-const blackholeTexture = loader.load( 'texture/track1/blackhole.jpg' );
 
 const groundtexture1 = loader.load( 'texture/track1/sand.jpg' );
 const skyTexture = loader.load( 'texture/track1/sky.jpg' );
@@ -190,21 +183,6 @@ for (let i = 0; i < 6; i++){
 var rampaTexture = loader.load( 'texture/neondots.png' );
 
 //-------------------------------------------------------------------------------
-// Audio Manager
-//-------------------------------------------------------------------------------
-var assetsMng = new assetsManager();
-assetsMng.loadAudio("startRace", "./soundAssets/startRace.mp3");
-
-assetsMng.loadAudio("01-Milkyway", "./soundAssets/01-milkyWay.mp3");
-assetsMng.loadAudio("02-VeridisQuo", "./soundAssets/02-veridisQuo.mp3");
-assetsMng.loadAudio("03-BowserCastle", "./soundAssets/03-bowserCastle.mp3");
-assetsMng.loadAudio("04-KoopaBeach", "./soundAssets/04-koopaBeach.mp3");
-assetsMng.loadAudio("05-BigBlue", "./soundAssets/05-bigBlue.mp3");
-
-assetsMng.loadAudio("00-CoconutMall", "./soundAssets/00-coconutMall.mp3");
-assetsMng.loadAudio("winRace", "./soundAssets/winRace.mp3");
-
-//-------------------------------------------------------------------------------
 // Prop Manager
 //-------------------------------------------------------------------------------
 
@@ -248,8 +226,6 @@ function selecionaProps(){
 // Ambiente - Eixos e Plano
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-var blackholeMaterial = new THREE.MeshStandardMaterial( { map: blackholeTexture } );
-
 var retrowaveMaterial = new THREE.MeshPhongMaterial( { map: retroTexture } );
 retrowaveMaterial.side = THREE.BackSide;
 
@@ -1645,56 +1621,6 @@ function alternaPlano(){
     }
 }
 
-//delay pra evitar stop() e play() ao mesmo tempo
-//se tiver baixo so aumentar o %30
-var delayMusica = 1;
-var tocar = false;
-function selectSoundtrack(track){
-    assetsMng.stop();
-    //fazer liga e desliga musica mais a frente
-    if(!tocar){
-        while (delayMusica%300 != 0 ){
-            delayMusica += 1;
-            if (delayMusica%30 == 0){
-                switch(track){
-                    case 1:
-                        assetsMng.play("01-Milkyway");
-                        delayMusica = 0 ;
-                        tocar = true;
-                        break;
-                    case 2:
-                        assetsMng.play("02-VeridisQuo");
-                        delayMusica = 0;
-                        tocar = true;
-                        break;
-                    case 3:
-                        assetsMng.play("03-BowserCastle");
-                        delayMusica = 0;
-                        tocar = true;
-                        break;
-                    case 4:
-                        assetsMng.play("04-KoopaBeach");
-                        delayMusica = 0;
-                        tocar = true;
-                        break;
-                    case 5:
-                        assetsMng.play("05-BigBlue");
-                        delayMusica = 0;
-                        tocar = true;
-                        break;
-                    default:
-                        delayMusica = 0;
-                        assetsMng.stop();
-                        tocar = true;
-                }
-            }
-        }
-    }
-    tocar = false;
-    delayMusica = 1;
-}
-
-
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 // Bounding Boxes
@@ -1736,17 +1662,6 @@ function boundingBoxesUpdate(){
 // Controles
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
-
-var controls = new InfoBox();
-  controls.add("Controles: ");
-  controls.addParagraph();
-  controls.add("Use keyboard to interact:");
-  controls.add("* Left/Right arrows to turn left/right");
-  controls.add("* Down arrow to go backwards");
-  controls.add("* X to accelerate");
-  controls.add("* Space to change camera view");
-  controls.add("* 1/2 buttons to change maps");
-  controls.show();
 
 var keyboard = new KeyboardState();
 var Speed = 40;
@@ -1844,70 +1759,60 @@ function keyboardUpdate() {
         newflagNumber = 9;
         newRVNumber = 12;
         newRHNumber = 10;
-        setaBloom();
         configuraPistas(newflagNumber, newRVNumber, newRHNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer('left');
         alternaPlano();
         carregaProps();
-        selectSoundtrack(1);
     }
     else if (keyboard.pressed("2") && pistaAtual != 2){
         pistaAtual = 2;
         newflagNumber = 8;
         newRVNumber = 12;
         newRHNumber = 10;
-        setaBloom();
         configuraPistas(newflagNumber, newRVNumber, newRHNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer('left');
         alternaPlano();
         carregaProps();
-        selectSoundtrack(2);
     }
     else if (keyboard.pressed("3") && pistaAtual != 3){
         pistaAtual = 3;
         newflagNumber = 8;
         newRVNumber = 22;
         newRHNumber = 22;
-        setaBloom();
         configuraPistas(newflagNumber,  newRVNumber, newRHNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer('down');
         alternaPlano();
         carregaProps();
-        selectSoundtrack(3);
     }
     else if (keyboard.pressed("4") && pistaAtual != 4){
         pistaAtual = 4;
         newflagNumber = 11;
         newRVNumber = 14;
         newRHNumber = 14;
-        setaBloom();
         configuraPistas(newflagNumber,  newRVNumber, newRHNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer('left');
         alternaPlano();
         carregaProps();
-        selectSoundtrack(4);
     }
     else if (keyboard.pressed("5") && pistaAtual != 5){
         pistaAtual = 5;
         newflagNumber = 12;
         newRVNumber = 0;
         newRHNumber = 0;
-        setaBloom();
         configuraPistas(newflagNumber, newRVNumber, newRHNumber);
         limpaProps();
         resetaVariaveis();
         reposicionaPlayer('right');
         alternaPlano();
         carregaProps();
-        selectSoundtrack(5);
     }
 
     if (keyboard.up("space")) {
@@ -1948,11 +1853,6 @@ function keyboardUpdate() {
         panoramicotraseiro = true;
         playerIcon.visible = false;
     }
-
-    //liga e desliga Bloom
-    if (keyboard.down("B")){
-        chaveBloom();
-    }
 }
 
 
@@ -1966,11 +1866,6 @@ function keyboardUpdate() {
 var gerou = false;
 
 function atualizaStatusFinal(){
-
-    if(voltas >= flagNumber && gerou == false){
-        assetsMng.play("winRace");
-        gerou = true
-    }
 
     var voltasDiv = document.getElementById("voltas");
     voltasDiv.style.position = 'absolute';
@@ -2196,21 +2091,9 @@ function geraStatusFinal(){
 
 let params = {
     //pixel
-    pixelSize: 2,
-    pixelizar: false,
-    //bloom
-    bloomThreshold: 0.32,
-    bloomStrength: 0.32,
-    bloomRadius: 1.0,
-    bloomTrue: false,
-    //player select
-    characterSelect: 1,
-    characters: 2
+    pixelSize: 1,
+    pixelizar: true,
 };
-
-function chaveBloom(){
-    params.bloomTrue = !params.bloomTrue;
-}
 
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
@@ -2237,63 +2120,6 @@ function updateGUI(){
 }
 
 //-------------------------------------------------------------------------------
-// PostProcessing - BloomPass
-//-------------------------------------------------------------------------------
-let bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 )
-bloomPass.threshold = params.bloomThreshold;
-bloomPass.strength = params.bloomStrength;
-bloomPass.radius = params.bloomRadius;
-bloomPass.renderToScreen = true;
-
-let bloomComposer = new EffectComposer(renderer);
-bloomComposer.setSize( window.innerWidth, window.innerHeight);
-
-bloomComposer.addPass( renderScene );
-bloomComposer.addPass( bloomPass );
-
-/*function renderBloom(){
-    renderer.autoClear = false;
-    renderer.clear();
-    bloomComposer.render();
-    renderer.clearDepth();
-    camera.layers.set(0);
-    console.clear();
-    renderer.render(scene.camera);
-}*/
-
-function setaBloom(){
-    switch(pistaAtual){
-        case 1:
-            bloomPass.threshold = Number(0.32);
-            bloomPass.strength = Number(0.32);
-            bloomPass.radius = Number(1.0);
-            break;
-        case 2:
-            bloomPass.threshold = Number(0.01);
-            bloomPass.strength = Number(0.29);
-            bloomPass.radius = Number(1.0);
-            break
-        case 3:
-            bloomPass.threshold = Number(0.25);
-            bloomPass.strength = Number(0.29);
-            bloomPass.radius = Number(0.01);
-            break;
-        case 4:
-            bloomPass.threshold = Number(0.05);
-            bloomPass.strength = Number(0.25);
-            bloomPass.radius = Number(0.92);
-            break;
-        case 5:
-            bloomPass.threshold = Number(0.82);
-            bloomPass.strength = Number(0.51);
-            bloomPass.radius = Number(0.34);
-            break;
-        default:
-            break;
-    }
-}
-
-//-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 // Render
 //-------------------------------------------------------------------------------
@@ -2312,9 +2138,6 @@ function controlledRender(t)
     updateGUI();
     if(params.pixelizar){
         pixelComposer.render();
-    }
-    else if (params.bloomTrue){
-        bloomComposer.render();
     }
     else {
         renderer.render(scene, camera);
@@ -2379,6 +2202,4 @@ function render(t)
 }
 
 var dt, anterior = 0;
-//assetsMng.play("startRace");
-selectSoundtrack(1);
 render();

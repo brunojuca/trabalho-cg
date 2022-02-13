@@ -8,7 +8,6 @@ import {pista4 as pista4} from './pistas/pista4.js';
 import {pista5 as pista5} from './pistas/pista5.js';
 import Pista from './Pista.js';
 import { CyberTruck } from './CyberTruck.js';
-import { Obstacles } from './obstacles.js';
 import { Buttons } from "../libs/other/buttons.js";
 import {onWindowResize,
         degreesToRadians,} from "../libs/util/util.js";
@@ -852,68 +851,6 @@ function resetaPosicaoRampasMudancaPista(){
 }
 
 //-------------------------------------------------------------------------------
-// Obstacles
-//-------------------------------------------------------------------------------
-
-var obstacles = [];
-var obstaclesBoxHelper = [];
-var obstaclesBox3 = [];
-var obstaclesExistem = true;
-
-function carregaObstacles(){
-    for (let i = 0; i < 20; i++) {
-        if(i < 10){
-            var obs = new Obstacles('./assets/', 'hay_bale2', 'SLOW');
-            obs.scale.set(10,15,10);
-        }
-        else{
-            var obs = new Obstacles('./assets/', 'japan_porcelain_vase', 'SOLID');
-            obs.scale.set(5,5,5);
-        }
-        var obsBoxHelper = new THREE.BoxHelper(obs, 0x00ff00);
-        obsBoxHelper.visible = false;
-        scene.add(obsBoxHelper);
-        var obsBox3 = new THREE.Box3();
-        obsBox3.setFromObject(obsBoxHelper);
-        obstaclesBoxHelper.push(obsBoxHelper);
-        obstaclesBox3.push(obsBox3);
-        obstacles.push(obs);
-    }
-}
-carregaObstacles();
-
-function posicionaObstacles(posicionamentoObstacles){
-    for(var k = 0; k < posicionamentoObstacles.length; k++){
-        obstacles[k].position.set(posicionamentoObstacles[k].getComponent(0), 0.0, posicionamentoObstacles[k].getComponent(2));
-        if (obstacles[k].tipoColisao == 'SOLID'){
-            obstacles[k].position.set(posicionamentoObstacles[k].getComponent(0), 4.8, posicionamentoObstacles[k].getComponent(2));
-        }
-        scene.add(obstacles[k]);
-    }
-    obstaclesExistem = true;
-}
-function encontraPosicaoObstacles(){
-    var posicaoObstacles = [];
-    for (var k = 0; k < platforms.length; k ++){
-        if(platforms[k].getBlockType() == "OBSTACLE"){
-            var posicaoNova = new THREE.Vector3;
-            posicaoNova.copy(platforms[k].bloco.position);
-            posicaoObstacles.push(posicaoNova);
-        }
-    }
-    return posicaoObstacles;
-}
-var posicionamentoObstacles = encontraPosicaoObstacles();
-posicionaObstacles(posicionamentoObstacles);
-
-function resetaPosicaoObstaclesMudancaPista(){
-    posicionamentoObstacles = encontraPosicaoObstacles();
-    posicionaObstacles(posicionamentoObstacles);
-}
-
-
-
-//-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 // Fisica e Colisores
 //-------------------------------------------------------------------------------
@@ -1208,27 +1145,6 @@ function verificaDesaceleraFora(){
 
 
 //-------------------------------------------------------------------------------
-// Colisor - Bounding Box
-//-------------------------------------------------------------------------------
-
-function colisorBoundingBox(){
-    if(obstaclesExistem && playerboxSetada){
-        for (let i = 0; i < obstaclesBox3.length; i++) {
-            if(playerBox3.intersectsBox(obstaclesBox3[i])){
-                if(obstacles[i].tipoColisao == 'SLOW')
-                    redutor = 0.2;
-                else if(obstacles[i].tipoColisao == 'SOLID'){
-                    var dirGuidePosition = dirguide.getWorldPosition(new THREE.Vector3());
-                    obstacles[i].body.lookAt(dirGuidePosition);
-                    obstacles[i].body.translateZ(speedModulo);
-                }
-            }
-        }
-    }
-}
-
-
-//-------------------------------------------------------------------------------
 // Colisor - Dentro - Checkpoints
 //-------------------------------------------------------------------------------
 
@@ -1318,6 +1234,10 @@ function armazenaTempoMenorVolta(){
                     if (tempoTodasVoltas[3] < tempoMenorVolta){
                         tempoMenorVolta = tempoTodasVoltas[3];
                     }
+                    mapa++;
+                    if(mapa >= 6){
+                        mapa = 1;
+                    }
                 }
             }
         }
@@ -1366,7 +1286,6 @@ function configuraPistas(newflagNumber, newRVNumber, newRHNumber){
     resetaVoltaAtual();
     resetaPosicaoCheckpointMudancaPista();
     resetaPosicaoRampasMudancaPista();
-    resetaPosicaoObstaclesMudancaPista();
     atualizaMinimapa();
 }
 
@@ -1490,20 +1409,10 @@ function atualizaBoundingPlayer(){
     player.add(ghostguide);
     player.add(dirguide);
     player.add(playerIcon)
-    colisorBoundingBox();
-}
-function atualizaBoundingObstacles(){
-    if(obstaclesExistem){
-        for (let i = 0; i < obstaclesBoxHelper.length; i++) {
-            obstaclesBoxHelper[i].update();
-            obstaclesBox3[i].setFromObject(obstacles[i]);
-        }
-    }
 }
 
 function boundingBoxesUpdate(){
     atualizaBoundingPlayer();
-    atualizaBoundingObstacles();
 }
 
 
@@ -1514,14 +1423,6 @@ function boundingBoxesUpdate(){
 //-------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------
 var buttons = new Buttons(onButtonDown, onButtonUp);
-var pressedA = false;
-var pressedB = false;
-
-let fwdValue = 0;
-let bkdValue = 0;
-let rgtValue = 0;
-let lftValue = 0;
-let joyManager;
 
 function sync(dt) {
     if (actions.acceleration) {
@@ -1628,67 +1529,9 @@ var speedBackward = 0;
 var tempoJogoAnterior = 0;
 var panoramico = false;
 var panoramicotraseiro = true;
-
-function keyboardUpdate() {
-    keyboard.update();
-
-    if (keyboard.pressed("W")){
-        camera.translateZ(10);
-    }
-    if (keyboard.pressed("S")){
-        camera.translateZ(-10);
-    }
-    if (keyboard.pressed("A")){
-        camera.rotateY(degreesToRadians(-10));
-    }
-    if (keyboard.pressed("D")){
-        camera.rotateY(degreesToRadians(10));
-    }
-    if (keyboard.pressed("Q")){
-        camera.rotateX(degreesToRadians(-10));
-    }
-    if (keyboard.pressed("E")){
-        camera.rotateX(degreesToRadians(10));
-    }
-    //controles do player
-    if (keyboard.pressed("X")){
-        carroAcelerando = true;
-        speedForward = (Speed/100 + aceleracao/100)*redutor;
-        //evita bug ao sair da pag, devido aos cálculos que continuam sendo feitos em segundo plano pelo browser
-        if(speedForward < -0.01){
-            speedForward = 1;
-            aceleracao = 1;
-        }
-        player.accelerate(speedForward);
-        speedModulo = speedForward;
-        player.defaultUpdate();
-    }
-    else if (keyboard.up("X")) {
-        carroAcelerando = false;
-        speedModulo = speedForward;
-        player.defaultUpdate();
-    }
-
-    if(keyboard.pressed("down")) {
-        carroFreiando = true
-        speedBackward = (-Speed/100 + freia/100)*redutor;
-        //evita bug ao sair da pag, devido aos cálculos que continuam sendo feitos em segundo plano pelo browser
-        if(speedBackward > 0.01){
-            speedBackward = -1;
-            aceleracao = 1;
-        }
-        player.accelerate(speedBackward);
-        speedModulo = -speedBackward;
-        player.defaultUpdate();
-    }
-    else if (keyboard.up("down")) {
-        carroFreiando = false
-        speedModulo = -speedBackward;
-        player.defaultUpdate();
-    }
-
-    //mapas
-    if (keyboard.pressed("1") && pistaAtual != 1){
+var mapa = 1;
+function selecaoMapa(){
+    if (mapa == 1 && pistaAtual != 1){
         pistaAtual = 1;
         newflagNumber = 9;
         newRVNumber = 12;
@@ -1700,7 +1543,7 @@ function keyboardUpdate() {
         alternaPlano();
         carregaProps();
     }
-    else if (keyboard.pressed("2") && pistaAtual != 2){
+    else if (mapa == 2 && pistaAtual != 2){
         pistaAtual = 2;
         newflagNumber = 8;
         newRVNumber = 12;
@@ -1712,7 +1555,7 @@ function keyboardUpdate() {
         alternaPlano();
         carregaProps();
     }
-    else if (keyboard.pressed("3") && pistaAtual != 3){
+    else if (mapa == 3 && pistaAtual != 3){
         pistaAtual = 3;
         newflagNumber = 8;
         newRVNumber = 22;
@@ -1724,7 +1567,7 @@ function keyboardUpdate() {
         alternaPlano();
         carregaProps();
     }
-    else if (keyboard.pressed("4") && pistaAtual != 4){
+    else if (mapa == 4 && pistaAtual != 4){
         pistaAtual = 4;
         newflagNumber = 11;
         newRVNumber = 14;
@@ -1736,7 +1579,7 @@ function keyboardUpdate() {
         alternaPlano();
         carregaProps();
     }
-    else if (keyboard.pressed("5") && pistaAtual != 5){
+    else if (mapa == 5 && pistaAtual != 5){
         pistaAtual = 5;
         newflagNumber = 12;
         newRVNumber = 0;
@@ -1748,22 +1591,6 @@ function keyboardUpdate() {
         alternaPlano();
         carregaProps();
     }
-
-    if (keyboard.up("space")) {
-      if (!panoramicotraseiro) {
-        cameraHolder.remove(camera);
-        cameraHolder2.add(camera);
-        panoramico = false;
-        panoramicotraseiro = true;
-        playerIcon.visible = false;
-      } else {
-        window.location.href = "carView.html";
-      }
-    }
-    if (keyboard.pressed("esc")){
-        window.location.href = "carARView.html";
-      }
-
 
     //cameras
     if (keyboard.pressed(",")){
@@ -2062,14 +1889,11 @@ function render(t)
 {
     stats.update();
     requestAnimationFrame(render);
+    selecaoMapa();
     dt = (t - anterior) / 100;
     anterior = t;
 	for (var i = 0; i < syncList.length; i++)
 		syncList[i](dt);
-    //movimentação do player
-    if(obstaclesExistem){
-        keyboardUpdate();
-    }
     boundingBoxesUpdate();
     verificaColisores();
     aceleraCarro(aceleracao);
